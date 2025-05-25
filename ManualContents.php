@@ -5,15 +5,18 @@
 /* This creative work is under the CC BY-NC-SA, later version. */
 
 /*
-This table of contents allows the choice to display one section or select multiple sections to format for print.
-Selecting multiple sections is for printing.
-The outline of the Table of Contents is contained in the 'ManualOutline.php' file that can be easily translated.
-The individual topics in the manual are in straight html files that are called along with the header and foot from here.
-Each function in webERP can initialise a $ViewTopic and $Bookmark variable, prior to including the header.php file.
-This will display the specified topic and bookmark if it exists when the user clicks on the Manual link in the webERP main menu.
-In this way the help can be easily broken into sections for online context-sensitive help.
-Comments beginning with Help Begin and Help End denote the beginning and end of a section that goes into the online help.
-What section is named after Help Begin: and there can be multiple sections separated with a comma.
+The outline of the Table of Contents is contained in /doc/Manual/ManualOutline.php which can
+be easily translated. The individual topics in the manual are HTML files called from here
+with the header and footer.
+
+Each webERP script can initialise a $ViewTopic and $Bookmark variable prior to including
+header.php. Accessing the manual from the script causes the specified topic and bookmark to
+be displayed if it exists. In this way the help can be easily broken into sections for online
+context-sensitive help.
+
+Comments beginning with Help Begin and Help End denote the beginning and end of a section that
+goes into the online help. The section name follows Help Begin: and multiple sections can
+be separated with a comma.
 */
 
 // BEGIN: Procedure division ---------------------------------------------------
@@ -72,7 +75,7 @@ if(((!isset($_POST['Submit'])) and (empty($_GET['ViewTopic']))) || ((isset($_POS
 	// if not submittws then coming into manual to look at TOC
 	// if SelectTableOfContents set then user wants it displayed
 	if(!isset($_POST['Submit'])) {
-		echo '<p>', _('Click on a link to view a page'), '</p>';
+		echo '<p>', _('Click on section link to view the section.'), '</p>';
 	}
 	echo '<h1>';
 	echo _('Table of Contents'), '</h1>';
