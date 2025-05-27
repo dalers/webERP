@@ -9,14 +9,18 @@ Electronic Data Interchange (EDI) is a method for exchanging business documents 
 
 <!-- Help Begin: CustEDISetup -->
 <h2>EDI Setup</h2>
-<p>To enable EDI transactions for a customer, first select the customer from the Select Customer link on any page, then click the link - Customer EDI Configuration. This page allows selection of the type of transactions that are to transmitted electronically currently only invoices/credit notes and orders are available. Each must be specifically enabled to activate them. Each customer must have their:</p>
-<p>
+<p>To enable EDI transactions for a customer:</p>
 <ul>
-  <li>EDI reference that they are identified by</li>
-  <li>Transport mechanism and address to which the invoice/credit note messages are to be sent - either email as a file attachment or via FTP (File Transfer Protocol)</li>
+  <li>Select the customer using [Main Menu > Receivables > Maintenance > Select Customer].</li>
+  <li>Click the link [Customer EDI Configuration]. This page allows selection of the type of transactions that are to transmitted electronically currently only invoices/credit notes and orders are available. Each must be specifically enabled to activate them.</li>
+</ul>
+<p>Each customer using EDI requires the following:</p>
+<ul>
+  <li>EDI reference for identification.</li>
+  <li>Transport mechanism and address for sending an invoice/credit note to.</li>
 </ul>
 
-<p>To use FTP for EDI, PHP must be compiled with FTP support (typically enabled).</p>
+<p><i>To use FTP for EDI, PHP must be compiled with FTP support (typically enabled).</i></p>
 
 <p>To activate EDI polling for invoices to send, configure cron (or equivalent) to periodically run EDISendInvoices.php (the webERP Manual section on automating sales has more information on configuring cron).</p>
 
