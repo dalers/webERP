@@ -88,6 +88,8 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 	while ( ($MyRow = fgetcsv($FileHandle, 10000, ",")) !== false ) {
 
 		//check for correct number of fields
+		//DS: hasn't this already been done above with the header row?
+		//    yes, but that was for the header row, this is for data rows
 		$FieldCount = count($MyRow);
 		if ($FieldCount != $FieldTarget){
 			prnMsg(__($FieldTarget. ' fields required, '. $FieldCount. ' fields received'),'error');
@@ -97,6 +99,7 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 		}
 
 		// cleanup the data (csv files often import with empty strings and such)
+		// set StockID to uppercase and trim all fields
 		$StockID = mb_strtoupper($MyRow[0]);
 		foreach ($MyRow as &$Value) {
 			$Value = trim($Value);
