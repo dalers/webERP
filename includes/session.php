@@ -20,6 +20,7 @@ require($PathPrefix.'vendor/autoload.php');
 
 if (!file_exists($PathPrefix . 'config.php')) {
 	// gg: there is no need for htmlspecialchars here, as we never output $RootPath into html
+	/// @todo what if we are on a webpage in a subfolder?
 	$RootPath = dirname($_SERVER['PHP_SELF']);
 	if ($RootPath == '/' or $RootPath == "\\") {
 		$RootPath = '';
@@ -28,7 +29,7 @@ if (!file_exists($PathPrefix . 'config.php')) {
 	exit();
 }
 
-$DefaultDatabase = 'weberp';
+$DefaultDatabase = 'weberpdemo';
 
 include($PathPrefix . 'config.php');
 
@@ -53,6 +54,11 @@ if (isset($MySQLPort) && !isset($DBPort)) {
 	unset($MySQLPort);
 }
 
+// another upgrade issue
+if (!isset($DBCharset)) {
+	$DBCharset = 'utf8';
+}
+
 if (isset($SessionSavePath)) {
 	session_save_path($SessionSavePath);
 }
@@ -63,7 +69,10 @@ if (!isset($SysAdminEmail)) {
 
 if (isset($_SESSION['Timeout'])) {
 	ini_set('session.gc_maxlifetime', (60 * $_SESSION['Timeout'] + 1));
+} else {
+	ini_set('session.gc_maxlifetime', $SessionLifeTime);
 }
+ini_set('max_execution_time', $MaximumExecutionTime);
 
 session_write_close(); //in case a previous session is not closed
 ini_set('session.cookie_httponly', 1);
@@ -155,7 +164,7 @@ if (basename($_SERVER['SCRIPT_NAME']) == 'Logout.php') {
 	include($PathPrefix . 'includes/GetConfig.php');
 
 } else {
-	include($PathPrefix . 'includes/UserLogin.php'); /* Login checking and setup. Includes GetConfig.php on successful logins */
+	include($PathPrefix . 'includes/LoginFunctions.php'); /* Login checking and setup. Includes GetConfig.php on successful logins */
 
 	/// @todo what if the current user is already logged in? We should at least log him/her out before re-logging in...
 	///       (or maybe swallow that event, and log it as suspected hack attempt?)
@@ -176,7 +185,7 @@ if (basename($_SERVER['SCRIPT_NAME']) == 'Logout.php') {
 	$Theme = (isset($_SESSION['Theme'])) ? $_SESSION['Theme'] : $DefaultTheme;
 
 	switch ($rc) {
-		case UL_OK; //user logged in successfully
+		case UL_OK: //user logged in successfully
 			/// @todo shouldn't we only set the cookie if $FirstLogin = true ?
 			setcookie('Login', $_SESSION['DatabaseName']);
 			//include($PathPrefix . 'includes/LanguageSetup.php'); //set up the language
@@ -369,11 +378,13 @@ if (!isset($_POST['CompanyNameField']) and sizeof($_POST) > 0 and !isset($AllowA
 	}
 }
 
+/// @todo move to LoginFunctions.php
 function CryptPass($Password) {
 	$Hash = password_hash($Password, PASSWORD_DEFAULT);
 	return $Hash;
 }
 
+/// @todo move to LoginFunctions.php
 function VerifyPass($Password, $Hash) {
 	return password_verify($Password, $Hash);
 }

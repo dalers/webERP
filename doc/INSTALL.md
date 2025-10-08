@@ -9,14 +9,17 @@ are upgrading an existing installation.
 
 * Web server (e.g. Apache HTTP Server or Nginx).
 
-* PHP interpreter. PHP v8.1 or later is required, with
-    mysqli extension (usd for accessing both MySql and MariaDB), gd, gettext (for translations),
+* PHP interpreter. PHP v8.1 or later is required, with MySQLi extension, gd, gettext (for translations),
     libxml, mbstring and ftp (optional for file transfer). The web server user must have full
     write privileges to the ./companies/ directory, and at least temporarily to the root
     directory for the web installer to save the created configuration file ./config.php.
 
-* MySQL or v4.1+ or MariaDb 10.4+ (innodb tables MUST be enabled, which should be the default, but
-    you can check `my.cnf` file to confirm, e.g. `/etc/my.cnf` or `/usr/local/etc/mysql/my.cnf`).
+* MySQL ver. 5.7.5+ or MariaDb 5.5+ (innodb tables MUST be enabled, which should be the default, but
+  you can check `my.cnf` file to confirm, e.g. `/etc/my.cnf` or `/usr/local/etc/mysql/my.cnf`).
+
+  The utf8mb4 character set is recommended. utf8mb3 will be used as fallback
+
+  The DB user account must have privileges sufficient to create triggers.
 
 Detailed instructions for installing those components can be readily found in a web search. XAMPP is
 recommended for development on a Windows(R) platform, see https://www.apachefriends.org/index.html.
@@ -183,7 +186,7 @@ the initial "admin" user details.
 If desired, the database can be created manually before accessing the webERP web installer. The installer
 will use an existing database if one exists.
 
-webERP requires either MySQL version 4.1 or greater or MariaDb 10.4+
+webERP requires either MySQL version 5.7.5 or greater or MariaDb 5.5+
 
 In webERP each company has its own database. For example, if you have a company called MyCompany, webERP
 expects there will be database named mycompany (in lower case). Before starting to install webERP, ensure

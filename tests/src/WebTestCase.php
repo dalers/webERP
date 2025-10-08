@@ -1,8 +1,8 @@
 <?php
 
+require_once(__DIR__ . '/HttpTestCase.php');
 require_once(__DIR__ . '/HttpBrowser.php');
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestStatus;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\HttpClient;
@@ -11,56 +11,18 @@ use Symfony\Component\HttpClient\HttpClient;
  * The test-case class to be used as base for all tests which need to make an http call to webERP.
  * The details for the connection to the webserver come from either env vars or phpunit.xml values
  */
-class WebTestCase extends TestCase
+class WebTestCase extends HttpTestCase
 {
-	/** @var string */
-	protected static $rootDir;
-	/** @var string */
-	protected static $baseUri;
-	/** @var string */
-	protected static $randId;
 	/** @var HttpBrowser */
 	protected $browser;
-
-	/**
-	 * Runs once before all the test methods of this object
-	 */
-	public static function setUpBeforeClass(): void
-	{
-		parent::setUpBeforeClass();
-
-		if (self::$rootDir == '') {
-			self::$rootDir = realpath(__DIR__ . '/../..');
-		}
-
-		/// @todo  This is a file which can be read by pages server-side to validate that the request is coming from the test
-		///        It remains to be done: 1. send self::$randId as cookie on every http request, and 2. check for it server-side
-		//self::$randId = uniqid();
-		//file_put_contents(sys_get_temp_dir() . '/phpunit_rand_id.txt', self::$randId);
-	}
-
-	/**
-	 * Runs once after all the test methods of this object
-	 */
-	public static function tearDownAfterClass(): void
-	{
-		//if (is_file(sys_get_temp_dir() . '/phpunit_rand_id.txt')) {
-		//	unlink(sys_get_temp_dir() . '/phpunit_rand_id.txt');
-		//}
-
-		parent::tearDownAfterClass();
-	}
 
 	/**
 	 * Runs once before each test method of this object
 	 */
 	public function setUp(): void
 	{
-		self::$baseUri = $_ENV['TEST_TARGET_PROTOCOL'] . '://'. $_ENV['TEST_TARGET_HOSTNAME'] .
-			($_ENV['TEST_TARGET_PORT'] != '' ? (':' . ltrim($_ENV['TEST_TARGET_PORT'], ':')) : '') .
-			rtrim($_ENV['TEST_TARGET_BASE_URL'], '/');
 		$this->browser = new HttpBrowser(HttpClient::create());
-
+		$this->browser->setExpectedErrorStrings(self::$errorPrependString, self::$errorAppendString, self::$serverRunsXDebug);
 		parent::setUp();
 	}
 
@@ -75,8 +37,10 @@ class WebTestCase extends TestCase
 		$testStatus =  $this->status();
 		if ($testStatus instanceof TestStatus\Failure || $testStatus instanceof TestStatus\Error) {
 			if ($this->browser) {
-				/// @todo add a timestamp suffix to the filename, and/or file/line nr. of the exception
-				$testName = get_class($this) . '_' . $this->name();
+				/// @todo add a timestamp suffix to the filename, and/or file/line nr. of the exception.
+				///       Also, the url being requested
+				$testName = get_class($this) . '_' . $this->name() .
+					($this->executingTestIdentifier != '' ? '_' . $this->executingTestIdentifier : '');
 				file_put_contents($_ENV['TEST_ERROR_SCREENSHOTS_DIR'] . '/webpage_failing_' . $testName. '.html', $this->getResponse()->getContent());
 			}
 		}
@@ -157,11 +121,12 @@ class WebTestCase extends TestCase
 
 	/**
 	 * Scans the source code for web pages (php files).
-	 * @param string[] $dirs List of dirs. Will _not_ recurse into them
-	 * @param bool $pathAsArray when set, return an array of arrays. good for dataProvider methods
+	 * NB: does not list php scripts known to be "includes", such as those in .../include as well as api scripts
+	 * @param string[] $dirs List of dirs to use instead of the default set. Will _not_ recurse into them
+	 * @param bool $pathAsArray when set, return an array of arrays. Good for dataProvider methods
 	 * @return array every php file is returned with its path relative to the root directory (starting with '/')
 	 */
-	protected static function listWebPages(array $dirs = [], $pathAsArray=false): array
+	protected static function listWebPages(array $dirs = [], $pathAsArray = false): array
 	{
 		if (self::$rootDir == '') {
 			self::$rootDir = realpath(__DIR__ . '/../..');
@@ -171,9 +136,9 @@ class WebTestCase extends TestCase
 			// directories with scripts known to be web-accessible
 			$dirs = [
 				self::$rootDir,
-				self::$rootDir . '/api',
+				//self::$rootDir . '/api',
 				self::$rootDir . '/dashboard',
-				self::$rootDir . '/doc/Manual',
+				//self::$rootDir . '/doc/Manual',
 				self::$rootDir . '/install',
 				self::$rootDir . '/reportwriter',
 				self::$rootDir . '/reportwriter/admin',
@@ -184,12 +149,20 @@ class WebTestCase extends TestCase
 		foreach($dirs as $dir) {
 			foreach(glob($dir . '/*.php') as $path) {
 				$path = preg_replace('|^' . self::$rootDir .'|', '', realpath($path));
+				if (in_array($path, ['/config.php', '/config.distrib.php'])) {
+					continue;
+				}
 				if ($pathAsArray) {
 					$pages[] = [$path];
 				} else {
 					$pages[] = $path;
 				}
 			}
+		}
+		if ($pathAsArray) {
+			/// @todo
+		} else {
+			sort($pages);
 		}
 		return $pages;
 	}
@@ -216,8 +189,36 @@ class WebTestCase extends TestCase
 		$this->assertStringNotContainsString($crawler->getUri(), '/install/', $message);
 	}
 
-	protected function assertIsNotOnLoginPage()
+	protected function assertIsOnLoginPage(Crawler $crawler, $message = '')
 	{
-/// @todo ...
+		/// @todo what about using $this->getResponse() instead of $crawler? Also, check for presence of login form
+		$this->assertStringContainsString('Please login here', $crawler->text(), $message);
+	}
+
+	protected function assertIsNotOnLoginPage(Crawler $crawler, $message = '')
+	{
+		/// @todo what about using $this->getResponse() instead of $crawler? Also, check for absence of login form
+		$this->assertStringNotContainsString('Please login here', $crawler->text(), $message);
+	}
+
+	protected function loginUser()
+	{
+		if (count($this->browser->getCookieJar()->all())) {
+			$crawler = $this->browser->request('GET', self::$baseUri . '/Logout.php');
+		} else {
+			$crawler = $this->browser->request('GET', self::$baseUri . '/index.php');
+		}
+
+		// make sure we do have not been redirected to the installer (belts-and-suspenders)
+		$this->assertIsNotOnInstallerPage($crawler);
+
+		$crawler = $this->browser->submitForm('SubmitUser', [
+			'CompanyNameField' => $_ENV['TEST_DB_SCHEMA'],
+			'UserNameEntryField' => $_ENV['TEST_USER_ACCOUNT'],
+			'Password' => $_ENV['TEST_USER_PASSWORD'],
+		]);
+
+		$this->assertStringNotContainsString('ERROR Report', $crawler->text());
+		$this->assertStringNotContainsString('Please login here', $crawler->text(), 'Failed logging in');
 	}
 }

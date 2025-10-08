@@ -24,7 +24,7 @@ function CreateCompanyLogo($CompanyName, $Path_To_Root, $CompanyDir) {
 		$px = (imagesx($im) - $TextWidth) / 2;
 		$py = (imagesy($im) - ($fh)) / 2;
 		//imagefill($im, 0, 0, $BackgroundColour);
-		imagestring($im, $Font, $px, $py, $CompanyName, $TextColour);
+		imagestring($im, $Font, (int)$px, (int)$py, $CompanyName, $TextColour);
 
 		imagesavealpha($im, true);
 
@@ -32,7 +32,6 @@ function CreateCompanyLogo($CompanyName, $Path_To_Root, $CompanyDir) {
 		if (!imagepng($im, $CompanyDir . '/logo.png')) {
 			$Result = copy($Path_To_Root . '/images/default_logo.jpg', $CompanyDir . '/logo.jpg');
 		}
-		imagedestroy($im);
 
 	} else {
 		$Result = copy($Path_To_Root . '/images/default_logo.jpg', $CompanyDir . '/logo.jpg');
@@ -110,7 +109,7 @@ function SaveUploadedCompanyLogo($DatabaseName, $Path_To_Root)
 /**
  * @return bool false when a fatal error happened
  */
-function CreateDataBase($HostName, $UserName, $Password, $DataBaseName, $DBPort, $DBType, $Path_To_Root) {
+function 	CreateDataBase($HostName, $UserName, $Password, $DataBaseName, $DBPort, $DBType, $Path_To_Root) {
 
 	// avoid exceptions being thrown on query errors
 	mysqli_report(MYSQLI_REPORT_ERROR);
@@ -124,14 +123,44 @@ function CreateDataBase($HostName, $UserName, $Password, $DataBaseName, $DBPort,
 
 	$Errors = [];
 
-	mysqli_set_charset($DB, 'utf8');
+	/// @todo move this to a shared function (eg. in UpgradeDB_$DBType.php)
+	/// @todo allow to pick/suggest a preferred charset - possibly leave the choice hidden in the installer, so that
+	///       end users do not get confused, but allow the test suite to force the code path which uses utf8mb3
+	$ListCharsetsSQL = "SHOW COLLATION WHERE Charset = 'utf8mb4'";
+	$ListCharsetsResult = @mysqli_query($DB, $ListCharsetsSQL);
+	if ($ListCharsetsResult) {
+		$Rows = mysqli_num_rows($ListCharsetsResult);
+	} else {
+		echo '<div class="warning">' . __('Failed to check for the available database character sets.') . '</div>';
+		$Rows = 0;
+	}
+
+	if ($Rows > 0) {
+		$_SESSION['Installer']['DBCharset'] = 'utf8mb4';
+	} else {
+		// NB: utf8 is an alias for utf8mb3, up to Mysql < 8.4, and mariadb < 10.6.1.
+		// After that, it becomes an alias for utf8mb4.
+		// A great win for BC! ;-)
+		// Ideally, the value we pick here should be an utf8 encoding supported by all db-versions/php-versions.
+		// The string 'utf8mb3' is a good candidate, but it was tested on both mysql 8.3 and mariadb 10.5, and it raised
+		// php warnings in both cases :-(
+		// Using 'utf8' instead worked, and got us a 3-bytes charset (tested with `mysqli_get_charset($DB)`).
+		// So be it.
+		// Final note: both mariadb and mysql support utf8mb4 since rev 5.5, which is less-or-equal to the minimum
+		// DB version we support. So this whole block (and the above test) could in fact be removed...
+		$_SESSION['Installer']['DBCharset'] = 'utf8';
+	}
+
+	if (!mysqli_set_charset($DB, $_SESSION['Installer']['DBCharset'])) {
+		echo '<div class="warning">' . __('Failed setting the database connection character set to') . ' ' . htmlspecialchars($_SESSION['Installer']['DBCharset']) . '</div>';
+	}
 
 	// gg: we only use this db connection for creating the database, as we use separate one for creating tables etc.
 	//     So this seems useless/overkill
 	//$Result = @mysqli_query($DB, 'SET SQL_MODE=""');
 	//$Result = @mysqli_query($DB, 'SET SESSION SQL_MODE=""');
 
-	/// @todo move checking for permissions and for existing tables into UpgradeDB_$dbtype.php, to give it a chance
+	/// @todo move checking for permissions and for existing tables into UpgradeDB_$DBType.php, to give it a chance
 	///       at being db-agnostic
 
 	$DBExistsSql = "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '" . mysqli_real_escape_string($DB, $DataBaseName) . "'";
@@ -154,8 +183,7 @@ function CreateDataBase($HostName, $UserName, $Password, $DataBaseName, $DBPort,
 		//if ($Privileges == 0) {
 		//	$Errors[] = __('The database does not exist, and this database user does not have privileges to create it');
 		//} else { /* Then we can create the database */
-			/// @todo add utf8-mb4 as default charset (check 1st that the db supports it. If not, utf8mb3)
-			$SQL = "CREATE DATABASE " . $DataBaseName;
+			$SQL = "CREATE DATABASE " . $DataBaseName . " CHARACTER SET = " . $_SESSION['Installer']['DBCharset'];
 			if (!@mysqli_query($DB, $SQL)) {
 				$Errors[] = __('Failed creating the database');
 			}
@@ -279,8 +307,8 @@ function CreateTables($Path_To_Root, $DBType) {
 			$SQLScriptFile = preg_replace('/([) ])STORED([, \n])/', ' $1PERSISTENT$2', $SQLScriptFile);
 		}
 
-		if ($DBType == 'mysqli' || $DBType == 'mysql' ) {
-			// mysql 5.5 chokes on GENERATED ALWAYS
+		if ($_SESSION['Installer']['DBCharset'] != 'utf8mb4') {
+			$SQLScriptFile = preg_replace('/ CHARSET *= *utf8mb4/', ' CHARSET = utf8mb3', $SQLScriptFile);
 		}
 
 		// we disable FKs for each script, in case the previous script re-enabled them
@@ -303,6 +331,8 @@ function CreateTables($Path_To_Root, $DBType) {
 
 function UploadData($Demo, $AdminPassword, $AdminUser, $Email, $Language, $CoA, $CompanyName, $Path_To_Root,
 	$DataBaseName, $DBType) {
+
+	$CompanyDir = $Path_To_Root . '/companies/' . $DataBaseName;
 	$Errors = 0;
 	if ($Demo != 'Yes') {
 		/* Create the admin user */
@@ -515,6 +545,7 @@ function UploadData($Demo, $AdminPassword, $AdminUser, $Email, $Language, $CoA, 
 		echo '<div class="info">' . __('Populating the database with demo data.') . '</div>';
 		flush();
 
+		DB_IgnoreForeignKeys();
 		$Errors = (int)PopulateSQLDataBySQLFile($Path_To_Root. '/install/sql/demo.sql', $DBType);
 
 		/// @todo this could just be pushed into demo.sql - and checked for presence by the scripts in /build
@@ -527,11 +558,10 @@ function UploadData($Demo, $AdminPassword, $AdminUser, $Email, $Language, $CoA, 
 			$Errors++;
 			//echo '<div class="error">' . __('...') . '</div>';
 		}
+		DB_ReinstateForeignKeys();
 
-		/// @todo there is no /companies/default folder atm...
-		$CompanyDir = $Path_To_Root . '/companies/' . $DataBaseName;
-		foreach (glob($Path_To_Root . '/companies/default/part_pics/*.jp*') as $JpegFile) {
-			copy("../companies/default/part_pics/" . basename($JpegFile), $CompanyDir . '/part_pics/' . basename($JpegFile));
+		foreach (glob($Path_To_Root . '/companies/weberpdemo/part_pics/*.jp*') as $JpegFile) {
+			copy($Path_To_Root . "/companies/weberpdemo/part_pics/" . basename($JpegFile), $CompanyDir . '/part_pics/' . basename($JpegFile));
 		}
 
 		/// @todo is there need to disable foreign keys for this insert?
@@ -605,8 +635,11 @@ function UploadData($Demo, $AdminPassword, $AdminUser, $Email, $Language, $CoA, 
 	}
 
 	/// @todo check for errors
+
 	$SQL = "INSERT INTO `config` (`confname`, `confvalue`) VALUES ('part_pics_dir', 'companies/" . $DataBaseName . "/part_pics')";
 	$Result = DB_query($SQL);
+
+	copy($Path_To_Root . '/companies/weberpdemo/part_pics/webERPsmall.png', $CompanyDir . '/part_pics/webERPsmall.png');
 
 	return ($Errors == 0);
 }

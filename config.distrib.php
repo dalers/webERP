@@ -50,6 +50,11 @@ $DBType = 'mysqli';
 $DBUser = 'weberp_db_user';
 $DBPassword = 'weberp_db_pwd';
 
+// The DB character set.
+// For mysql/mariadb, utf8mb4 is preferred. If your database version does not support it, you can, depending on the
+// specific version, use the 'utf8' alias for 'utf8mb3'
+$DBCharset = 'utf8mb4';
+
 // Login company selection
 //
 // If allowing selection of the company in the login window is not desired (e.g. in a hosted environment and seeing other
@@ -67,6 +72,7 @@ $AllowCompanySelectionBox = 'ShowSelectionBox';
 $DefaultDatabase = 'weberpdemo';
 
 // The maximum time that a login session can be idle before automatic logout.
+// Currently only used for the API and for users for which the timeout is not defined in their personal settings.
 // Time is in seconds. 3600 seconds in an hour
 $SessionLifeTime = 3600;
 
