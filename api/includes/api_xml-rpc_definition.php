@@ -3512,12 +3512,13 @@ function xmlrpc_GetSalesOrderLineDetails($request)
 {
 	ob_start('ob_file_callback');
 	$encoder = new Encoder();
-	if ($request->getNumParams() == 2) {
+	if ($request->getNumParams() == 3) {
 		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails(
 			$request->getParam(0)->scalarval(),
-			$request->getParam(1)->scalarval())));
+			$request->getParam(1)->scalarval(),
+		    $request->getParam(2)->scalarval())));
 	} else {
-		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails('', '')));
+		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($request->getParam(0)->scalarval(), '', '')));
 	}
 	ob_end_flush();
 	return $rtn;
