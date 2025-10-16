@@ -3504,9 +3504,7 @@ $ReturnValue = __('If successful this function returns a set of key/value pairs 
 	. __('Otherwise an array of error codes is returned. ');
 
 $GetSalesOrderLineDetails_sig = array(
-	//array(Value::$xmlrpcArray),
 	array(Value::$xmlrpcArray, Value::$xmlrpcStruct),
-	//array(Value::$xmlrpcArray, Value::$xmlrpcString, Value::$xmlrpcString));
 	array(Value::$xmlrpcArray, Value::$xmlrpcString, Value::$xmlrpcString, Value::$xmlrpcString));
 $GetSalesOrderLineDetails_doc = apiBuildDocHTML($Description, $Parameter, $ReturnValue);
 
@@ -3515,7 +3513,6 @@ function xmlrpc_GetSalesOrderLineDetails($request)
 	ob_start('ob_file_callback');
 	$encoder = new Encoder();
 	if ($request->getNumParams() == 3) {
-//$rtn=UmetumaNgapi;
 		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails(
 			$request->getParam(0)->scalarval(),
 			$request->getParam(1)->scalarval(),

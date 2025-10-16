@@ -710,7 +710,7 @@ function GetSalesOrderValue($OrderNo, $user, $password) {
    the database record for that Order. If the Order Header ID doesn't exist
    then it returns an $Errors array.
 */
-
+/*
 function GetSalesOrderLineDetails($OrderNo, $user = '', $password = '') {
     $Errors = array();
     $db = db($user, $password);
@@ -763,7 +763,7 @@ function GetSalesOrderLineDetails($OrderNo, $user = '', $password = '') {
 	$Errors[1]=$OrderLines;
 	return $Errors;
 }
-/*
+*/
 function GetSalesOrderLineDetails($OrderNo, $user = '', $password = '') {
     $Errors = array();
     $db = db($user, $password);
@@ -826,7 +826,7 @@ function GetSalesOrderLineDetails($OrderNo, $user = '', $password = '') {
 	$Errors[1]=$OrderLines;
 	return $Errors;
 }
-*/
+
 /** This function takes a Order Header ID  and returns an associative array containing
    the database record for that Order. If the Order Header ID doesn't exist
    then it returns an $Errors array.
