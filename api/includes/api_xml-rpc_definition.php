@@ -3513,14 +3513,18 @@ function xmlrpc_GetSalesOrderLineDetails($request)
 	ob_start('ob_file_callback');
 	$encoder = new Encoder();
 	if ($request->getNumParams() == 3) {
+		$rtn=UmetumaNgapi;
+		/*
 		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails(
-			//$request->getParam(0)->scalarval(),
-			//$request->getParam(1)->scalarval(),
-		    //$request->getParam(2)->scalarval()
-			$encoder->decode($request->getParam(0)),
+			$request->getParam(0)->scalarval(),
 			$request->getParam(1)->scalarval(),
-			$request->getParam(2)->scalarval()
+		    $request->getParam(2)->scalarval()
+			// $encoder->decode($request->getParam(0)),
+			// $request->getParam(1)->scalarval(),
+			// $request->getParam(2)->scalarval()
+			
 		)));
+		*/
 	} else {
 	//	$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($request->getParam(0)->scalarval(), '', '')));
 		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($encoder->decode($request->getParam(0)), '', '')));
