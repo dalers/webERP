@@ -5,7 +5,7 @@ if (!isset($PathPrefix)) {
 	exit();
 }
 
-/** Check that the stock code */
+/** Verify Stock Code exists */
 function VerifyStockCode($StockCode, $i, $Errors) {
 	$Searchsql = "SELECT count(stockid)
 				  FROM stockmaster
@@ -18,7 +18,7 @@ function VerifyStockCode($StockCode, $i, $Errors) {
 	return $Errors;
 }
 
-/** Check that the stock code exists */
+/** Verify Stock Code does not exist */
 function VerifyStockCodeExists($StockCode, $i, $Errors) {
 	$Searchsql = "SELECT count(stockid)
 				  FROM stockmaster
@@ -31,7 +31,7 @@ function VerifyStockCodeExists($StockCode, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify the category exists */
+/** Verify Stock Category exists */
 function VerifyStockCategoryExists($StockCategory, $i, $Errors) {
 	$Searchsql = "SELECT count(categoryid)
 				  FROM stockcategory
@@ -44,7 +44,7 @@ function VerifyStockCategoryExists($StockCategory, $i, $Errors) {
 	return $Errors;
 }
 
-/** Check that the description is 50 characters or less long */
+/** Verify Stock Description is 50 characters or less */
 function VerifyStockDescription($StockDescription, $i, $Errors) {
 	if (mb_strlen($StockDescription)>50) {
 		$Errors[$i] = IncorrectStockDescriptionLength;
@@ -52,7 +52,7 @@ function VerifyStockDescription($StockDescription, $i, $Errors) {
 	return $Errors;
 }
 
-/** Check that the long description is 256 characters or less long */
+/** Verify Stock Long Description is 256 characters or less */
 function VerifyStockLongDescription($StockLongDescription, $i, $Errors) {
 	if (mb_strlen($StockLongDescription)>256) {
 		$Errors[$i] = IncorrectLongStockDescriptionLength;
@@ -60,7 +60,7 @@ function VerifyStockLongDescription($StockLongDescription, $i, $Errors) {
 	return $Errors;
 }
 
-/** Check that the units description is 20 characters or fewer */
+/** Verify Units description is 20 characters or less */
 function VerifyUnits($units, $i, $Errors) {
 	if (mb_strlen($units)>20) {
 		$Errors[$i] = IncorrectUnitsLength;
@@ -68,7 +68,7 @@ function VerifyUnits($units, $i, $Errors) {
 	return $Errors;
 }
 
-/** Check the mbflag has a valid value */
+/** Verify MBFlag is valid */
 function VerifyMBFlag($mbflag,$i, $Errors) {
 	if ($mbflag!='M' and $mbflag!='K' and $mbflag!='A' and $mbflag!='B' and $mbflag!='D' and $mbflag!='G') {
 		$Errors[$i] = IncorrectMBFlag;
@@ -76,9 +76,9 @@ function VerifyMBFlag($mbflag,$i, $Errors) {
 	return $Errors;
 }
 
-/** Check that the last current cost date is a valid date. The date
- * must be in the same format as the date format specified in the
- * target webERP company */
+/** Verify Last Current Cost Date is valid (the date must be in the same
+   format as the date format specified in the target webERP company)
+*/
 function VerifyLastCurCostDate($CurCostDate, $i, $Errors) {
 	$SQL="SELECT confvalue FROM config WHERE confname='DefaultDateFormat'";
 	$Result = DB_query($SQL);
@@ -112,7 +112,7 @@ function VerifyLastCurCostDate($CurCostDate, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the actual cost figure is numeric */
+/** Verify Actual Cost is numeric */
 function VerifyActualCost($ActualCost, $i, $Errors) {
 	if (!is_numeric($ActualCost)) {
 		$Errors[$i] = InvalidActualCost;
@@ -120,7 +120,7 @@ function VerifyActualCost($ActualCost, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the last cost figure is numeric */
+/** Verify Last Cost is numeric */
 function VerifyLastCost($LastCost, $i, $Errors) {
 	if (!is_numeric($LastCost)) {
 		$Errors[$i] = InvalidLastCost;
@@ -128,7 +128,7 @@ function VerifyLastCost($LastCost, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the material cost figure is numeric */
+/** Verify Material Cost is numeric */
 function VerifyMaterialCost($MaterialCost, $i, $Errors) {
 	if (!is_numeric($MaterialCost)) {
 		$Errors[$i] = InvalidMaterialCost;
@@ -136,7 +136,7 @@ function VerifyMaterialCost($MaterialCost, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the labour cost figure is numeric */
+/** Verify Labour Cost is numeric */
 function VerifyLabourCost($LabourCost, $i, $Errors) {
 	if (!is_numeric($LabourCost)) {
 		$Errors[$i] = InvalidLabourCost;
@@ -144,7 +144,7 @@ function VerifyLabourCost($LabourCost, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the overhead cost figure is numeric */
+/** Verify Overhead Cost is numeric */
 function VerifyOverheadCost($OverheadCost, $i, $Errors) {
 	if (!is_numeric($OverheadCost)) {
 		$Errors[$i] = InvalidOverheadCost;
@@ -152,7 +152,7 @@ function VerifyOverheadCost($OverheadCost, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the lowest level figure is numeric */
+/** Verify LowestLevel is numeric */
 function VerifyLowestLevel($LowestLevel, $i, $Errors) {
 	if (!is_numeric($LowestLevel)) {
 		$Errors[$i] = InvalidLowestLevel;
@@ -160,7 +160,7 @@ function VerifyLowestLevel($LowestLevel, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the Discontinued flag is a 1 or 0 */
+/** Verify Discontinued is 1 or 0 */
 function VerifyDiscontinued($Discontinued, $i, $Errors) {
 	if ($Discontinued!=0 and $Discontinued!=1) {
 		$Errors[$i] = InvalidDiscontinued;
@@ -168,7 +168,7 @@ function VerifyDiscontinued($Discontinued, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the Controlled flag is a 1 or 0 */
+/** Verify Controlled is 1 or 0 */
 function VerifyControlled($Controlled, $i, $Errors) {
 	if ($Controlled!=0 and $Controlled!=1) {
 		$Errors[$i] = InvalidControlled;
@@ -176,7 +176,7 @@ function VerifyControlled($Controlled, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the eoq figure is numeric */
+/** Verify EOQ is numeric */
 function VerifyEOQ($eoq, $i, $Errors) {
 	if (!is_numeric($eoq)) {
 		$Errors[$i] = InvalidEOQ;
@@ -184,7 +184,7 @@ function VerifyEOQ($eoq, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the volume figure is numeric */
+/** Verify Volume is numeric */
 function VerifyVolume($volume, $i, $Errors) {
 	if (!is_numeric($volume)) {
 		$Errors[$i] = InvalidVolume;
@@ -192,7 +192,7 @@ function VerifyVolume($volume, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the kgs figure is numeric */
+/** Verify Kgs is numeric */
 function VerifyKgs($kgs, $i, $Errors) {
 	if (!is_numeric($kgs)) {
 		$Errors[$i] = InvalidKgs;
@@ -200,7 +200,7 @@ function VerifyKgs($kgs, $i, $Errors) {
 	return $Errors;
 }
 
-/** Check that the barcode is 50 characters or less long */
+/** Verify Bar Code is 50 characters or less */
 function VerifyBarCode($barcode, $i, $Errors) {
 	if (mb_strlen($barcode)>50) {
 		$Errors[$i] = IncorrectBarCodeLength;
@@ -208,7 +208,7 @@ function VerifyBarCode($barcode, $i, $Errors) {
 	return $Errors;
 }
 
-/** Check that the discount category is 2 characters or less long */
+/** Verify Discount Category is 2 characters or less */
 function VerifyDiscountCategory($discountcategory, $i, $Errors) {
 	if (mb_strlen($discountcategory)>2) {
 		$Errors[$i] = IncorrectDiscountCategory;
@@ -216,7 +216,7 @@ function VerifyDiscountCategory($discountcategory, $i, $Errors) {
 	return $Errors;
 }
 
-/** Check that the tax category exists */
+/** Verify TaxCategory exists */
 function VerifyTaxCatExists($TaxCat, $i, $Errors) {
 	$Searchsql = "SELECT count(taxcatid)
 				  FROM taxcategories
@@ -229,7 +229,7 @@ function VerifyTaxCatExists($TaxCat, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the Serialised flag is a 1 or 0 */
+/** Verify Serialised is 1 or 0 */
 function VerifySerialised($Serialised, $i, $Errors) {
 	if ($Serialised!=0 and $Serialised!=1) {
 		$Errors[$i] = InvalidSerialised;
@@ -237,7 +237,7 @@ function VerifySerialised($Serialised, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the Perishable flag is a 1 or 0 */
+/** Verify Perishable is 1 or 0 */
 function VerifyPerishable($Perishable, $i, $Errors) {
 	if ($Perishable!=0 and $Perishable!=1) {
 		$Errors[$i] = InvalidPerishable;
@@ -245,7 +245,7 @@ function VerifyPerishable($Perishable, $i, $Errors) {
 	return $Errors;
 }
 
-/** Verify that the decimal places figure is numeric */
+/** Verify DecimalPlaces value is numeric */
 function VerifyDecimalPlaces($DecimalPlaces, $i, $Errors) {
 	if (!is_numeric($DecimalPlaces)) {
 		$Errors[$i] = InvalidDecmalPlaces;
