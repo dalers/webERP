@@ -3514,11 +3514,16 @@ function xmlrpc_GetSalesOrderLineDetails($request)
 	$encoder = new Encoder();
 	if ($request->getNumParams() == 3) {
 		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails(
-			$request->getParam(0)->scalarval(),
+			//$request->getParam(0)->scalarval(),
+			//$request->getParam(1)->scalarval(),
+		    //$request->getParam(2)->scalarval()
+			$encoder->decode($request->getParam(0)),
 			$request->getParam(1)->scalarval(),
-		    $request->getParam(2)->scalarval())));
+			$request->getParam(2)->scalarval()
+		)));
 	} else {
-		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($request->getParam(0)->scalarval(), '', '')));
+	//	$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($request->getParam(0)->scalarval(), '', '')));
+		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($encoder->decode($request->getParam(0)), '', '')));
 	}
 	ob_end_flush();
 	return $rtn;
