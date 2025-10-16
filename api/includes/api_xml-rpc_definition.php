@@ -2883,7 +2883,8 @@ function xmlrpc_StockAdjustment($request)
 			$request->getParam(2)->scalarval(),
 			$request->getParam(3)->scalarval(),
 			$request->getParam(4)->scalarval(),
-			$request->getParam(5)->scalarval())));
+			$request->getParam(5)->scalarval()
+		)));
 	} else {
 		$rtn = new Response($encoder->encode(StockAdjustment(
 			$request->getParam(0)->scalarval(),
@@ -2892,6 +2893,7 @@ function xmlrpc_StockAdjustment($request)
 			$request->getParam(3)->scalarval(), '', '')));
 	}
 	ob_end_flush();
+	$rtn=hapovipi;
 	return $rtn;
 }
 
