@@ -3507,7 +3507,7 @@ $GetSalesOrderLineDetails_sig = array(
 	//array(Value::$xmlrpcArray),
 	array(Value::$xmlrpcArray, Value::$xmlrpcStruct),
 	//array(Value::$xmlrpcArray, Value::$xmlrpcString, Value::$xmlrpcString));
-	array(Value::$xmlrpcArray, Value::$xmlrpcStruct, Value::$xmlrpcString, Value::$xmlrpcString));
+	array(Value::$xmlrpcArray, Value::$xmlrpcString, Value::$xmlrpcString, Value::$xmlrpcString));
 $GetSalesOrderLineDetails_doc = apiBuildDocHTML($Description, $Parameter, $ReturnValue);
 
 function xmlrpc_GetSalesOrderLineDetails($request)
