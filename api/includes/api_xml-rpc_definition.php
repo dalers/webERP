@@ -3512,12 +3512,10 @@ $GetSalesOrderLineDetails_doc = apiBuildDocHTML($Description, $Parameter, $Retur
 
 function xmlrpc_GetSalesOrderLineDetails($request)
 {
-	$rtn=$request->getNumParams();
 	ob_start('ob_file_callback');
 	$encoder = new Encoder();
 	if ($request->getNumParams() == 3) {
-		$rtn=UmetumaNgapi;
-		/*
+//$rtn=UmetumaNgapi;
 		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails(
 			$request->getParam(0)->scalarval(),
 			$request->getParam(1)->scalarval(),
@@ -3527,7 +3525,6 @@ function xmlrpc_GetSalesOrderLineDetails($request)
 			// $request->getParam(2)->scalarval()
 			
 		)));
-		*/
 	} else {
 	//	$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($request->getParam(0)->scalarval(), '', '')));
 		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($encoder->decode($request->getParam(0)), '', '')));
