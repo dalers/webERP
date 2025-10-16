@@ -710,6 +710,7 @@ function GetSalesOrderValue($OrderNo, $user, $password) {
    the database record for that Order. If the Order Header ID doesn't exist
    then it returns an $Errors array.
 */
+/*
 function GetSalesOrderLineDetails($OrderNo, $user, $password) {
     $Errors = array();
     $db = db($user, $password);
@@ -758,6 +759,69 @@ function GetSalesOrderLineDetails($OrderNo, $user, $password) {
 		$OrderLines[$i]=$Row[0];
 		$i++;
 	}
+	$Errors[0]=0;
+	$Errors[1]=$OrderLines;
+	return $Errors;
+}
+*/
+function GetSalesOrderLineDetails($OrderNo, $user, $password) {
+    $Errors = array();
+    $db = db($user, $password);
+    if (gettype($db)=='integer') {
+        $Errors[0] = NoAuthorisation;
+        return $Errors;
+    }
+
+    $Errors = VerifyOrderHeaderExists($OrderNo, sizeof($Errors), $Errors);
+    if (sizeof($Errors) != 0) {
+        return $Errors;
+    }
+
+    $SQL = "SELECT stkcode,
+                    stockmaster.description,
+                    stockmaster.longdescription,
+                    stockmaster.controlled,
+                    stockmaster.serialised,
+                    stockmaster.volume,
+                    stockmaster.grossweight,
+                    stockmaster.units,
+                    stockmaster.decimalplaces,
+                    stockmaster.mbflag,
+                    stockmaster.taxcatid,
+                    stockmaster.discountcategory,
+                    salesorderdetails.unitprice,
+                    salesorderdetails.quantity,
+                    salesorderdetails.discountpercent,
+                    salesorderdetails.actualdispatchdate,
+                    salesorderdetails.qtyinvoiced,
+                    salesorderdetails.narrative,
+                    salesorderdetails.orderlineno,
+                    salesorderdetails.poline,
+                    salesorderdetails.itemdue,
+                    stockmaster.actualcost as standardcost
+            FROM salesorderdetails INNER JOIN stockmaster
+                ON salesorderdetails.stkcode = stockmaster.stockid
+            WHERE salesorderdetails.orderno ='" . $OrderNo . "'
+			AND salesorderdetails.quantity - salesorderdetails.qtyinvoiced >0
+			ORDER BY salesorderdetails.orderlineno";
+
+    $Result = api_DB_Query($SQL);
+    $OrderLines = array();
+	$i=0;
+    while ($Row = DB_fetch_array($Result)) {
+        $OrderLines[$i] = array(
+            'stkcode'           => $Row['stkcode'],
+            'description'       => $Row['description'],
+            'longdescription'   => $Row['longdescription'],
+            'quantity'          => $Row['quantity'],
+            'unitprice'         => $Row['unitprice'],
+            'discountpercent'   => $Row['discountpercent'],
+            'qtyinvoiced'       => $Row['qtyinvoiced'],
+            'itemdue'           => $Row['itemdue'],
+            'standardcost'      => $Row['standardcost']
+        );
+        $i++;
+    }
 	$Errors[0]=0;
 	$Errors[1]=$OrderLines;
 	return $Errors;
