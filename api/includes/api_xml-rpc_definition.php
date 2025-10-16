@@ -3510,6 +3510,7 @@ $GetSalesOrderLineDetails_doc = apiBuildDocHTML($Description, $Parameter, $Retur
 
 function xmlrpc_GetSalesOrderLineDetails($request)
 {
+	$rtn=Chuchuchu;
 	ob_start('ob_file_callback');
 	$encoder = new Encoder();
 	if ($request->getNumParams() == 3) {
