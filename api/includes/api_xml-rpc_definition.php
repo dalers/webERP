@@ -3642,6 +3642,42 @@ function xmlrpc_GetSalesOrderValue($request)
 unset($Description);
 unset($Parameter);
 unset($ReturnValue);
+
+// New definition: api/includes/api_xml-rpc_definition.php
+$Description = 'This function returns the locations for the given stockid.';
+$Parameter[0]['name'] = __('Stock ID');
+$Parameter[0]['description'] = __('A string field containing a valid stockid that must already be setup in the stockmaster table. The api will check this before making the enquiry.');
+$Parameter[1]['name'] = __('User name');
+$Parameter[1]['description'] = __('A valid weberp username. This user should have security access  to this data.');
+$Parameter[2]['name'] = __('User password');
+$Parameter[2]['description'] = __('The weberp password associated with this user name. ');
+$ReturnValue = __('This function returns an array of locations for this stock item, each containing the location code, location name, and quantity on hand.');
+
+$GetStockLocations_sig = array(
+	array(Value::$xmlrpcArray, Value::$xmlrpcString),
+	array(Value::$xmlrpcArray, Value::$xmlrpcString, Value::$xmlrpcString, Value::$xmlrpcString));
+$GetStockLocations_doc = apiBuildDocHTML($Description, $Parameter, $ReturnValue);
+
+function xmlrpc_GetStockLocations($request)
+{
+	ob_start('ob_file_callback');
+	$encoder = new Encoder();
+	if ($request->getNumParams() == 3) {
+		$rtn = new Response($encoder->encode(GetStockLocations(
+			$request->getParam(0)->scalarval(),
+			$request->getParam(1)->scalarval(),
+			$request->getParam(2)->scalarval())));
+	} else {
+		$rtn = new Response($encoder->encode(GetStockLocations($request->getParam(0)->scalarval(), '', '')));
+	}
+	ob_end_flush();
+	return $rtn;
+}
+
+unset($Description);
+unset($Parameter);
+unset($ReturnValue);
+
 //=============================
 $Description = __('Returns (possibly translated) error text from error codes');
 $Parameter[0]['name'] = __('Error codes');
@@ -4060,4 +4096,8 @@ return array(
 		"function" => "xmlrpc_SearchOrders",
 		"signature" => $SearchOrders_sig,
 		"docstring" => $SearchOrders_doc),
+	"weberp.xmlrpc_GetStockLocations" => array(
+		"function" => "xmlrpc_GetStockLocations",
+		"signature" => $GetStockLocations_sig,
+		"docstring" => $GetStockLocations_doc),
 );

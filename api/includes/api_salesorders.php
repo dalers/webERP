@@ -711,50 +711,54 @@ function GetSalesOrderValue($OrderNo, $user, $password) {
    then it returns an $Errors array.
 */
 function GetSalesOrderLineDetails($OrderNo, $user, $password) {
-	$Errors = array();
-	$db = db($user, $password);
-	if (gettype($db)=='integer') {
-		$Errors[0]=NoAuthorisation;
-		return $Errors;
-	}
-	$Errors=VerifyOrderHeaderExists($OrderNo, sizeof($Errors), $Errors);
-	if (sizeof($Errors)!=0) {
-		return $Errors;
-	}
-		$SQL = "SELECT stkcode,
-								stockmaster.description,
-								stockmaster.longdescription,
-								stockmaster.controlled,
-								stockmaster.serialised,
-								stockmaster.volume,
-								stockmaster.grossweight,
-								stockmaster.units,
-								stockmaster.decimalplaces,
-								stockmaster.mbflag,
-								stockmaster.taxcatid,
-								stockmaster.discountcategory,
-								salesorderdetails.unitprice,
-								salesorderdetails.quantity,
-								salesorderdetails.discountpercent,
-								salesorderdetails.actualdispatchdate,
-								salesorderdetails.qtyinvoiced,
-								salesorderdetails.narrative,
-								salesorderdetails.orderlineno,
-								salesorderdetails.poline,
-								salesorderdetails.itemdue,
-								stockmaster.actualcost as standardcost
-							FROM salesorderdetails INNER JOIN stockmaster
-							 	ON salesorderdetails.stkcode = stockmaster.stockid
-							WHERE salesorderdetails.orderno ='" . $OrderNo . "'
-							and salesorderdetails.quantity - salesorderdetails.qtyinvoiced >0
-							ORDER BY salesorderdetails.orderlineno";
+    $Errors = array();
+    $db = db($user, $password);
+    if (gettype($db)=='integer') {
+        $Errors[0] = NoAuthorisation;
+        return $Errors;
+    }
 
-	$Result = api_DB_Query($SQL);
-	if (sizeof($Errors)==0) {
-		return DB_fetch_array($Result);
-	} else {
-		return $Errors;
-	}
+    $Errors = VerifyOrderHeaderExists($OrderNo, sizeof($Errors), $Errors);
+    if (sizeof($Errors) != 0) {
+        return $Errors;
+    }
+
+    $SQL = "SELECT stkcode,
+                    stockmaster.description,
+                    stockmaster.longdescription,
+                    stockmaster.controlled,
+                    stockmaster.serialised,
+                    stockmaster.volume,
+                    stockmaster.grossweight,
+                    stockmaster.units,
+                    stockmaster.decimalplaces,
+                    stockmaster.mbflag,
+                    stockmaster.taxcatid,
+                    stockmaster.discountcategory,
+                    salesorderdetails.unitprice,
+                    salesorderdetails.quantity,
+                    salesorderdetails.discountpercent,
+                    salesorderdetails.actualdispatchdate,
+                    salesorderdetails.qtyinvoiced,
+                    salesorderdetails.narrative,
+                    salesorderdetails.orderlineno,
+                    salesorderdetails.poline,
+                    salesorderdetails.itemdue,
+                    stockmaster.actualcost as standardcost
+            FROM salesorderdetails
+            INNER JOIN stockmaster
+                ON salesorderdetails.stkcode = stockmaster.stockid
+            WHERE salesorderdetails.orderno = '" . $OrderNo . "'
+            AND (salesorderdetails.quantity - salesorderdetails.qtyinvoiced) > 0
+            ORDER BY salesorderdetails.orderlineno";
+
+    $Result = api_DB_Query($SQL);
+    $OrderLines = array();
+
+    while ($Row = DB_fetch_array($Result)) {
+        $OrderLines[] = $Row;
+    }
+    return $OrderLines;
 }
 
 /** This function takes a Order Header ID  and returns an associative array containing
