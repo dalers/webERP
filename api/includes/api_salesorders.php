@@ -745,20 +745,22 @@ function GetSalesOrderLineDetails($OrderNo, $user, $password) {
                     salesorderdetails.poline,
                     salesorderdetails.itemdue,
                     stockmaster.actualcost as standardcost
-            FROM salesorderdetails
-            INNER JOIN stockmaster
+            FROM salesorderdetails INNER JOIN stockmaster
                 ON salesorderdetails.stkcode = stockmaster.stockid
-            WHERE salesorderdetails.orderno = '" . $OrderNo . "'
-            AND (salesorderdetails.quantity - salesorderdetails.qtyinvoiced) > 0
-            ORDER BY salesorderdetails.orderlineno";
+            WHERE salesorderdetails.orderno ='" . $OrderNo . "'
+			AND salesorderdetails.quantity - salesorderdetails.qtyinvoiced >0
+			ORDER BY salesorderdetails.orderlineno";
 
     $Result = api_DB_Query($SQL);
     $OrderLines = array();
-
-    while ($Row = DB_fetch_array($Result)) {
-        $OrderLines[] = $Row;
-    }
-    return $OrderLines;
+	$i=0;
+	while ($Row=DB_fetch_array($Result)) {
+		$OrderLines[$i]=$Row[0];
+		$i++;
+	}
+	$Errors[0]=0;
+	$Errors[1]=$OrderLines;
+	return $Errors;
 }
 
 /** This function takes a Order Header ID  and returns an associative array containing
