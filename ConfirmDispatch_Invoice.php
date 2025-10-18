@@ -108,7 +108,8 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 
 
 		$MyRow = DB_fetch_array($GetOrdHdrResult);
-
+		echo 'Leah this line 111: <br>'.$LineItemsSQL;
+exit;
 		$_SESSION['Items' . $identifier]->DebtorNo = $MyRow['debtorno'];
 		$_SESSION['Items' . $identifier]->OrderNo = $MyRow['orderno'];
 		$_SESSION['Items' . $identifier]->Branch = $MyRow['branchcode'];
@@ -123,8 +124,7 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 		$_SESSION['Items' . $identifier]->InternalComments = reverse_escape($MyRow['internalcomment']);
 		$_SESSION['Items' . $identifier]->Consignment = $MyRow['consignment'];
 		$_SESSION['Items' . $identifier]->Packages = $MyRow['packages'];
-		echo 'Leah this line 126: <br>'.$LineItemsSQL;
-exit;
+
 		if (is_null($BestShipper)) {
 			$BestShipper = 0;
 		}
