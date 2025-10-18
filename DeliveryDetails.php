@@ -27,8 +27,7 @@ include('includes/CountriesArray.php');
 if (isset($_GET['identifier'])) {
 	$identifier = $_GET['identifier'];
 }
-echo 'hello Leah! This is line 30';
-exit;
+
 unset($_SESSION['WarnOnce']);
 if (!isset($_SESSION['Items'.$identifier]) or !isset($_SESSION['Items'.$identifier]->DebtorNo)) {
 	prnMsg(__('This page can only be read if an order has been entered') . '. ' . __('To enter an order select customer transactions then sales order entry'),'error');
@@ -56,7 +55,8 @@ if (isset($_POST['ProcessOrder']) or isset($_POST['MakeRecurringOrder'])) {
 	$OldFreightCost = round($_POST['FreightCost'],2);
 
 }
-
+echo 'hello Leah! This is line 58';
+exit;
 if (isset($_POST['Update'])
 	or isset($_POST['BackToLineDetails'])
 	or isset($_POST['MakeRecurringOrder'])) {
