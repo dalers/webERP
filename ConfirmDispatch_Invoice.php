@@ -108,8 +108,7 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 
 
 		$MyRow = DB_fetch_array($GetOrdHdrResult);
-		echo 'Leah this line 111: <br>'.$LineItemsSQL;
-exit;
+
 		$_SESSION['Items' . $identifier]->DebtorNo = $MyRow['debtorno'];
 		$_SESSION['Items' . $identifier]->OrderNo = $MyRow['orderno'];
 		$_SESSION['Items' . $identifier]->Branch = $MyRow['branchcode'];
@@ -154,7 +153,8 @@ exit;
 		DB_free_result($GetOrdHdrResult);
 
 		/*now populate the line items array with the sales order details records */
-
+		echo 'Leah this line 156: <br>'.$LineItemsSQL;
+exit;
 		$LineItemsSQL = "SELECT stkcode,
 								stockmaster.description,
 								stockmaster.longdescription,
