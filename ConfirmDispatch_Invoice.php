@@ -147,7 +147,6 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 		$_SESSION['CurrencyRate'] = $MyRow['currency_rate'];
 		$_SESSION['Items' . $identifier]->TaxGroup = $MyRow['taxgroupid'];
 		$_SESSION['Items' . $identifier]->DispatchTaxProvince = $MyRow['taxprovinceid'];
-				echo 'Leah this line 150: <br>';
 
 		$_SESSION['Items' . $identifier]->GetFreightTaxes();
 

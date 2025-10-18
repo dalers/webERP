@@ -372,7 +372,8 @@ class Cart {
 	function GetFreightTaxes () {
 		/*Gets the Taxes and rates applicable to the freight based on the tax group of the branch combined with the tax category for this particular freight
 		and SESSION['FreightTaxCategory'] the taxprovince of the dispatch location */
-
+				echo 'Leah this line 400: <br>'. $SQL;
+exit;
 		$SQL = "SELECT taxcatid FROM taxcategories WHERE taxcatname='Freight'";// This tax category is hardcoded inside the database.
 		$TaxCatQuery = DB_query($SQL);
 
@@ -397,8 +398,7 @@ class Cart {
 				AND taxauthrates.dispatchtaxprovince='" . $this->DispatchTaxProvince . "'
 				AND taxauthrates.taxcatid = '" . $TaxCatID . "'
 				ORDER BY taxgrouptaxes.calculationorder";
-				echo 'Leah this line 400: <br>'. $SQL;
-exit;
+
 		$ErrMsg = __('The taxes and rates for this item could not be retrieved because');
 		$GetTaxRatesResult = DB_query($SQL, $ErrMsg);
 		$i=1;
