@@ -55,8 +55,7 @@ if (isset($_POST['ProcessOrder']) or isset($_POST['MakeRecurringOrder'])) {
 	$OldFreightCost = round($_POST['FreightCost'],2);
 
 }
-echo 'hello Leah! This is line 58';
-exit;
+
 if (isset($_POST['Update'])
 	or isset($_POST['BackToLineDetails'])
 	or isset($_POST['MakeRecurringOrder'])) {
@@ -122,7 +121,8 @@ if (isset($_POST['Update'])
 	}
 
 	*/
-
+echo 'hello Leah! This is line 124';
+exit;
 	if ($InputErrors == 0) {
 	if ($_SESSION['DoFreightCalc']==true) {
 			list ($_POST['FreightCost'], $BestShipper) = CalcFreightCost($_SESSION['Items'.$identifier]->total,
