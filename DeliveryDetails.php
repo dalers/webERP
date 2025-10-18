@@ -9,8 +9,7 @@ This is where the delivery details are confirmed/entered/modified and the order 
 include('includes/DefineCartClass.php');
 
 require(__DIR__ . '/includes/session.php');
-echo 'hello Leah!';
-exit;
+
 $Title = __('Order Delivery Details');// Screen identification.
 $ViewTopic = 'SalesOrders';// Filename's id in ManualContents.php's TOC.
 $BookMark = 'DeliveryDetails';// Anchor's id in the manual's html document.
@@ -28,7 +27,8 @@ include('includes/CountriesArray.php');
 if (isset($_GET['identifier'])) {
 	$identifier = $_GET['identifier'];
 }
-
+echo 'hello Leah! This is line 30';
+exit;
 unset($_SESSION['WarnOnce']);
 if (!isset($_SESSION['Items'.$identifier]) or !isset($_SESSION['Items'.$identifier]->DebtorNo)) {
 	prnMsg(__('This page can only be read if an order has been entered') . '. ' . __('To enter an order select customer transactions then sales order entry'),'error');
