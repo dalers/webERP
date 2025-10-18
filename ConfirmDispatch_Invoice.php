@@ -103,8 +103,7 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 
 	$ErrMsg = __('The order cannot be retrieved because');
 	$GetOrdHdrResult = DB_query($OrderHeaderSQL, $ErrMsg);
-echo 'Leah this line 106: <br>'.DB_num_rows($GetOrdHdrResult);
-exit;
+
 	if (DB_num_rows($GetOrdHdrResult) == 1) {
 
 		$MyRow = DB_fetch_array($GetOrdHdrResult);
@@ -184,7 +183,8 @@ exit;
 
 		$ErrMsg = __('The line items of the order cannot be retrieved because');
 		$LineItemsResult = DB_query($LineItemsSQL, $ErrMsg);
-
+echo 'Leah this line 186: <br>'.$LineItemsSQL;
+exit;
 		if (DB_num_rows($LineItemsResult) > 0) {
 
 			while ($MyRow = DB_fetch_array($LineItemsResult)) {
