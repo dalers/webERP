@@ -103,7 +103,8 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 
 	$ErrMsg = __('The order cannot be retrieved because');
 	$GetOrdHdrResult = DB_query($OrderHeaderSQL, $ErrMsg);
-
+echo 'Leah this line 106: <br>'.$SerialItemsSQL;
+exit;
 	if (DB_num_rows($GetOrdHdrResult) == 1) {
 
 		$MyRow = DB_fetch_array($GetOrdHdrResult);
@@ -221,8 +222,7 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 							if ($_SESSION['RequirePickingNote'] == 1) {
 	$_SESSION['Items' . $identifier]->LineItems[$MyRow['orderlineno']]->QtyDispatched = $MySerial['qtypicked'];
 }
-echo 'Leah this line 224: <br>'.$SerialItemsSQL;
-exit;
+
 						}
 					}
 				}
