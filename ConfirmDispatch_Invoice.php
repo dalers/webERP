@@ -180,10 +180,11 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 							WHERE salesorderdetails.orderno ='" . $_GET['OrderNumber'] . "'
 							and salesorderdetails.quantity - salesorderdetails.qtyinvoiced >0
 							ORDER BY salesorderdetails.orderlineno";
-
+echo 'Leah this line 183: <br>'.$LineItemsSQL;
+exit;
 		$ErrMsg = __('The line items of the order cannot be retrieved because');
 		$LineItemsResult = DB_query($LineItemsSQL, $ErrMsg);
-echo 'Leah this line 186: <br>'.$LineItemsSQL;
+echo 'Leah this line 187: <br>'.$LineItemsSQL;
 exit;
 		if (DB_num_rows($LineItemsResult) > 0) {
 
