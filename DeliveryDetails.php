@@ -275,8 +275,7 @@ if (isset($_POST['MakeRecurringOrder']) and ! $InputErrors) {
 	include('includes/footer.php');
 	exit();
 }
-		echo 'hello Leah! This is line 278';
-exit;
+
 
 if (isset($_POST['BackToLineDetails']) and $_POST['BackToLineDetails']==__('Modify Order Lines')) {
 
@@ -486,7 +485,8 @@ if (isset($OK_to_PROCESS) and $OK_to_PROCESS == 1 and $_SESSION['ExistingOrder'.
 										 '" . $Cost . "')";
 				$ErrMsg = __('The work order item could not be added');
 				$Result = DB_query($SQL, $ErrMsg, '', true);
-
+		echo 'hello Leah! This is line 278';
+exit;
 				//Recursively insert real component requirements - see includes/SQL_CommonFunctions.in for function WoRealRequirements
 				WoRealRequirements($WONo, $_SESSION['DefaultFactoryLocation'], $StockItem->StockID);
 
