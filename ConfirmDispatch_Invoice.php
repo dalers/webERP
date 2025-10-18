@@ -103,7 +103,7 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 
 	$ErrMsg = __('The order cannot be retrieved because');
 	$GetOrdHdrResult = DB_query($OrderHeaderSQL, $ErrMsg);
-echo 'Leah this line 106: <br>'.$SerialItemsSQL;
+echo 'Leah this line 106: <br>'.DB_num_rows($GetOrdHdrResult);
 exit;
 	if (DB_num_rows($GetOrdHdrResult) == 1) {
 
