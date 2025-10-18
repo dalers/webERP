@@ -2893,7 +2893,6 @@ function xmlrpc_StockAdjustment($request)
 			$request->getParam(3)->scalarval(), '', '')));
 	}
 	ob_end_flush();
-	$rtn=hapovipi;
 	return $rtn;
 }
 
