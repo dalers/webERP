@@ -103,9 +103,12 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 
 	$ErrMsg = __('The order cannot be retrieved because');
 	$GetOrdHdrResult = DB_query($OrderHeaderSQL, $ErrMsg);
+echo 'Leah this line 106: <br>'.$LineItemsSQL;
 
 	if (DB_num_rows($GetOrdHdrResult) == 1) {
 
+		echo 'Leah this line 110: <br>'.$LineItemsSQL;
+exit;
 		$MyRow = DB_fetch_array($GetOrdHdrResult);
 
 		$_SESSION['Items' . $identifier]->DebtorNo = $MyRow['debtorno'];
@@ -150,8 +153,7 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 		$_SESSION['Items' . $identifier]->SpecialInstructions = $MyRow['specialinstructions'];
 
 		DB_free_result($GetOrdHdrResult);
-echo 'Leah this line 153: <br>'.$LineItemsSQL;
-exit;
+
 		/*now populate the line items array with the sales order details records */
 
 		$LineItemsSQL = "SELECT stkcode,
