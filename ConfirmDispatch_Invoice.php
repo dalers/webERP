@@ -103,12 +103,10 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 
 	$ErrMsg = __('The order cannot be retrieved because');
 	$GetOrdHdrResult = DB_query($OrderHeaderSQL, $ErrMsg);
-echo 'Leah this line 106: <br>'.$LineItemsSQL;
 
 	if (DB_num_rows($GetOrdHdrResult) == 1) {
 
-		echo 'Leah this line 110: <br>'.$LineItemsSQL;
-exit;
+
 		$MyRow = DB_fetch_array($GetOrdHdrResult);
 
 		$_SESSION['Items' . $identifier]->DebtorNo = $MyRow['debtorno'];
@@ -125,7 +123,8 @@ exit;
 		$_SESSION['Items' . $identifier]->InternalComments = reverse_escape($MyRow['internalcomment']);
 		$_SESSION['Items' . $identifier]->Consignment = $MyRow['consignment'];
 		$_SESSION['Items' . $identifier]->Packages = $MyRow['packages'];
-
+		echo 'Leah this line 126: <br>'.$LineItemsSQL;
+exit;
 		if (is_null($BestShipper)) {
 			$BestShipper = 0;
 		}
