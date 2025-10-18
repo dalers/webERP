@@ -162,7 +162,7 @@ if (isset($_POST['Update'])
 
 		$ErrMsg = __('The customer branch record of the customer selected') . ': ' . $_SESSION['Items'.$identifier]->CustomerName . ' ' . __('cannot be retrieved because');
 		$Result = DB_query($SQL, $ErrMsg);
-		echo 'hello Leah! This is line 124';
+		echo 'hello Leah! This is line 165';
 exit;
 		if (DB_num_rows($Result) == 0) {
 
