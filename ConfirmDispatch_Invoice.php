@@ -150,8 +150,7 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 				echo 'Leah this line 150: <br>';
 
 		$_SESSION['Items' . $identifier]->GetFreightTaxes();
-				echo 'Leah this line 153: <br>';
-exit;
+
 		$_SESSION['Items' . $identifier]->SpecialInstructions = $MyRow['specialinstructions'];
 
 		DB_free_result($GetOrdHdrResult);

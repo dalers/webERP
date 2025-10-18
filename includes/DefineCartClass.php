@@ -397,7 +397,8 @@ class Cart {
 				AND taxauthrates.dispatchtaxprovince='" . $this->DispatchTaxProvince . "'
 				AND taxauthrates.taxcatid = '" . $TaxCatID . "'
 				ORDER BY taxgrouptaxes.calculationorder";
-
+				echo 'Leah this line 400: <br>'. $SQL;
+exit;
 		$ErrMsg = __('The taxes and rates for this item could not be retrieved because');
 		$GetTaxRatesResult = DB_query($SQL, $ErrMsg);
 		$i=1;
