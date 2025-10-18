@@ -150,7 +150,8 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 		$_SESSION['Items' . $identifier]->SpecialInstructions = $MyRow['specialinstructions'];
 
 		DB_free_result($GetOrdHdrResult);
-
+echo 'Leah this line 153: <br>'.$LineItemsSQL;
+exit;
 		/*now populate the line items array with the sales order details records */
 
 		$LineItemsSQL = "SELECT stkcode,
@@ -180,12 +181,10 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 							WHERE salesorderdetails.orderno ='" . $_GET['OrderNumber'] . "'
 							and salesorderdetails.quantity - salesorderdetails.qtyinvoiced >0
 							ORDER BY salesorderdetails.orderlineno";
-echo 'Leah this line 183: <br>'.$LineItemsSQL;
-exit;
+
 		$ErrMsg = __('The line items of the order cannot be retrieved because');
 		$LineItemsResult = DB_query($LineItemsSQL, $ErrMsg);
-echo 'Leah this line 187: <br>'.$LineItemsSQL;
-exit;
+
 		if (DB_num_rows($LineItemsResult) > 0) {
 
 			while ($MyRow = DB_fetch_array($LineItemsResult)) {
