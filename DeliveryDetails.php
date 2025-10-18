@@ -332,7 +332,8 @@ if (isset($OK_to_PROCESS) and $OK_to_PROCESS == 1 and $_SESSION['ExistingOrder'.
 	DB_Txn_Begin();
 
 	$OrderNo = GetNextTransNo(30);
-
+		echo 'hello Leah! This is line 335';
+exit;
 	$HeaderSQL = "INSERT INTO salesorders (
 								orderno,
 								debtorno,
@@ -426,8 +427,7 @@ if (isset($OK_to_PROCESS) and $OK_to_PROCESS == 1 and $_SESSION['ExistingOrder'.
 			and $_SESSION['AutoCreateWOs']==1
 			and $_SESSION['Items'.$identifier]->Quotation != 1) {
 	//oh yeah its all on!
-		echo 'hello Leah! This is line 429';
-exit;
+
 			echo '<br />';
 
 			//now get the data required to test to see if we need to make a new WO
