@@ -162,8 +162,7 @@ if (isset($_POST['Update'])
 
 		$ErrMsg = __('The customer branch record of the customer selected') . ': ' . $_SESSION['Items'.$identifier]->CustomerName . ' ' . __('cannot be retrieved because');
 		$Result = DB_query($SQL, $ErrMsg);
-		echo 'hello Leah! This is line 165';
-exit;
+
 		if (DB_num_rows($Result) == 0) {
 
 			prnMsg(__('The branch details for branch code') . ': ' . $_SESSION['Items'.$identifier]->Branch . ' ' . __('against customer code') . ': ' . $_POST['Select'] . ' ' . __('could not be retrieved') . '. ' . __('Check the set up of the customer and branch'),'error');
@@ -276,7 +275,8 @@ if (isset($_POST['MakeRecurringOrder']) and ! $InputErrors) {
 	include('includes/footer.php');
 	exit();
 }
-
+		echo 'hello Leah! This is line 278';
+exit;
 
 if (isset($_POST['BackToLineDetails']) and $_POST['BackToLineDetails']==__('Modify Order Lines')) {
 
