@@ -332,8 +332,7 @@ if (isset($OK_to_PROCESS) and $OK_to_PROCESS == 1 and $_SESSION['ExistingOrder'.
 	DB_Txn_Begin();
 
 	$OrderNo = GetNextTransNo(30);
-		echo 'hello Leah! This is line 335';
-exit;
+
 	$HeaderSQL = "INSERT INTO salesorders (
 								orderno,
 								debtorno,
@@ -391,7 +390,8 @@ exit;
 	$ErrMsg = __('The order cannot be added because');
 	$InsertQryResult = DB_query($HeaderSQL, $ErrMsg);
 
-
+		echo 'hello Leah! This is line 393';
+exit;
 	$StartOf_LineItemsSQL = "INSERT INTO salesorderdetails (
 											orderlineno,
 											orderno,
