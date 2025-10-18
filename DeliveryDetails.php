@@ -121,8 +121,7 @@ if (isset($_POST['Update'])
 	}
 
 	*/
-echo 'hello Leah! This is line 124';
-exit;
+
 	if ($InputErrors == 0) {
 	if ($_SESSION['DoFreightCalc']==true) {
 			list ($_POST['FreightCost'], $BestShipper) = CalcFreightCost($_SESSION['Items'.$identifier]->total,
@@ -163,6 +162,8 @@ exit;
 
 		$ErrMsg = __('The customer branch record of the customer selected') . ': ' . $_SESSION['Items'.$identifier]->CustomerName . ' ' . __('cannot be retrieved because');
 		$Result = DB_query($SQL, $ErrMsg);
+		echo 'hello Leah! This is line 124';
+exit;
 		if (DB_num_rows($Result) == 0) {
 
 			prnMsg(__('The branch details for branch code') . ': ' . $_SESSION['Items'.$identifier]->Branch . ' ' . __('against customer code') . ': ' . $_POST['Select'] . ' ' . __('could not be retrieved') . '. ' . __('Check the set up of the customer and branch'),'error');
