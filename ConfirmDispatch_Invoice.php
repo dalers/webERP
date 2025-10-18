@@ -148,8 +148,10 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 		$_SESSION['Items' . $identifier]->TaxGroup = $MyRow['taxgroupid'];
 		$_SESSION['Items' . $identifier]->DispatchTaxProvince = $MyRow['taxprovinceid'];
 				echo 'Leah this line 150: <br>';
-exit;
+
 		$_SESSION['Items' . $identifier]->GetFreightTaxes();
+				echo 'Leah this line 153: <br>';
+exit;
 		$_SESSION['Items' . $identifier]->SpecialInstructions = $MyRow['specialinstructions'];
 
 		DB_free_result($GetOrdHdrResult);
