@@ -1,6 +1,4 @@
 <?php
-echo 'hello Leah!';
-exit;
 /* Used during order entry to allow the entry of delivery addresses other than the defaulted branch delivery address and information about carrier/shipping method etc. */
 
 /*
@@ -11,7 +9,8 @@ This is where the delivery details are confirmed/entered/modified and the order 
 include('includes/DefineCartClass.php');
 
 require(__DIR__ . '/includes/session.php');
-
+echo 'hello Leah!';
+exit;
 $Title = __('Order Delivery Details');// Screen identification.
 $ViewTopic = 'SalesOrders';// Filename's id in ManualContents.php's TOC.
 $BookMark = 'DeliveryDetails';// Anchor's id in the manual's html document.
