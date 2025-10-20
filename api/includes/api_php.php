@@ -24,13 +24,12 @@ include($PathPrefix . 'includes/SQL_CommonFunctions.php');
 /* Required for creating invoices/credits */
 include($PathPrefix . 'includes/GetSalesTransGLCodes.php');
 include($PathPrefix . 'includes/Z_POSDataCreation.php');
-
+echo 'line 46: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br> Path: '.$PathPrefix;
+exit;
 /**
  * Get weberp authentication, and return a valid database connection, or 1
  * @return int|resource
  */
-echo 'line 46: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br>';
-exit;
 function db($user, $password) {
 
 	if (!isset($_SESSION['AccessLevel']) OR $_SESSION['AccessLevel'] == '' OR !isset($_SESSION['db'])) {
