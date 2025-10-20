@@ -128,13 +128,8 @@ foreach ($TOC_Array['TableOfContents'] as $Name => $FullName) {
 		}
 
 		echo '<div id="manualpage">';
-				echo 'line 131: <br>'.$ManualPage.'<br>';
-				echo getcwd();
 		include($ManualPage);
 		echo '</div>';
-		echo 'line 135: <br>'.$ManualPage.'<br>';
-		echo getcwd();
-exit;
 	}
 }
 
