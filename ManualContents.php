@@ -42,8 +42,7 @@ if (!file_exists($ManualOutline)) { // If locale outline not exist, use doc/Manu
 }
 
 ob_start();
-echo 'umeona! line 45';
-exit;
+
 // Output the header part:
 $ManualHeader = 'locale/' . $Language . '/Manual/ManualHeader.html';
 if (file_exists($ManualHeader)) { // Use locale ManualHeader.html if exists. Each language can have its own page header.
@@ -63,7 +62,8 @@ if (file_exists($ManualHeader)) { // Use locale ManualHeader.html if exists. Eac
 			<a class="minitext" href="#bottom">⬇ ', __('Go to Bottom'), '</a>
 		</div>';
 }
-
+echo 'umeona! line 65';
+exit;
 include($ManualOutline);
 $_GET['Bookmark'] = isset($_GET['Bookmark']) ? $_GET['Bookmark'] : '';
 $_GET['ViewTopic'] = isset($_GET['ViewTopic']) ? $_GET['ViewTopic'] : '';
