@@ -33,9 +33,6 @@ function db($user, $password) {
 
 	if (!isset($_SESSION['AccessLevel']) OR $_SESSION['AccessLevel'] == '' OR !isset($_SESSION['db'])) {
 		// Login to default database = old clients.
-		echo 'line 49: <br> User: '.$user.'<br>Password: '.$password.'<br>';
-echo getcwd();
-exit;
 		if ($user != '' AND $password != '') {
 			global $api_DatabaseName;
 			$rc = LoginAPI($api_DatabaseName, $user, $password);
@@ -46,6 +43,9 @@ exit;
 		/// @todo why not return null/false ?
 		return NoAuthorisation;
 	} else {
+				echo 'line 49: <br> User: '.$user.'<br>Password: '.$password.'<br>';
+echo getcwd();
+exit;
 		return $_SESSION['db'];
 	}
 }
