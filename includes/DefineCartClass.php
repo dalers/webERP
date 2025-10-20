@@ -375,8 +375,7 @@ class Cart {
 
 		$SQL = "SELECT taxcatid FROM taxcategories WHERE taxcatname='Freight'";// This tax category is hardcoded inside the database.
 		$TaxCatQuery = DB_query($SQL);
-				echo 'Leah this line 400: <br>'. $SQL;
-exit;
+
 		if ($TaxCatRow = DB_fetch_array($TaxCatQuery)) {
 		  $TaxCatID = $TaxCatRow['taxcatid'];
 		} else {
