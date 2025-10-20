@@ -46,9 +46,7 @@ function db($user, $password) {
 		return $_SESSION['db'];
 	}
 }
-echo 'line 49: <br>'.$_SESSION['db'].'<br>';
-echo getcwd();
-exit;
+
 // API wrapper for DB issues - no HTML output, AND remember any error message
 function api_DB_query( $SQL, $EMsg= '', $DMsg= '', $Transaction='', $TrapErrors=false )
 {
@@ -90,3 +88,6 @@ include(__DIR__ . '/api_suppliers.php');
 include(__DIR__ . '/api_purchdata.php');
 include(__DIR__ . '/api_workorders.php');
 include(__DIR__ . '/api_webERPsettings.php');
+echo 'line 49: <br>'.$_SESSION['db'].'<br>';
+echo getcwd();
+exit;
