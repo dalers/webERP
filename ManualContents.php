@@ -130,10 +130,12 @@ foreach ($TOC_Array['TableOfContents'] as $Name => $FullName) {
 		echo '<div id="manualpage">';
 		include($ManualPage);
 		echo '</div>';
+		echo 'line 135: <br>'.$ManualPage.'<br>';
+		echo getcwd();
+exit;
 	}
 }
-echo 'line 135: <br>'.$ManualPage;
-exit;
+
 // Output the footer part:
 $ManualFooter = 'locale/' . $Language . '/Manual/ManualFooter.html';
 if (file_exists($ManualFooter)) {// Use locale ManualHeader.html if exists. Each language can have its own page footer.
