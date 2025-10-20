@@ -7,13 +7,12 @@ if (!isset($PathPrefix)) {
 if (!isset($RootPath)) {
 	$RootPath = htmlspecialchars(dirname(dirname(dirname($_SERVER['PHP_SELF']))), ENT_QUOTES, 'UTF-8');
 }
-				echo 'line 10: <br>'.$ManualPage.'<br>';
-				echo getcwd();
-				exit;
 include($PathPrefix . 'api/includes/api_errorcodes.php');
 
 $Title = 'API documentation';
-
+				echo 'line 13: <br>'.$ManualPage.'<br>';
+				echo getcwd();
+				exit;
 /// @todo move to html5 as the rest of the app
 echo '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>' . $Title . '</title>';
 echo '<link rel="icon" href="' . $RootPath . '/favicon.ico" type="image/x-icon" />';
