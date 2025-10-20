@@ -62,7 +62,7 @@ if (file_exists($ManualHeader)) { // Use locale ManualHeader.html if exists. Eac
 			<a class="minitext" href="#bottom">⬇ ', __('Go to Bottom'), '</a>
 		</div>';
 }
-
+$ManualOutline = '/'.$ManualOutline;
 include($ManualOutline);
 echo 'line 67: '.$ManualOutline.'<br>';
 echo getcwd();
