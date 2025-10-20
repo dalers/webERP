@@ -1,7 +1,5 @@
 <?php
-				echo 'line 2: <br>'.$dispatchMap.'<br>';
-				echo getcwd();
-				exit;
+
 /**
  * Definition of all the php functions exposed as xml-rpc methods. Those are just wrappers around functions
  * defined in the various api_*.php files.
@@ -16,7 +14,9 @@ PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = 'UTF-8';
 use PhpXmlRpc\Value;
 use PhpXmlRpc\Encoder;
 use PhpXmlRpc\Response;
-
+				echo 'line 17: <br>'.$xmlrpc_internalencoding.'<br>';
+				echo getcwd();
+				exit;
 /**
  * Empty handler function for unwanted output.
  * Must be a better way of doing this, but at least it works...
