@@ -19,15 +19,17 @@ echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 echo '</head>';
 
 echo '<body>';
+				echo 'line 22: <br>'.$Title .'<br>';
 
 // avoid sending an xml-rpc request to self, interrogate directly the server
 $dispatchMap = include($PathPrefix . 'api/includes/api_xml-rpc_definition.php');
+				echo 'line 26: <br>'.$dispatchMap.'<br>';
+				echo getcwd();
+				exit;
 $server = new PhpXmlRpc\Server($dispatchMap, false);
 $response = PhpXmlRpc\Server::_xmlrpcs_listMethods($server);
 $answer = $response->value();
-				echo 'line 28: <br>'.$answer.'<br>';
-				echo getcwd();
-				exit;
+
 $encoder = new \PhpXmlRpc\Encoder();
 for ($i=0; $i<sizeof($answer); $i++) {
 	$method = $answer[$i];
