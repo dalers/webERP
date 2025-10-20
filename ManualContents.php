@@ -62,9 +62,8 @@ if (file_exists($ManualHeader)) { // Use locale ManualHeader.html if exists. Eac
 			<a class="minitext" href="#bottom">⬇ ', __('Go to Bottom'), '</a>
 		</div>';
 }
-$ManualOutline = '/'.$ManualOutline;
-include($ManualOutline);
 
+include($ManualOutline);
 $_GET['Bookmark'] = isset($_GET['Bookmark']) ? $_GET['Bookmark'] : '';
 $_GET['ViewTopic'] = isset($_GET['ViewTopic']) ? $_GET['ViewTopic'] : '';
 //all sections of manual listed here
@@ -72,6 +71,9 @@ if (((!isset($_POST['Submit'])) and (empty($_GET['ViewTopic']))) || ((isset($_PO
 	echo '<form action = "', htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8'), '" method = "post">';
 	// if not submittws then coming into manual to look at TOC
 	// if SelectTableOfContents set then user wants it displayed
+	echo 'line 74: '.$ManualOutline.'<br>';
+echo getcwd();
+exit;
 	if (!isset($_POST['Submit'])) {
 		echo '<p>', __('Click on a link to view a page'), '</p>';
 	}
