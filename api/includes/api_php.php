@@ -25,6 +25,9 @@ include($PathPrefix . 'includes/SQL_CommonFunctions.php');
 include($PathPrefix . 'includes/GetSalesTransGLCodes.php');
 include($PathPrefix . 'includes/Z_POSDataCreation.php');
 
+echo 'line 49: <br> User: '.$user.'<br>Password: '.$password;
+echo getcwd();
+exit;
 /**
  * Get weberp authentication, and return a valid database connection, or 1
  * @return int|resource
@@ -88,6 +91,3 @@ include(__DIR__ . '/api_suppliers.php');
 include(__DIR__ . '/api_purchdata.php');
 include(__DIR__ . '/api_workorders.php');
 include(__DIR__ . '/api_webERPsettings.php');
-echo 'line 49: <br>'.$_SESSION['db'].'<br>';
-echo getcwd();
-exit;
