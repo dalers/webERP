@@ -122,11 +122,12 @@ foreach ($TOC_Array['TableOfContents'] as $Name => $FullName) {
 			$Name .= '.html';
 		}
 		$ManualPage = 'locale/' . $Language . '/Manual/Manual' . $Name;
-			echo 'line 125: <br>'.$ManualPage;
-exit;
+
 		if (!file_exists($ManualPage)) {// If locale topic page not exist, use topic page in doc/Manual.
 			$ManualPage = 'doc/Manual/Manual' . $Name;
 		}
+					echo 'line 125: <br>'.$ManualPage;
+exit;
 		echo '<div id="manualpage">';
 		include($ManualPage);
 		echo '</div>';
