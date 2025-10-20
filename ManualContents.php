@@ -62,8 +62,7 @@ if (file_exists($ManualHeader)) { // Use locale ManualHeader.html if exists. Eac
 			<a class="minitext" href="#bottom">⬇ ', __('Go to Bottom'), '</a>
 		</div>';
 }
-echo 'umeona! line 65';
-exit;
+
 include($ManualOutline);
 $_GET['Bookmark'] = isset($_GET['Bookmark']) ? $_GET['Bookmark'] : '';
 $_GET['ViewTopic'] = isset($_GET['ViewTopic']) ? $_GET['ViewTopic'] : '';
@@ -79,6 +78,8 @@ if (((!isset($_POST['Submit'])) and (empty($_GET['ViewTopic']))) || ((isset($_PO
 	echo '<h1>';
 	echo __('Table of Contents'), '</h1>';
 	$j = 0;
+	echo 'umeona! line 81';
+exit;
 	foreach ($TOC_Array['TableOfContents'] as $Title => $SubLinks) {
 		$Name = 'Select' . $Title;
 		echo '<ul>
