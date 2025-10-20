@@ -112,18 +112,19 @@ if (((!isset($_POST['Submit'])) and (empty($_GET['ViewTopic']))) || ((isset($_PO
 if (!isset($_GET['ViewTopic'])) {
 	$_GET['ViewTopic'] = '';
 }
-	echo 'line 74: '.$ManualOutline.'<br>Submit: '.$_POST['Submit'].'<br>ViewTopic: '.$_GET['ViewTopic'].'<br> Select: '.$_POST['SelectTableOfContents'];
-echo getcwd();
-exit;
+
 foreach ($TOC_Array['TableOfContents'] as $Name => $FullName) {
 	$PostName = 'Select' . $Name;
 	if (($_GET['ViewTopic'] == $Name) or (isset($_POST[$PostName]))) {
 		if ($Name == 'APIFunctions') {
-	$Name .= '.php';
-} else {
+			$Name .= '.php';
+		} else {
 			$Name .= '.html';
 		}
 		$ManualPage = 'locale/' . $Language . '/Manual/Manual' . $Name;
+			echo 'line 125: '.$ManualPage;
+echo getcwd();
+exit;
 		if (!file_exists($ManualPage)) {// If locale topic page not exist, use topic page in doc/Manual.
 			$ManualPage = 'doc/Manual/Manual' . $Name;
 		}
