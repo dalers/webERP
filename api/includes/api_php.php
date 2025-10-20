@@ -17,15 +17,15 @@ if (isset($_SESSION['DatabaseName'])) {
 } else {
     $api_DatabaseName = $DefaultDatabase;
 }
-
+echo 'line 20: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br> Path: '.$PathPrefix;
+exit;
 include(__DIR__ . '/api_errorcodes.php');
 /* Include SQL_CommonFunctions.php, to use GetNextTransNo(). */
 include($PathPrefix . 'includes/SQL_CommonFunctions.php');
 /* Required for creating invoices/credits */
 include($PathPrefix . 'includes/GetSalesTransGLCodes.php');
 include($PathPrefix . 'includes/Z_POSDataCreation.php');
-echo 'line 46: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br> Path: '.$PathPrefix;
-exit;
+
 /**
  * Get weberp authentication, and return a valid database connection, or 1
  * @return int|resource
