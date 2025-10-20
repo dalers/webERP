@@ -5,7 +5,8 @@
  * defined in the various api_*.php files.
  * NB: this file by itself does not do anything. It is supposed to be included
  */
-
+echo 'line 20: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br> Path: '.$PathPrefix;
+exit;
 /* Note api_php.php includes api_session.php and api_*.php */
 include(__DIR__ . '/api_php.php');
 PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = 'UTF-8';
