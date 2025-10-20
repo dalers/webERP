@@ -11,9 +11,7 @@
 $AllowAnyone = true;
 $PathPrefix = __DIR__ . '/../../';
 include(__DIR__ . '/api_session.php');
-echo 'line 14: <br>'.$PathPrefix.'<br>';
-echo getcwd();
-exit;
+
 if (isset($_SESSION['DatabaseName'])) {
     $api_DatabaseName = $_SESSION['DatabaseName'];
 } else {
@@ -26,7 +24,9 @@ include($PathPrefix . 'includes/SQL_CommonFunctions.php');
 /* Required for creating invoices/credits */
 include($PathPrefix . 'includes/GetSalesTransGLCodes.php');
 include($PathPrefix . 'includes/Z_POSDataCreation.php');
-
+echo 'line 27: <br>'.$PathPrefix.'<br>';
+echo getcwd();
+exit;
 /**
  * Get weberp authentication, and return a valid database connection, or 1
  * @return int|resource
