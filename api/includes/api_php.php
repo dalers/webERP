@@ -1,6 +1,4 @@
 <?php
-echo 'line 2: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br> Path: '.$PathPrefix;
-
 /**
  * Note: includes api_session.php, to allow database connection, and access to miscfunctions and datefunctions.
  *
@@ -12,15 +10,12 @@ echo 'line 2: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION
 $AllowAnyone = true;
 $PathPrefix = __DIR__ . '/../../';
 include(__DIR__ . '/api_session.php');
-echo 'line 14: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br> Path: '.$PathPrefix;
 
 if (isset($_SESSION['DatabaseName'])) {
     $api_DatabaseName = $_SESSION['DatabaseName'];
 } else {
     $api_DatabaseName = $DefaultDatabase;
 }
-echo 'line 20: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br> Path: '.$PathPrefix;
-exit;
 include(__DIR__ . '/api_errorcodes.php');
 /* Include SQL_CommonFunctions.php, to use GetNextTransNo(). */
 include($PathPrefix . 'includes/SQL_CommonFunctions.php');
