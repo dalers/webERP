@@ -8,15 +8,15 @@
 
 /* Note api_php.php includes api_session.php and api_*.php */
 include(__DIR__ . '/api_php.php');
-
+				echo 'line 11: <br>'.__DIR__.'<br>';
+				echo getcwd();
+				exit;
 PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = 'UTF-8';
 
 use PhpXmlRpc\Value;
 use PhpXmlRpc\Encoder;
 use PhpXmlRpc\Response;
-				echo 'line 17: <br>'.$xmlrpc_internalencoding.'<br>';
-				echo getcwd();
-				exit;
+
 /**
  * Empty handler function for unwanted output.
  * Must be a better way of doing this, but at least it works...
