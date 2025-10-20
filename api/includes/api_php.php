@@ -43,7 +43,7 @@ function db($user, $password) {
 		/// @todo why not return null/false ?
 		return NoAuthorisation;
 	} else {
-				echo 'line 49: <br> User: '.$user.'<br>Password: '.$password.'<br>';
+				echo 'line 46: <br> User: '.$user.'<br>Password: '.$password.'<br>';
 echo getcwd();
 exit;
 		return $_SESSION['db'];
