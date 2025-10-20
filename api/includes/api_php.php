@@ -11,6 +11,7 @@
 $AllowAnyone = true;
 $PathPrefix = __DIR__ . '/../../';
 include(__DIR__ . '/api_session.php');
+echo 'line 14: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br> Path: '.$PathPrefix;
 
 if (isset($_SESSION['DatabaseName'])) {
     $api_DatabaseName = $_SESSION['DatabaseName'];
