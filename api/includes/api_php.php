@@ -24,9 +24,7 @@ include($PathPrefix . 'includes/SQL_CommonFunctions.php');
 /* Required for creating invoices/credits */
 include($PathPrefix . 'includes/GetSalesTransGLCodes.php');
 include($PathPrefix . 'includes/Z_POSDataCreation.php');
-echo 'line 27: <br>'.$PathPrefix.'<br>';
-echo getcwd();
-exit;
+
 /**
  * Get weberp authentication, and return a valid database connection, or 1
  * @return int|resource
@@ -48,7 +46,9 @@ function db($user, $password) {
 		return $_SESSION['db'];
 	}
 }
-
+echo 'line 49: <br>'.$_SESSION['db'].'<br>';
+echo getcwd();
+exit;
 // API wrapper for DB issues - no HTML output, AND remember any error message
 function api_DB_query( $SQL, $EMsg= '', $DMsg= '', $Transaction='', $TrapErrors=false )
 {
