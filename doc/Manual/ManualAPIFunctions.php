@@ -2,7 +2,7 @@
 
 // in case this file is accessed directly...
 if (!isset($PathPrefix)) {
-	$PathPrefix = __DIR__ . '/../';
+	$PathPrefix = __DIR__ . '/../../';
 }
 if (!isset($RootPath)) {
 	$RootPath = htmlspecialchars(dirname(dirname(dirname($_SERVER['PHP_SELF']))), ENT_QUOTES, 'UTF-8');
