@@ -10,9 +10,7 @@ if (!isset($RootPath)) {
 include($PathPrefix . 'api/includes/api_errorcodes.php');
 
 $Title = 'API documentation';
-				echo 'line 13: <br>'.$ManualPage.'<br>';
-				echo getcwd();
-				exit;
+
 /// @todo move to html5 as the rest of the app
 echo '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>' . $Title . '</title>';
 echo '<link rel="icon" href="' . $RootPath . '/favicon.ico" type="image/x-icon" />';
@@ -27,7 +25,9 @@ $dispatchMap = include($PathPrefix . 'api/includes/api_xml-rpc_definition.php');
 $server = new PhpXmlRpc\Server($dispatchMap, false);
 $response = PhpXmlRpc\Server::_xmlrpcs_listMethods($server);
 $answer = $response->value();
-
+				echo 'line 28: <br>'.$answer.'<br>';
+				echo getcwd();
+				exit;
 $encoder = new \PhpXmlRpc\Encoder();
 for ($i=0; $i<sizeof($answer); $i++) {
 	$method = $answer[$i];
