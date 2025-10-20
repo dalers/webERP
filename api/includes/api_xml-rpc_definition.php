@@ -1,5 +1,7 @@
 <?php
-
+				echo 'line 2: <br>'.$dispatchMap.'<br>';
+				echo getcwd();
+				exit;
 /**
  * Definition of all the php functions exposed as xml-rpc methods. Those are just wrappers around functions
  * defined in the various api_*.php files.
