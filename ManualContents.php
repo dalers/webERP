@@ -29,7 +29,8 @@ if (isset($_GET['Language'])) {// Set an other language for manual.
 require(__DIR__ . '/includes/session.php');
 
 $Title = __('webERP Manual');
-
+echo 'umeona! line 32';
+exit;
 // Set the Cascading Style Sheet for the manual:
 $ManualStyle = 'locale/' . $Language . '/Manual/css/manual.css';
 if (!file_exists($ManualStyle)) { // If locale ccs not exist, use doc/Manual/css/manual.css. Each language can have its own css.
