@@ -5,10 +5,11 @@
  * defined in the various api_*.php files.
  * NB: this file by itself does not do anything. It is supposed to be included
  */
-
+$apiphp = __DIR__ . '/api_php.php';
+echo 'line 11: <br>'.$apiphp.'<br>';
 /* Note api_php.php includes api_session.php and api_*.php */
 include(__DIR__ . '/api_php.php');
-				echo 'line 11: <br>'.__DIR__.'<br>';
+				echo 'line 11: <br>'.$apiphp.'<br>';
 				echo getcwd();
 				exit;
 PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = 'UTF-8';
