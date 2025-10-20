@@ -1,4 +1,5 @@
 <?php
+echo 'line 2: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br> Path: '.$PathPrefix;
 
 /**
  * Note: includes api_session.php, to allow database connection, and access to miscfunctions and datefunctions.
