@@ -25,9 +25,6 @@ include($PathPrefix . 'includes/SQL_CommonFunctions.php');
 include($PathPrefix . 'includes/GetSalesTransGLCodes.php');
 include($PathPrefix . 'includes/Z_POSDataCreation.php');
 
-echo 'line 49: <br> User: '.$user.'<br>Password: '.$password;
-echo getcwd();
-exit;
 /**
  * Get weberp authentication, and return a valid database connection, or 1
  * @return int|resource
@@ -36,6 +33,9 @@ function db($user, $password) {
 
 	if (!isset($_SESSION['AccessLevel']) OR $_SESSION['AccessLevel'] == '' OR !isset($_SESSION['db'])) {
 		// Login to default database = old clients.
+		echo 'line 49: <br> User: '.$user.'<br>Password: '.$password.'<br>';
+echo getcwd();
+exit;
 		if ($user != '' AND $password != '') {
 			global $api_DatabaseName;
 			$rc = LoginAPI($api_DatabaseName, $user, $password);
