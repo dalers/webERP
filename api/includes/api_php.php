@@ -29,6 +29,8 @@ include($PathPrefix . 'includes/Z_POSDataCreation.php');
  * Get weberp authentication, and return a valid database connection, or 1
  * @return int|resource
  */
+echo 'line 46: <br> Access Level: '.$_SESSION['AccessLevel'].'<br>Db: '.$_SESSION['db'].'<br>';
+exit;
 function db($user, $password) {
 
 	if (!isset($_SESSION['AccessLevel']) OR $_SESSION['AccessLevel'] == '' OR !isset($_SESSION['db'])) {
@@ -43,9 +45,7 @@ function db($user, $password) {
 		/// @todo why not return null/false ?
 		return NoAuthorisation;
 	} else {
-				echo 'line 46: <br> User: '.$user.'<br>Password: '.$password.'<br>';
-echo getcwd();
-exit;
+
 		return $_SESSION['db'];
 	}
 }
