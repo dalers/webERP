@@ -66,7 +66,7 @@ if (file_exists($ManualHeader)) { // Use locale ManualHeader.html if exists. Eac
 include($ManualOutline);
 $_GET['Bookmark'] = isset($_GET['Bookmark']) ? $_GET['Bookmark'] : '';
 $_GET['ViewTopic'] = isset($_GET['ViewTopic']) ? $_GET['ViewTopic'] : '';
-echo 'umeona! line 69: -> '.$ManualOutline.'<br>'.$_GET['Bookmark'].'<br>'.$_GET['ViewTopic'];
+echo 'umeona! line 69: -> '.$ManualOutline.'<br>Bookamark: '.$_GET['Bookmark'].'<br>ViewTopic: '.$_GET['ViewTopic'];
 exit;
 //all sections of manual listed here
 if (((!isset($_POST['Submit'])) and (empty($_GET['ViewTopic']))) || ((isset($_POST['Submit'])) and (isset($_POST['SelectTableOfContents'])))) {
