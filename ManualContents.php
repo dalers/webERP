@@ -64,6 +64,8 @@ if (file_exists($ManualHeader)) { // Use locale ManualHeader.html if exists. Eac
 }
 
 include($ManualOutline);
+echo 'line 67: '.$ManualOutline;
+exit;
 $_GET['Bookmark'] = isset($_GET['Bookmark']) ? $_GET['Bookmark'] : '';
 $_GET['ViewTopic'] = isset($_GET['ViewTopic']) ? $_GET['ViewTopic'] : '';
 //all sections of manual listed here
