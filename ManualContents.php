@@ -126,14 +126,14 @@ foreach ($TOC_Array['TableOfContents'] as $Name => $FullName) {
 		if (!file_exists($ManualPage)) {// If locale topic page not exist, use topic page in doc/Manual.
 			$ManualPage = 'doc/Manual/Manual' . $Name;
 		}
-					echo 'line 125: <br>'.$ManualPage;
-exit;
+
 		echo '<div id="manualpage">';
 		include($ManualPage);
 		echo '</div>';
 	}
 }
-
+echo 'line 135: <br>'.$ManualPage;
+exit;
 // Output the footer part:
 $ManualFooter = 'locale/' . $Language . '/Manual/ManualFooter.html';
 if (file_exists($ManualFooter)) {// Use locale ManualHeader.html if exists. Each language can have its own page footer.
