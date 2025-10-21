@@ -10,7 +10,7 @@
 
 // FOLLOWING IS ALWAYS REQUIRED
 
-$api_DatabaseName = 'weberpdemo';
+$api_DatabaseName = 'zerp_global';
 if (isset($_SESSION['DatabaseName'])) {
 	$api_DatabaseName = $_SESSION['DatabaseName'];
 }
