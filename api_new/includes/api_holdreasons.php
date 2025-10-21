@@ -5,39 +5,39 @@ if (!isset($PathPrefix)) {
 	exit();
 }
 
-/** This function returns a list of the currency abbreviations
+/** This function returns a list of the hold reason codes
  * currently setup on webERP
  */
-function GetCurrencyList($user, $password) {
+function GetHoldReasonList($user, $password) {
 	$Errors = array();
 	$db = db($user, $password);
 	if (gettype($db)=='integer') {
 		$Errors[0]=NoAuthorisation;
 		return $Errors;
 	}
-	$SQL = 'SELECT currabrev FROM currencies';
+	$SQL = 'SELECT reasoncode FROM holdreasons';
 	$Result = DB_query($SQL);
 	$i=0;
-	$CurrencyList = array();
+	$HoldReasonList = array();
 	while ($MyRow=DB_fetch_array($Result)) {
-		$CurrencyList[$i]=$MyRow[0];
+		$HoldReasonList[$i]=$MyRow[0];
 		$i++;
 	}
-	return $CurrencyList;
+	return $HoldReasonList;
 }
 
-/** This function takes as a parameter a currency abbreviation
+/** This function takes as a parameter a hold reason code
  * and returns an array containing the details of the selected
- * currency.
+ * hold reason.
  */
-function GetCurrencyDetails($Currency, $user, $password) {
+function GetHoldReasonDetails($holdreason, $user, $password) {
 	$Errors = array();
 	$db = db($user, $password);
 	if (gettype($db)=='integer') {
 		$Errors[0]=NoAuthorisation;
 		return $Errors;
 	}
-	$SQL = "SELECT * FROM currencies WHERE currabrev='".$Currency."'";
+	$SQL = "SELECT * FROM holdreasons WHERE reasoncode='".$holdreason."'";
 	$Result = DB_query($SQL);
 	return DB_fetch_array($Result);
 }

@@ -5,39 +5,39 @@ if (!isset($PathPrefix)) {
 	exit();
 }
 
-/** This function returns a list of the currency abbreviations
+/** This function returns a list of the customer types
  * currently setup on webERP
  */
-function GetCurrencyList($user, $password) {
+function GetCustomerTypeList($user, $password) {
 	$Errors = array();
 	$db = db($user, $password);
 	if (gettype($db)=='integer') {
 		$Errors[0]=NoAuthorisation;
 		return $Errors;
 	}
-	$SQL = 'SELECT currabrev FROM currencies';
+	$SQL = 'SELECT typeid FROM debtortype';
 	$Result = DB_query($SQL);
 	$i=0;
-	$CurrencyList = array();
+	$TaxgroupList = array();
 	while ($MyRow=DB_fetch_array($Result)) {
-		$CurrencyList[$i]=$MyRow[0];
+		$TaxgroupList[$i]=$MyRow[0];
 		$i++;
 	}
-	return $CurrencyList;
+	return $TaxgroupList;
 }
 
-/** This function takes as a parameter a currency abbreviation
+/** This function takes as a parameter a customer type id
  * and returns an array containing the details of the selected
- * currency.
+ * customer type.
  */
-function GetCurrencyDetails($Currency, $user, $password) {
+function GetCustomerTypeDetails($typeid, $user, $password) {
 	$Errors = array();
 	$db = db($user, $password);
 	if (gettype($db)=='integer') {
 		$Errors[0]=NoAuthorisation;
 		return $Errors;
 	}
-	$SQL = "SELECT * FROM currencies WHERE currabrev='".$Currency."'";
+	$SQL = "SELECT * FROM debtortype WHERE typeid='".$typeid."'";
 	$Result = DB_query($SQL);
 	return DB_fetch_array($Result);
 }

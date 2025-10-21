@@ -250,15 +250,14 @@ function VerifyConsignment($consignment, $i, $Errors) {
  *
  * This function also in SQL_CommonFunctions...better to use it from there as it covers all cases
  * and not limited to stk='any'!!
- *
-	function GetSalesGLCode($salesarea, $partnumber) {
-		$SQL="SELECT salesglcode FROM salesglpostings
-			WHERE stkcat='any'";
-		$Result = DB_query($SQL);
-		$MyRow=DB_fetch_array($Result);
-		return $MyRow[0];
-	}
-*/
+ */
+function GetSalesGLCode($salesarea, $partnumber) {
+	$SQL="SELECT salesglcode FROM salesglpostings
+		WHERE stkcat='any'";
+	$Result = DB_query($SQL);
+	$MyRow=DB_fetch_array($Result);
+	return $MyRow[0];
+}
 
 /** Retrieves the default debtors code for webERP */
 function GetDebtorsGLCode() {

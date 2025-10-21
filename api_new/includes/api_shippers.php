@@ -5,39 +5,39 @@ if (!isset($PathPrefix)) {
 	exit();
 }
 
-/** This function returns a list of the currency abbreviations
+/** This function returns a list of the stock shipper id's
  * currently setup on webERP
  */
-function GetCurrencyList($user, $password) {
+function GetShipperList($User, $Password) {
 	$Errors = array();
-	$db = db($user, $password);
+	$db = db($User, $Password);
 	if (gettype($db)=='integer') {
 		$Errors[0]=NoAuthorisation;
 		return $Errors;
 	}
-	$SQL = 'SELECT currabrev FROM currencies';
+	$SQL = 'SELECT shipper_id FROM shippers';
 	$Result = DB_query($SQL);
 	$i=0;
-	$CurrencyList = array();
+	$ShipperList = array();
 	while ($MyRow=DB_fetch_array($Result)) {
-		$CurrencyList[$i]=$MyRow[0];
+		$ShipperList[$i]=$MyRow[0];
 		$i++;
 	}
-	return $CurrencyList;
+	return $ShipperList;
 }
 
-/** This function takes as a parameter a currency abbreviation
+/** This function takes as a parameter a shipper id
  * and returns an array containing the details of the selected
- * currency.
+ * shipper.
  */
-function GetCurrencyDetails($Currency, $user, $password) {
+function GetShipperDetails($Shipper, $User, $Password) {
 	$Errors = array();
-	$db = db($user, $password);
+	$db = db($User, $Password);
 	if (gettype($db)=='integer') {
 		$Errors[0]=NoAuthorisation;
 		return $Errors;
 	}
-	$SQL = "SELECT * FROM currencies WHERE currabrev='".$Currency."'";
+	$SQL = "SELECT * FROM shippers WHERE shipper_id='" . $Shipper."'";
 	$Result = DB_query($SQL);
 	return DB_fetch_array($Result);
 }
