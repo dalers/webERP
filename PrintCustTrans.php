@@ -238,8 +238,7 @@ if (isset($PrintPDF)
 	echo '<p class = "bad">' . __('Your account is set up to see only a specific salespersons orders. You are not authorised to view transaction for this order') . '</p>';
 				exit();
 }
-echo 'Test 241';
-exit;
+
 			if (isset($CustomerLogin) && $CustomerLogin == 1 and $MyRow['debtorno'] != $_SESSION['CustomerID']){
 				echo '<p class = "bad">' . __('This transaction is addressed to another customer and cannot be displayed for privacy reasons') . '</p>';
 				exit();
@@ -589,7 +588,8 @@ if (isset($_GET['View']) and $_GET['View'] == 'Yes') {
 	include('includes/footer.php');
 
 } else {
-
+echo 'Test 591';
+exit;
 	// Generate PDF with DomPDF
 	$PdfFileName = $_SESSION['DatabaseName'] . '_' . $InvOrCredit . '_' . ($FromTransNo-1) .'_'. date('Y-m-d') . '.pdf';
 	// Display PDF in browser
