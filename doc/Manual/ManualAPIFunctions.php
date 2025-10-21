@@ -7,7 +7,6 @@ if (!isset($PathPrefix)) {
 if (!isset($RootPath)) {
 	$RootPath = htmlspecialchars(dirname(dirname(dirname($_SERVER['PHP_SELF']))), ENT_QUOTES, 'UTF-8');
 }
-
 include($PathPrefix . 'api/includes/api_errorcodes.php');
 
 $Title = 'API documentation';
@@ -23,6 +22,7 @@ echo '<body>';
 
 // avoid sending an xml-rpc request to self, interrogate directly the server
 $dispatchMap = include($PathPrefix . 'api/includes/api_xml-rpc_definition.php');
+
 $server = new PhpXmlRpc\Server($dispatchMap, false);
 $response = PhpXmlRpc\Server::_xmlrpcs_listMethods($server);
 $answer = $response->value();

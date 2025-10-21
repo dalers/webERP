@@ -1,5 +1,4 @@
 <?php
-
 /* Used during order entry to allow the entry of delivery addresses other than the defaulted branch delivery address and information about carrier/shipping method etc. */
 
 /*
@@ -163,6 +162,7 @@ if (isset($_POST['Update'])
 
 		$ErrMsg = __('The customer branch record of the customer selected') . ': ' . $_SESSION['Items'.$identifier]->CustomerName . ' ' . __('cannot be retrieved because');
 		$Result = DB_query($SQL, $ErrMsg);
+
 		if (DB_num_rows($Result) == 0) {
 
 			prnMsg(__('The branch details for branch code') . ': ' . $_SESSION['Items'.$identifier]->Branch . ' ' . __('against customer code') . ': ' . $_POST['Select'] . ' ' . __('could not be retrieved') . '. ' . __('Check the set up of the customer and branch'),'error');
@@ -390,7 +390,6 @@ if (isset($OK_to_PROCESS) and $OK_to_PROCESS == 1 and $_SESSION['ExistingOrder'.
 	$ErrMsg = __('The order cannot be added because');
 	$InsertQryResult = DB_query($HeaderSQL, $ErrMsg);
 
-
 	$StartOf_LineItemsSQL = "INSERT INTO salesorderdetails (
 											orderlineno,
 											orderno,
@@ -415,6 +414,7 @@ if (isset($OK_to_PROCESS) and $OK_to_PROCESS == 1 and $_SESSION['ExistingOrder'.
 					'" . $StockItem->POLine . "',
 					'" . FormatDateForSQL($StockItem->ItemDue) . "'
 				)";
+	
 		$ErrMsg = __('Unable to add the sales order line');
 		$Ins_LineItemResult = DB_query($LineItemsSQL, $ErrMsg,'',true);
 
@@ -650,7 +650,7 @@ if (isset($OK_to_PROCESS) and $OK_to_PROCESS == 1 and $_SESSION['ExistingOrder'.
 											 VALUES ('" . $WONo . "',
 													'" . $_SESSION['Items'.$identifier]->Location ."',
 													'" . $ContractRow['requireddate'] . "',
-													'" . date('Y-m-d'). "')",
+													CURRENT_DATE)",
 										$ErrMsg);
 			//Need to get the latest BOM to roll up cost but also add the contract other requirements
 			$CostResult = DB_query("SELECT SUM((actualcost)*contractbom.quantity) as cost

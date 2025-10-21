@@ -1,5 +1,4 @@
 <?php
-
 /* Country codes based on the two-letter alphabetic code from ISO 3166-1:2013 Codes for the representation of names of countries and their subdivisions. Part 1: Country codes. */
 
 $CountriesArray =  array();
@@ -198,7 +197,7 @@ $CountriesArray['TO'] = __('Tonga');
 $CountriesArray['TR'] = __('Turkey');
 $CountriesArray['TT'] = __('Trinidad and Tobago');
 $CountriesArray['TW'] = __('Taiwan');
-$CountriesArray['TZ'] = __('Tanzania, United Rep. of');
+$CountriesArray['TZ'] = __('Tanzania');
 $CountriesArray['UA'] = __('Ukraine');
 $CountriesArray['UG'] = __('Uganda');
 $CountriesArray['US'] = __('United States');
