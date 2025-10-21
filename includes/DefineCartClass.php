@@ -354,6 +354,7 @@ class Cart {
 		$GetTaxRatesResult = DB_query($SQL, $ErrMsg);
 		unset($this->LineItems[$LineNumber]->Taxes);
 		if (DB_num_rows($GetTaxRatesResult)==0){
+			echo 'Tax Rates: '.$SQL;
 			prnMsg(__('It appears that taxes are not defined correctly for this customer tax group') ,'error');
 		} else {
 			$i=1;

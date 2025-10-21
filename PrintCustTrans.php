@@ -238,6 +238,7 @@ if (isset($PrintPDF)
 	echo '<p class = "bad">' . __('Your account is set up to see only a specific salespersons orders. You are not authorised to view transaction for this order') . '</p>';
 				exit();
 }
+
 			if (isset($CustomerLogin) && $CustomerLogin == 1 and $MyRow['debtorno'] != $_SESSION['CustomerID']){
 				echo '<p class = "bad">' . __('This transaction is addressed to another customer and cannot be displayed for privacy reasons') . '</p>';
 				exit();
@@ -601,6 +602,8 @@ if (isset($_GET['View']) and $_GET['View'] == 'Yes') {
 
 	// Output the generated PDF to Browser
 	$dompdf->stream($PdfFileName, array("Attachment" => false));
+
+
 }
 
 } else {

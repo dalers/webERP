@@ -106,6 +106,7 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 
 	if (DB_num_rows($GetOrdHdrResult) == 1) {
 
+
 		$MyRow = DB_fetch_array($GetOrdHdrResult);
 
 		$_SESSION['Items' . $identifier]->DebtorNo = $MyRow['debtorno'];
@@ -146,7 +147,9 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 		$_SESSION['CurrencyRate'] = $MyRow['currency_rate'];
 		$_SESSION['Items' . $identifier]->TaxGroup = $MyRow['taxgroupid'];
 		$_SESSION['Items' . $identifier]->DispatchTaxProvince = $MyRow['taxprovinceid'];
+
 		$_SESSION['Items' . $identifier]->GetFreightTaxes();
+
 		$_SESSION['Items' . $identifier]->SpecialInstructions = $MyRow['specialinstructions'];
 
 		DB_free_result($GetOrdHdrResult);
@@ -221,6 +224,7 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 							if ($_SESSION['RequirePickingNote'] == 1) {
 	$_SESSION['Items' . $identifier]->LineItems[$MyRow['orderlineno']]->QtyDispatched = $MySerial['qtypicked'];
 }
+
 						}
 					}
 				}

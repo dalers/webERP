@@ -223,3 +223,39 @@ function ModifyLocation($Location, $user, $password) {
 	}
 	return $Errors;
 }
+
+function GetStockLocations($StockID, $user, $password) {
+	$Errors = array();
+	$db = db($user, $password);
+	if (gettype($db)=='integer') {
+		$Errors[0]=NoAuthorisation;
+		return $Errors;
+	}
+	$Errors = VerifyStockCodeExists($StockID, sizeof($Errors), $Errors);
+	if (sizeof($Errors)!=0) {
+		return $Errors;
+	}
+	$SQL="SELECT locstock.loccode,
+				 locstock.quantity,
+				 locations.locationname
+		   FROM locstock
+		   INNER JOIN locations
+			   ON locations.loccode = locstock.loccode
+		   WHERE locstock.stockid='" . $StockID."'";
+	$Result = DB_query($SQL);
+	if (sizeof($Errors)==0) {
+		$i=0;
+		$Locations = array();
+		while ($MyRow=DB_fetch_array($Result)) {
+			$Locations[$i]['loccode']=$MyRow['loccode'];
+			$Locations[$i]['locationname']=$MyRow['locationname'];
+			$Locations[$i]['quantity']=$MyRow['quantity'];
+			$i++;
+		}
+		$Errors[0]=0;
+		$Errors[1]=$Locations;
+		return $Errors;
+	} else {
+		return $Errors;
+	}
+}

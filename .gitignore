@@ -6,7 +6,8 @@
 /.vscode/launch.json
 # And random assorted tooling files
 Thumbs.db
-
+*.DS_Store
+api/.DS_Store
 # Only config.distrib.php is to be distributed
 /config.php
 
