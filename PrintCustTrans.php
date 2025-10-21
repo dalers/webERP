@@ -603,8 +603,7 @@ if (isset($_GET['View']) and $_GET['View'] == 'Yes') {
 	// Output the generated PDF to Browser
 	$dompdf->stream($PdfFileName, array("Attachment" => false));
 
-	echo 'Test 606';
-exit;
+
 }
 
 } else {
