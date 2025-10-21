@@ -3456,7 +3456,6 @@ unset($Description);
 unset($Parameter);
 unset($ReturnValue);
 
-//==============Orders List===============
 $Description = __('This function returns a list of created Orders.');
 $Parameter[0]['name'] = __('User name');
 $Parameter[0]['description'] = __('A valid weberp username. This user should have security access  to this data.');
@@ -3489,7 +3488,7 @@ function xmlrpc_GetSalesOrderList($request)
 unset($Description);
 unset($Parameter);
 unset($ReturnValue);
-//=============================
+
 $Description = __('This function takes an order number and returns an array of key/value pairs.') .
 	__('The keys represent the database field names, and the values are the value of that field.');
 $Parameter[0]['name'] = __('Order No');
@@ -3516,13 +3515,8 @@ function xmlrpc_GetSalesOrderLineDetails($request)
 			$request->getParam(0)->scalarval(),
 			$request->getParam(1)->scalarval(),
 		    $request->getParam(2)->scalarval()
-			// $encoder->decode($request->getParam(0)),
-			// $request->getParam(1)->scalarval(),
-			// $request->getParam(2)->scalarval()
-			
 		)));
 	} else {
-	//	$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($request->getParam(0)->scalarval(), '', '')));
 		$rtn = new Response($encoder->encode(GetSalesOrderLineDetails($encoder->decode($request->getParam(0)), '', '')));
 	}
 	ob_end_flush();
@@ -3647,7 +3641,6 @@ unset($Description);
 unset($Parameter);
 unset($ReturnValue);
 
-//=============================
 $Description = __('Returns (possibly translated) error text from error codes');
 $Parameter[0]['name'] = __('Error codes');
 $Parameter[0]['description'] = __('An array of error codes to change into text messages. ');
@@ -4061,12 +4054,6 @@ return array(
 		"function" => "xmlrpc_GetSalesOrderList",
 		"signature" => $GetSalesOrderList_sig,
 		"docstring" => $GetSalesOrderList_doc),
-		/*
-	"weberp.xmlrpc_SearchOrders" => array(
-		"function" => "xmlrpc_SearchOrders",
-		"signature" => $SearchOrders_sig,
-		"docstring" => $SearchOrders_doc),
-		*/
 	"weberp.xmlrpc_GetStockLocations" => array(
 		"function" => "xmlrpc_GetStockLocations",
 		"signature" => $GetStockLocations_sig,
