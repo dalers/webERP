@@ -4061,10 +4061,12 @@ return array(
 		"function" => "xmlrpc_GetSalesOrderList",
 		"signature" => $GetSalesOrderList_sig,
 		"docstring" => $GetSalesOrderList_doc),
+		/*
 	"weberp.xmlrpc_SearchOrders" => array(
 		"function" => "xmlrpc_SearchOrders",
 		"signature" => $SearchOrders_sig,
 		"docstring" => $SearchOrders_doc),
+		*/
 	"weberp.xmlrpc_GetStockLocations" => array(
 		"function" => "xmlrpc_GetStockLocations",
 		"signature" => $GetStockLocations_sig,
