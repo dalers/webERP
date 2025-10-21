@@ -2,8 +2,7 @@
 
 require(__DIR__ . '/includes/session.php');
 require_once __DIR__ . '/vendor/autoload.php'; // DomPDF autoload
-echo 'test1';
-exit;
+
 use Dompdf\Dompdf;
 
 $ViewTopic = 'ARReports';
@@ -239,6 +238,8 @@ if (isset($PrintPDF)
 	echo '<p class = "bad">' . __('Your account is set up to see only a specific salespersons orders. You are not authorised to view transaction for this order') . '</p>';
 				exit();
 }
+echo 'Test 241';
+exit;
 			if (isset($CustomerLogin) && $CustomerLogin == 1 and $MyRow['debtorno'] != $_SESSION['CustomerID']){
 				echo '<p class = "bad">' . __('This transaction is addressed to another customer and cannot be displayed for privacy reasons') . '</p>';
 				exit();
