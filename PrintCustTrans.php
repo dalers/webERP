@@ -588,8 +588,7 @@ if (isset($_GET['View']) and $_GET['View'] == 'Yes') {
 	include('includes/footer.php');
 
 } else {
-echo 'Test 591';
-exit;
+
 	// Generate PDF with DomPDF
 	$PdfFileName = $_SESSION['DatabaseName'] . '_' . $InvOrCredit . '_' . ($FromTransNo-1) .'_'. date('Y-m-d') . '.pdf';
 	// Display PDF in browser
@@ -603,6 +602,9 @@ exit;
 
 	// Output the generated PDF to Browser
 	$dompdf->stream($PdfFileName, array("Attachment" => false));
+
+	echo 'Test 606';
+exit;
 }
 
 } else {
