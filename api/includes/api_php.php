@@ -10,11 +10,11 @@
 
 // FOLLOWING IS ALWAYS REQUIRED
 
-$api_DatabaseName = 'zerp_global';
 if (isset($_SESSION['DatabaseName'])) {
 	$api_DatabaseName = $_SESSION['DatabaseName'];
 }
-
+echo 'the db is; '.$api_Databasename;
+exit;
 $AllowAnyone = true;
 $PathPrefix = __DIR__ . '/../../';
 include(__DIR__ . '/api_session.php');
