@@ -15,7 +15,6 @@ if (isset($_SESSION['DatabaseName'])) {
 }else{
 $api_DatabaseName = 'zerp_global';
 }
-echo 'the db is: '.$api_Databasename;
 
 $AllowAnyone = true;
 $PathPrefix = __DIR__ . '/../../';
