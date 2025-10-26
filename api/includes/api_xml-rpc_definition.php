@@ -7,6 +7,9 @@
  */
 /* Note api_php.php includes api_session.php and api_*.php */
 include(__DIR__ . '/api_php.php');
+$path = __DIR__ . '/api_php.php';
+echo 'the path is: '. $path;
+exit;
 PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = 'UTF-8';
 
 use PhpXmlRpc\Value;
