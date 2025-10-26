@@ -1,5 +1,5 @@
 <?php
-$path = __DIR__ . '/includes/api_xml-rpc_definition.php;
+$path = __DIR__ . '/includes/api_xml-rpc_definition.php';
 echo 'the path is: '. $path;
 exit;
 /**
