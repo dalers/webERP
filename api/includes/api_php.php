@@ -12,6 +12,8 @@
 
 if (isset($_SESSION['DatabaseName'])) {
 	$api_DatabaseName = $_SESSION['DatabaseName'];
+}else{
+$api_DatabaseName = 'zerp_global';
 }
 echo 'the db is; '.$api_Databasename;
 exit;
