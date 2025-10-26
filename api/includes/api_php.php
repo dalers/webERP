@@ -9,11 +9,11 @@
  */
 
 // FOLLOWING IS ALWAYS REQUIRED
-$api_Databasename = "zerp_global";
+//$api_Databasename = "zerp_global";
 if (isset($_SESSION['DatabaseName'])) {
 	$api_DatabaseName = $_SESSION['DatabaseName'];
 }else{
-$api_DatabaseName = 'zerp_global';
+$api_DatabaseName = "zerp_global";
 }
 
 $AllowAnyone = true;
