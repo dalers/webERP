@@ -222,14 +222,8 @@ if (!isset($_GET['OrderNumber']) and !isset($_SESSION['ProcessingOrder'])) {
 							$_SESSION['Items' . $identifier]->LineItems[$MyRow['orderlineno']]->SerialItems[$MySerial['serialno']] = new SerialItem($MySerial['serialno'], ($InOutModifier > 0 ? 1 : 1) * filter_number_format($MySerial['moveqty']));
 						} else {
 							if ($_SESSION['RequirePickingNote'] == 1) {
-<<<<<<< HEAD
-	$_SESSION['Items' . $identifier]->LineItems[$MyRow['orderlineno']]->QtyDispatched = $MySerial['qtypicked'];
-}
-
-=======
 								$_SESSION['Items' . $identifier]->LineItems[$MyRow['orderlineno']]->QtyDispatched = $MySerial['qtypicked'];
 							}
->>>>>>> 694078ad8da1663904c7b8b0dbe06b456fcfd14d
 						}
 					}
 				}
