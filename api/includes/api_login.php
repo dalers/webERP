@@ -5,6 +5,9 @@ if (!isset($PathPrefix)) {
 	exit();
 }
 
+// Include now for the error code values.
+include_once($PathPrefix . 'includes/LoginFunctions.php');	/* Login checking and setup */
+
 //  Validates user and sets up $_SESSION environment for API users.
 function  LoginAPI($databasename, $user, $password) {
 	global $PathPrefix, $SysAdminEmail;
