@@ -1,14 +1,13 @@
 <?php
-/*
+
 if (!isset($PathPrefix)) {
 	header('Location: ../../');
 	exit();
 }
- echo 'PathPrefix: '.$PathPrefix;
- echo '<br>'.$PathPrefix . 'includes/LoginFunctions.php';
- exit;
+
 // Include now for the error code values.
-include_once($PathPrefix . 'includes/LoginFunctions.php');	/* Login checking and setup */
+   //commented the following line as it causes errors on API based login
+   //include_once($PathPrefix . 'includes/LoginFunctions.php');	/* Login checking and setup */
 
 //  Validates user and sets up $_SESSION environment for API users.
 function  LoginAPI($databasename, $user, $password) {
