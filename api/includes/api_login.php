@@ -4,7 +4,9 @@ if (!isset($PathPrefix)) {
 	header('Location: ../../');
 	exit();
 }
-
+ echo 'PathPrefix: '.$PathPrefix;
+ echo '<br>'.$PathPrefix . 'includes/LoginFunctions.php';
+ exit;
 // Include now for the error code values.
 include_once($PathPrefix . 'includes/LoginFunctions.php');	/* Login checking and setup */
 
