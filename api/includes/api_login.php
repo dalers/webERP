@@ -1,5 +1,5 @@
 <?php
-
+/*
 if (!isset($PathPrefix)) {
 	header('Location: ../../');
 	exit();
