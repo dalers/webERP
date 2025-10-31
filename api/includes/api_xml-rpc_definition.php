@@ -3641,6 +3641,46 @@ unset($Description);
 unset($Parameter);
 unset($ReturnValue);
 
+////////////////// jlungo's APIs ////////////////////
+$Description = __('This function takes a supplier ID and returns an array of key/value pairs.') .
+	__('The keys represent the database field names, and the values are the value of that field.');
+$Parameter[0]['name'] = __('Supplier ID');
+$Parameter[0]['description'] = __('The Supplier ID to identify the supplier in the database.');
+$Parameter[1]['name'] = __('User name');
+$Parameter[1]['description'] = __('A valid weberp username. This user should have security access to this data.');
+$Parameter[2]['name'] = __('User password');
+$Parameter[2]['description'] = __('The weberp password associated with this user name. ');
+$ReturnValue = __('If successful this function returns a set of key/value pairs containing the details of this order. ')
+	. __('The key will be identical with field name from the tables involved in the query. All fields will be in the set regardless of whether the value was set.') . '<p>'
+	. __('Otherwise an array of error codes is returned. ');
+
+$GetSupplierInquiry_sig = array(
+	array(Value::$xmlrpcStruct, Value::$xmlrpcString),
+	array(Value::$xmlrpcStruct, Value::$xmlrpcString, Value::$xmlrpcString, Value::$xmlrpcString));
+$GetSupplierInquiry_doc = apiBuildDocHTML($Description, $Parameter, $ReturnValue);
+
+function xmlrpc_GetSupplierInquiry($request)
+{
+	ob_start('ob_file_callback');
+	$encoder = new Encoder();
+	if ($request->getNumParams() == 3) {
+		$rtn = new Response($encoder->encode(GetSupplierInquiry(
+			$request->getParam(0)->scalarval(),
+			$request->getParam(1)->scalarval(),
+			$request->getParam(2)->scalarval())));
+	} else {
+		$rtn = new Response($encoder->encode(GetSupplierInquiry($request->getParam(0)->scalarval(), '', '')));
+	}
+	ob_end_flush();
+	return $rtn;
+}
+
+unset($Description);
+unset($Parameter);
+unset($ReturnValue);
+
+//////////////////end of jlungo's APIs /////////////
+
 $Description = __('Returns (possibly translated) error text from error codes');
 $Parameter[0]['name'] = __('Error codes');
 $Parameter[0]['description'] = __('An array of error codes to change into text messages. ');
@@ -4058,4 +4098,9 @@ return array(
 		"function" => "xmlrpc_GetStockLocations",
 		"signature" => $GetStockLocations_sig,
 		"docstring" => $GetStockLocations_doc),
+	/////////// jlungo's APIs ///////////////////
+	"weberp.xmlrpc_GetSupplierInquiry" => array(
+		"function" => "xmlrpc_GetSupplierInquiry",
+		"signature" => $GetSupplierInquiry_sig,
+		"docstring" => $GetSupplierInquiry_doc),
 );

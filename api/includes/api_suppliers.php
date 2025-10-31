@@ -355,3 +355,113 @@ function SearchSuppliers($Field, $Criteria, $user, $password) {
 	}
 	return $SupplierList;
 }
+
+/** This function takes a supplier id and returns an associative array containing
+   the database record for that supplier's Statement Inquiry (i.e. balance, due, overdue1, overdue2). If the supplier id doesn't exist
+   then it returns an $Errors array.
+*/
+function GetSupplierInquiry($SupplierID, $user, $password) {
+	$Errors = array();
+	$db = db($user, $password);
+	if (gettype($db)=='integer') {
+		$Errors[0]=NoAuthorisation;
+		return $Errors;
+	}
+	$Errors = VerifySupplierNoExists($SupplierID, sizeof($Errors), $Errors);
+	if (sizeof($Errors)!=0) {
+		return $Errors;
+	}
+	$SQL="SELECT suppliers.suppname,
+		suppliers.currcode,
+		currencies.currency,
+		currencies.decimalplaces AS currdecimalplaces,
+		paymentterms.terms,
+		SUM(supptrans.ovamount + supptrans.ovgst - supptrans.alloc) AS balance,
+		SUM(CASE WHEN paymentterms.daysbeforedue > 0 THEN
+			CASE WHEN (TO_DAYS(Now()) - TO_DAYS(supptrans.trandate)) >= paymentterms.daysbeforedue
+			THEN supptrans.ovamount + supptrans.ovgst - supptrans.alloc ELSE 0 END
+		ELSE
+			CASE WHEN TO_DAYS(Now()) - TO_DAYS(ADDDATE(last_day(supptrans.trandate),paymentterms.dayinfollowingmonth)) >= 0 THEN supptrans.ovamount + supptrans.ovgst - supptrans.alloc ELSE 0 END
+		END) AS due,
+		SUM(CASE WHEN paymentterms.daysbeforedue > 0  THEN
+			CASE WHEN (TO_DAYS(Now()) - TO_DAYS(supptrans.trandate)) > paymentterms.daysbeforedue
+					AND (TO_DAYS(Now()) - TO_DAYS(supptrans.trandate)) >= (paymentterms.daysbeforedue + " . $_SESSION['PastDueDays1'] . ")
+			THEN supptrans.ovamount + supptrans.ovgst - supptrans.alloc ELSE 0 END
+		ELSE
+			CASE WHEN TO_DAYS(Now()) - TO_DAYS(ADDDATE(last_day(supptrans.trandate),paymentterms.dayinfollowingmonth)) >= '" . $_SESSION['PastDueDays1'] . "'
+			THEN supptrans.ovamount + supptrans.ovgst - supptrans.alloc ELSE 0 END
+		END) AS overdue1,
+		Sum(CASE WHEN paymentterms.daysbeforedue > 0 THEN
+			CASE WHEN TO_DAYS(Now()) - TO_DAYS(supptrans.trandate) > paymentterms.daysbeforedue AND TO_DAYS(Now()) - TO_DAYS(supptrans.trandate) >= (paymentterms.daysbeforedue + " . $_SESSION['PastDueDays2'] . ")
+			THEN supptrans.ovamount + supptrans.ovgst - supptrans.alloc ELSE 0 END
+		ELSE
+			CASE WHEN TO_DAYS(Now()) - TO_DAYS(ADDDATE(last_day(supptrans.trandate),paymentterms.dayinfollowingmonth)) >= '" . $_SESSION['PastDueDays2'] . "'
+			THEN supptrans.ovamount + supptrans.ovgst - supptrans.alloc ELSE 0 END
+		END ) AS overdue2
+		FROM suppliers INNER JOIN paymentterms
+		ON suppliers.paymentterms = paymentterms.termsindicator
+     	INNER JOIN currencies
+     	ON suppliers.currcode = currencies.currabrev
+     	INNER JOIN supptrans
+     	ON suppliers.supplierid = supptrans.supplierno
+		WHERE suppliers.supplierid = '" . $SupplierID . "'
+		GROUP BY suppliers.suppname,
+      			currencies.currency,
+      			currencies.decimalplaces,
+      			paymentterms.terms,
+      			paymentterms.daysbeforedue,
+      			paymentterms.dayinfollowingmonth
+	";
+	$SupplierResult = DB_query($SQL);
+
+	if(DB_num_rows($SupplierResult) == 0) {
+
+		/*Because there is no balance - so just retrieve the header information about the Supplier - the choice is do one query to get the balance and transactions for those Suppliers who have a balance and two queries for those who don't have a balance OR always do two queries - I opted for the former */
+
+		$NIL_BALANCE = true;
+
+		$SQL = "SELECT suppliers.suppname,
+						suppliers.currcode,
+						currencies.currency,
+						currencies.decimalplaces AS currdecimalplaces,
+						paymentterms.terms
+				FROM suppliers INNER JOIN paymentterms
+				ON suppliers.paymentterms = paymentterms.termsindicator
+				INNER JOIN currencies
+				ON suppliers.currcode = currencies.currabrev
+				WHERE suppliers.supplierid = '" . $SupplierID . "'";
+
+	//	$ErrMsg = __('The supplier details could not be retrieved by the SQL because');
+		$SupplierResult = DB_query($SQL, $ErrMsg);
+
+	} else {
+		$NIL_BALANCE = false;
+	}
+
+	$SupplierRecord = DB_fetch_array($SupplierResult);
+
+	if($NIL_BALANCE == true) {
+
+		$SupplierRecord['balance'] = 0;
+		$SupplierRecord['due'] = 0;
+		$SupplierRecord['overdue1'] = 0;
+		$SupplierRecord['overdue2'] = 0;
+		
+		$Errors[0]=$SupplierRecord['balance']; 
+		$Errors[1]=$SupplierRecord['due']; 
+		$Errors[2]=$SupplierRecord['overdue1']; 
+		$Errors[3]=$SupplierRecord['overdue2']; 
+
+		// $Errors[0]=0; //balance
+		// $Errors[1]=0; //due
+		// $Errors[2]=0; //overdue1
+		// $Errors[3]=0; //overdue2
+
+	}else{
+		if (sizeof($Errors)==0) {
+			return DB_fetch_array($SupplierResult);
+		} else {
+			return $Errors;
+		}
+	}
+}
