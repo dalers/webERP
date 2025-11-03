@@ -3,6 +3,8 @@ require (__DIR__ . '/includes/session.php');
 
 use Dompdf\Dompdf;
 
+include('includes/SetDomPDFOptions.php');
+
 include ('includes/SQL_CommonFunctions.php');
 
 //Get Out if we have no order number to work with
@@ -88,8 +90,7 @@ if (DB_num_rows($Result) == 0) {
 		</div>';
 	include ('includes/footer.php');
 	exit();
-}
-elseif (DB_num_rows($Result) == 1) {
+} elseif (DB_num_rows($Result) == 1) {
 
 	$ListCount = 1;
 
@@ -216,11 +217,8 @@ if (DB_num_rows($Result) > 0) {
 </html>';
 
 	// ---- End HTML for DomPDF ----
-	//echo $HTML;
-	//exit;
-	// Setup DomPDF options
-	// (Optional) Setup the paper size and orientation
-	$DomPDF = new Dompdf(['chroot' => __DIR__]);
+
+	$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
 	$DomPDF->loadHtml($HTML);
 	// (Optional) Setup the paper size and orientation
 	$DomPDF->setPaper($_SESSION['PageSize'], 'landscape');
@@ -238,8 +236,7 @@ if (DB_num_rows($Result) > 0) {
 			WHERE salesorders.orderno = '" . $_GET['TransNo'] . "'";
 	$Result = DB_query($SQL);
 
-}
-else {
+} else {
 	$Title = __('Print Packing Slip Error');
 	include ('includes/header.php');
 	echo '<p>' . __('There were no outstanding items on the order to deliver. A dispatch note cannot be printed') . '<br /><a href="' . $RootPath . '/SelectSalesOrder.php">' . __('Print Another Packing Slip/Order') . '</a>' . '<br />' . '<a href="' . $RootPath . '/index.php">' . __('Back to the menu') . '</a>';

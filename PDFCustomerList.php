@@ -6,6 +6,8 @@ require(__DIR__ . '/includes/session.php');
 
 use Dompdf\Dompdf;
 
+include('includes/SetDomPDFOptions.php');
+
 $ViewTopic = 'ARReports';
 $BookMark = 'CustomerListing';
 
@@ -13,8 +15,8 @@ if (isset($_POST['ActivitySince'])){$_POST['ActivitySince'] = ConvertSQLDate($_P
 
 if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
-	if($_POST['Activity']!='All') {
-		if(!is_numeric($_POST['ActivityAmount'])) {
+	if ($_POST['Activity']!='All') {
+		if (!is_numeric($_POST['ActivityAmount'])) {
 			$Title = __('Customer List') . ' - ' . __('Problem Report') . '....';
 			include('includes/header.php');
 			echo '<p />';
@@ -26,8 +28,8 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 	/* Now figure out the customer data to report for the selections made */
 
-	if(in_array('All', $_POST['Areas'])) {
-		if(in_array('All', $_POST['SalesPeople'])) {
+	if (in_array('All', $_POST['Areas'])) {
+		if (in_array('All', $_POST['SalesPeople'])) {
 			$SQL = "SELECT debtorsmaster.debtorno,
 						debtorsmaster.name,
 						debtorsmaster.address1,
@@ -100,7 +102,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 				$i=0;
 				foreach ($_POST['SalesPeople'] as $Salesperson) {
-					if($i>0) {
+					if ($i>0) {
 						$SQL .= " OR ";
 					}
 					$i++;
@@ -113,7 +115,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 						custbranch.branchcode";
 		} /*end if SalesPeople =='All' */
 	} else { /* not all sales areas has been selected so need to build the where clause */
-		if(in_array('All', $_POST['SalesPeople'])) {
+		if (in_array('All', $_POST['SalesPeople'])) {
 			$SQL = "SELECT debtorsmaster.debtorno,
 						debtorsmaster.name,
 						debtorsmaster.address1,
@@ -149,7 +151,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 			$i=0;
 			foreach ($_POST['Areas'] as $Area) {
-				if($i>0) {
+				if ($i>0) {
 					$SQL .= " OR ";
 				}
 				$i++;
@@ -197,7 +199,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 			$i=0;
 			foreach ($_POST['Areas'] as $Area) {
-				if($i>0) {
+				if ($i>0) {
 					$SQL .= " OR ";
 				}
 				$i++;
@@ -208,7 +210,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 			$i=0;
 			foreach ($_POST['SalesPeople'] as $Salesperson) {
-				if($i>0) {
+				if ($i>0) {
 					$SQL .= " OR ";
 				}
 				$i++;
@@ -226,7 +228,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	$ErrMsg = __('The customer List could not be retrieved');
 	$CustomersResult = DB_query($SQL, $ErrMsg);
 
-	if(DB_num_rows($CustomersResult) == 0) {
+	if (DB_num_rows($CustomersResult) == 0) {
 	  $Title = __('Customer List') . ' - ' . __('Problem Report') . '....';
 	  include('includes/header.php');
 	  prnMsg( __('This report has no output because there were no customers retrieved'), 'error' );
@@ -315,7 +317,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 	while($Customers = DB_fetch_array($CustomersResult)) {
 
-		if($_POST['Activity']!='All') {
+		if ($_POST['Activity']!='All') {
 
 			/*Get the total turnover in local currency for the customer/branch
 			since the date entered */
@@ -331,14 +333,14 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			$ActivityRow = DB_fetch_row($ActivityResult);
 			$LocalCurrencyTurnover = $ActivityRow[0];
 
-			if($_POST['Activity'] =='GreaterThan') {
-				if($LocalCurrencyTurnover > $_POST['ActivityAmount']) {
+			if ($_POST['Activity'] =='GreaterThan') {
+				if ($LocalCurrencyTurnover > $_POST['ActivityAmount']) {
 					$PrintThisCustomer = true;
 				} else {
 					$PrintThisCustomer = false;
 				}
-			} elseif($_POST['Activity'] =='LessThan') {
-				if($LocalCurrencyTurnover < $_POST['ActivityAmount']) {
+			} elseif ($_POST['Activity'] =='LessThan') {
+				if ($LocalCurrencyTurnover < $_POST['ActivityAmount']) {
 					$PrintThisCustomer = true;
 				} else {
 					$PrintThisCustomer = false;
@@ -348,15 +350,15 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			$PrintThisCustomer = true;
 		}
 
-		if($PrintThisCustomer) {
+		if ($PrintThisCustomer) {
 
 			$HTML .='<tr class="striped_row">';
-			if($Area!=$Customers['area']) {
+			if ($Area!=$Customers['area']) {
 				$HTML .= '<th colspan="3">' . __('Customers in') . ' ' . $Customers['areadescription'] . '<br />';
 				$Area = $Customers['area'];
 			}
 
-			if($SalesPerson!=$Customers['salesman']) {
+			if ($SalesPerson!=$Customers['salesman']) {
 				$HTML .= '' . __('Salesman') . ' ' . $Customers['salesmanname'] . '</th>';
 				$SalesPerson = $Customers['salesman'];
 			}
@@ -377,7 +379,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 						</td>';
 
 
-			if($_POST['Activity']!='All') {
+			if ($_POST['Activity']!='All') {
 				$HTML .= '<td>' . __('Turnover') . ' - ' . locale_number_format($LocalCurrencyTurnover,0) . '</td>';
 			}
 
@@ -419,17 +421,17 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 		</html>';
 
 	if (isset($_POST['PrintPDF'])) {
-		$dompdf = new Dompdf(['chroot' => __DIR__]);
-		$dompdf->loadHtml($HTML);
+		$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+		$DomPDF->loadHtml($HTML);
 
 		// (Optional) Setup the paper size and orientation
-		$dompdf->setPaper($_SESSION['PageSize'], 'portrait');
+		$DomPDF->setPaper($_SESSION['PageSize'], 'portrait');
 
 		// Render the HTML as PDF
-		$dompdf->render();
+		$DomPDF->render();
 
 		// Output the generated PDF to Browser
-		$dompdf->stream($_SESSION['DatabaseName'] . '_CustomerListing_' . date('Y-m-d') . '.pdf', array(
+		$DomPDF->stream($_SESSION['DatabaseName'] . '_CustomerListing_' . date('Y-m-d') . '.pdf', array(
 			"Attachment" => false
 		));
 	} else {

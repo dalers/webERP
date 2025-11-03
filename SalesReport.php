@@ -12,6 +12,8 @@ require(__DIR__ . '/includes/session.php');
 
 use Dompdf\Dompdf;
 
+include('includes/SetDomPDFOptions.php');
+
 $Title = __('Sales to Customers');
 $ViewTopic = 'Sales';
 $BookMark = 'SalesReport';
@@ -20,19 +22,19 @@ if (isset($_POST['PeriodFrom'])){$_POST['PeriodFrom'] = ConvertSQLDate($_POST['P
 if (isset($_POST['PeriodTo'])){$_POST['PeriodTo'] = ConvertSQLDate($_POST['PeriodTo']);}
 
 // Merges gets into posts:
-if(isset($_GET['PeriodFrom'])) {
+if (isset($_GET['PeriodFrom'])) {
 	$_POST['PeriodFrom'] = $_GET['PeriodFrom'];
 }
-if(isset($_GET['PeriodTo'])) {
+if (isset($_GET['PeriodTo'])) {
 	$_POST['PeriodTo'] = $_GET['PeriodTo'];
 }
-if(isset($_GET['ShowDetails'])) {
+if (isset($_GET['ShowDetails'])) {
 	$_POST['ShowDetails'] = $_GET['ShowDetails'];
 }
 
 // Validates the data submitted in the form:
-if(isset($_POST['PeriodFrom']) AND isset($_POST['PeriodTo'])) {
-	if(Date1GreaterThanDate2($_POST['PeriodFrom'], $_POST['PeriodTo'])) {
+if (isset($_POST['PeriodFrom']) AND isset($_POST['PeriodTo'])) {
+	if (Date1GreaterThanDate2($_POST['PeriodFrom'], $_POST['PeriodTo'])) {
 		// The beginning is after the end.
 		$_POST['NewReport'] = 'on';
 		prnMsg(__('The beginning of the period should be before or equal to the end of the period. Please reselect the reporting period.'), 'error');
@@ -106,8 +108,8 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 				ORDER BY debtortrans.debtorno, debtortrans.trandate";
 		$Result = DB_query($SQL);
 		foreach($Result as $MyRow) {
-			if($MyRow['debtorno'] != $CustomerId) {// If different, prints customer totals:
-				if($CustomerId != '') {// If NOT the first line.
+			if ($MyRow['debtorno'] != $CustomerId) {// If different, prints customer totals:
+				if ($CustomerId != '') {// If NOT the first line.
 					$HTML .= '<tr>
 							<td colspan="3">&nbsp;</td>
 							<td class="number">' . locale_number_format($CustomerOvAmount, $_SESSION['CompanyRecord']['decimalplaces']) . '</td>
@@ -227,17 +229,17 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 		</html>';
 
 	if (isset($_POST['PrintPDF'])) {
-		$dompdf = new Dompdf(['chroot' => __DIR__]);
-		$dompdf->loadHtml($HTML);
+		$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+		$DomPDF->loadHtml($HTML);
 
 		// (Optional) Setup the paper size and orientation
-		$dompdf->setPaper($_SESSION['PageSize'], 'landscape');
+		$DomPDF->setPaper($_SESSION['PageSize'], 'landscape');
 
 		// Render the HTML as PDF
-		$dompdf->render();
+		$DomPDF->render();
 
 		// Output the generated PDF to Browser
-		$dompdf->stream($_SESSION['DatabaseName'] . '_SalesReport_' . date('Y-m-d') . '.pdf', array(
+		$DomPDF->stream($_SESSION['DatabaseName'] . '_SalesReport_' . date('Y-m-d') . '.pdf', array(
 			"Attachment" => false
 		));
 	} else {
@@ -266,7 +268,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	// Select period from:
 			'<field>
 				<label for="PeriodFrom">', __('Period from'), '</label>';
-	if(!isset($_POST['PeriodFrom'])) {
+	if (!isset($_POST['PeriodFrom'])) {
 		$_POST['PeriodFrom'] = date($_SESSION['DefaultDateFormat'], strtotime("-1 year", time()));// One year before current date.
 	}
 	echo '<input type="date" id="PeriodFrom" maxlength="10" name="PeriodFrom" required="required" size="11" value="', FormatDateForSQL($_POST['PeriodFrom']), '" />',
@@ -275,7 +277,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			// Select period to:
 			'<field>',
 				'<label for="PeriodTo">', __('Period to'), '</label>';
-	if(!isset($_POST['PeriodTo'])) {
+	if (!isset($_POST['PeriodTo'])) {
 		$_POST['PeriodTo'] = date($_SESSION['DefaultDateFormat']);
 	}
 	echo '<input type="date" id="PeriodTo" maxlength="10" name="PeriodTo" required="required" size="11" value="', FormatDateForSQL($_POST['PeriodTo']), '" />',

@@ -3,15 +3,15 @@ require (__DIR__ . '/includes/session.php');
 
 use Dompdf\Dompdf;
 
+include('includes/SetDomPDFOptions.php');
+
 include (__DIR__ . '/includes/SQL_CommonFunctions.php');
 
 if (isset($_GET['KeyValue'])) {
 	$SelectedProdSpec = $_GET['KeyValue'];
-}
-elseif (isset($_POST['KeyValue'])) {
+} elseif (isset($_POST['KeyValue'])) {
 	$SelectedProdSpec = $_POST['KeyValue'];
-}
-else {
+} else {
 	$SelectedProdSpec = '';
 }
 
@@ -197,8 +197,8 @@ if (isset($SelectedProdSpec) and $SelectedProdSpec != '') {
 	$HTML .= '</html>';
 
 	// Output PDF using DomPDF
-	$DomPDF = new Dompdf(["chroot" => realpath(__DIR__), // Restrict file access for security
-	]);
+	$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+
 	$DomPDF->loadHtml($HTML, 'UTF-8');
 	$DomPDF->setPaper('letter');
 	$DomPDF->render();
@@ -206,8 +206,7 @@ if (isset($SelectedProdSpec) and $SelectedProdSpec != '') {
 	$FileName = $_SESSION['DatabaseName'] . '_ProductSpecification_' . date('Y-m-d') . '.pdf';
 
 	$DomPDF->stream($FileName, array("Attachment" => false));
-}
-else {
+} else {
 
 	$Title = __('Select Product Specification To Print');
 	$ViewTopic = 'QualityAssurance';

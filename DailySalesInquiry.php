@@ -4,6 +4,8 @@ require(__DIR__ . '/includes/session.php');
 
 use Dompdf\Dompdf;
 
+include('includes/SetDomPDFOptions.php');
+
 $Title = __('Daily Sales Inquiry');
 $ViewTopic = 'ARInquiries';
 $BookMark = '';
@@ -126,7 +128,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	$LastDayOfMonth = DayOfMonthFromSQLDate($EndDateSQL);
 	for ($i=1;$i<=$LastDayOfMonth;$i++){
 		$ColumnCounter++;
-		if(isset($DaySalesArray[$i])) {
+		if (isset($DaySalesArray[$i])) {
 			$HTML .= '<td class="number" style="outline: 1px solid gray;">' . locale_number_format($DaySalesArray[$i]['Sales'],0) . '<br />' .  locale_number_format($DaySalesArray[$i]['GPPercent']*100,1) . '%</td>';
 		} else {
 			$HTML .= '<td class="number" style="outline: 1px solid gray;">' . locale_number_format(0,0) . '<br />' .  locale_number_format(0,1) . '%</td>';
@@ -136,7 +138,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 						for ($j=1;$j<=7;$j++){
 								   $HTML .= '<th>' . $DayNumber. '</th>';
 							$DayNumber++;
-							if($DayNumber>$LastDayOfMonth){
+							if ($DayNumber>$LastDayOfMonth){
 								   break;
 							}
 						}
@@ -179,17 +181,17 @@ $HTML .= '</table>';
 		</html>';
 
 	if (isset($_POST['PrintPDF'])) {
-		$dompdf = new Dompdf(['chroot' => __DIR__]);
-		$dompdf->loadHtml($HTML);
+		$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+		$DomPDF->loadHtml($HTML);
 
 		// (Optional) Setup the paper size and orientation
-		$dompdf->setPaper($_SESSION['PageSize'], 'landscape');
+		$DomPDF->setPaper($_SESSION['PageSize'], 'landscape');
 
 		// Render the HTML as PDF
-		$dompdf->render();
+		$DomPDF->render();
 
 		// Output the generated PDF to Browser
-		$dompdf->stream($_SESSION['DatabaseName'] . '_OrderStatus_' . date('Y-m-d') . '.pdf', array("Attachment" => false));
+		$DomPDF->stream($_SESSION['DatabaseName'] . '_OrderStatus_' . date('Y-m-d') . '.pdf', array("Attachment" => false));
 	} else {
 		include('includes/header.php');
 
@@ -234,7 +236,7 @@ $HTML .= '</table>';
 	echo '<field>
 			<label for="Salesperson">' . __('Salesperson') . ':</label>';
 
-	if($_SESSION['SalesmanLogin'] != '') {
+	if ($_SESSION['SalesmanLogin'] != '') {
 		echo '<td>';
 		echo $_SESSION['UsersRealName'];
 		echo '</td>';

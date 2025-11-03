@@ -4,8 +4,10 @@
  * Note: includes api_session.php, to allow database connection, and access to miscfunctions and datefunctions.
  *
  * @todo refactor:
- *       - make the API independent of sessions
+ *       - make the API independent of sessions. Ideally, api_session.php would be included by the script which includes
+ *         this one. We leave its inclusion here for BC - but make it possible to avoid its inclusion
  *       - simplify the api bootstrap chain
+ *       - get rid of $_SESSION['db'], use only the global var $db
  */
 
 // FOLLOWING IS ALWAYS REQUIRED
@@ -18,7 +20,13 @@ $api_DatabaseName = "zalongwa_weberp";
 
 $AllowAnyone = true;
 $PathPrefix = __DIR__ . '/../../';
-include(__DIR__ . '/api_session.php');
+if (!isset($WebErpSessionType)) {
+	include(__DIR__ . '/api_session.php');
+} else {
+	if ($WebErpSessionType == 'web') {
+		$_SESSION['db'] = $db;
+	}
+}
 
 include(__DIR__ . '/api_errorcodes.php');
 /* Include SQL_CommonFunctions.php, to use GetNextTransNo(). */
@@ -27,7 +35,11 @@ include($PathPrefix . 'includes/SQL_CommonFunctions.php');
 include($PathPrefix . 'includes/GetSalesTransGLCodes.php');
 include($PathPrefix . 'includes/Z_POSDataCreation.php');
 
-/** Get weberp authentication, and return a valid database connection */
+/**
+ * Get weberp authentication, and return a valid database connection, or 1.
+ * Note: atm none of the code calling this function does use the returned db connection - it only checks for failure...
+ * @return int|resource
+ */
 function db($user, $password) {
 
 	if (!isset($_SESSION['AccessLevel']) OR

@@ -4,6 +4,8 @@ require_once __DIR__ . '/vendor/autoload.php'; // DomPDF autoload
 
 use Dompdf\Dompdf;
 
+include('includes/SetDomPDFOptions.php');
+
 $ViewTopic = 'ARReports';
 $BookMark = 'PrintInvoicesCredits';
 
@@ -59,8 +61,8 @@ if (isset($PrintPDF)
 				FROM bankaccounts
 				WHERE bankaccounts.invoice = '1'";
 		$Result = DB_query($SQL, '', '', false, false);
-		if(DB_error_no()!=1) {
-			if(DB_num_rows($Result)==1) {
+		if (DB_error_no()!=1) {
+			if (DB_num_rows($Result)==1) {
 				$MyRowBank = DB_fetch_array($Result);
 				$DefaultBankAccountNumber = __('Account') .': ' .$MyRowBank['bankaccountnumber'];
 				$DefaultBankAccountCode = __('Bank Code:') .' ' .$MyRowBank['bankaccountcode'];
@@ -149,7 +151,7 @@ if (isset($PrintPDF)
 						ON debtorsmaster.currcode=currencies.currabrev
 						WHERE debtortrans.type=10
 						AND debtortrans.transno='" . $FromTransNo . "'";
-			if(isset($_POST['PrintEDI']) AND $_POST['PrintEDI']=='No') {
+			if (isset($_POST['PrintEDI']) AND $_POST['PrintEDI']=='No') {
 				$SQL .= ' AND debtorsmaster.ediinvoices=0';
 			}
 		} else {
@@ -200,7 +202,7 @@ if (isset($PrintPDF)
 						ON debtorsmaster.currcode=currencies.currabrev
 						WHERE debtortrans.type=11
 						AND debtortrans.transno='" . $FromTransNo . "'";
-			if(isset($_POST['PrintEDI']) AND $_POST['PrintEDI']=='No') {
+			if (isset($_POST['PrintEDI']) AND $_POST['PrintEDI']=='No') {
 				$SQL .= ' AND debtorsmaster.ediinvoices=0';
 			}
 		}
@@ -479,14 +481,14 @@ if (isset($PrintPDF)
 							$HTML .= '<tr class="striped_row"><td></td><td colspan="6">' . $Narrative . '</td></tr>';
 						}
 						// Serial/controlled stock lines if you want to show them
-						if($MyRow2['controlled']==1) {
+						if ($MyRow2['controlled']==1) {
 							$GetControlMovts = DB_query("
 								SELECT
 									moveqty,
 									serialno
 								FROM stockserialmoves
 								WHERE stockmoveno='" . $MyRow2['stkmoveno'] . "'");
-							if($MyRow2['serialised']==1) {
+							if ($MyRow2['serialised']==1) {
 								while($ControlledMovtRow = DB_fetch_array($GetControlMovts)) {
 									$HTML .= '<tr><td></td><td colspan="6">' . $ControlledMovtRow['serialno'] . '</td></tr>';
 								}
@@ -550,14 +552,14 @@ if (isset($_GET['View']) and $_GET['View'] == 'Yes') {
 } elseif (isset($_GET['Email'])) {
 
 	$PdfFileName = $_SESSION['DatabaseName'] . '_' . $InvOrCredit . '_' . ($FromTransNo-1) .'_'. date('Y-m-d') . '.pdf';
-	$dompdf = new Dompdf(['chroot' => __DIR__]);
-	$dompdf->loadHtml($HTML);
+	$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+	$DomPDF->loadHtml($HTML);
 	// (Optional) set up the paper size and orientation
-	$dompdf->setPaper($_SESSION['PageSize'], 'landscape');
+	$DomPDF->setPaper($_SESSION['PageSize'], 'landscape');
 	// Render the HTML as PDF
-	$dompdf->render();
+	$DomPDF->render();
 	// Output the generated PDF to a temporary file
-	$output = $dompdf->output();
+	$output = $DomPDF->output();
 
 	file_put_contents($PdfFileName, $output);
 
@@ -591,18 +593,22 @@ if (isset($_GET['View']) and $_GET['View'] == 'Yes') {
 	// Generate PDF with DomPDF
 	$PdfFileName = $_SESSION['DatabaseName'] . '_' . $InvOrCredit . '_' . ($FromTransNo-1) .'_'. date('Y-m-d') . '.pdf';
 	// Display PDF in browser
-	$dompdf = new Dompdf(['chroot' => __DIR__]);
-	$dompdf->loadHtml($HTML);
+	$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+	$DomPDF->loadHtml($HTML);
 
-	$dompdf->setPaper($_SESSION['PageSize'], $Orientation);
+	$DomPDF->setPaper($_SESSION['PageSize'], $Orientation);
 
 	// Render the HTML as PDF
-	$dompdf->render();
+	$DomPDF->render();
 
 	// Output the generated PDF to Browser
+<<<<<<< HEAD
 	$dompdf->stream($PdfFileName, array("Attachment" => false));
 
 
+=======
+	$DomPDF->stream($PdfFileName, array("Attachment" => false));
+>>>>>>> 3c1eac11b1f2a0c53c580a461d0b76408d52bd2e
 }
 
 } else {

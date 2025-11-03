@@ -28,6 +28,7 @@ ini_set('max_execution_time', $MaximumExecutionTime);
 
 session_name('webERPapi');
 session_start();
+$WebErpSessionType = 'api';
 
 include($PathPrefix . 'includes/LanguageSetup.php');
 //  Establish a DB connection, if possible. NOTE that this connection

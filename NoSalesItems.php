@@ -4,6 +4,8 @@ require(__DIR__ . '/includes/session.php');
 
 use Dompdf\Dompdf;
 
+include('includes/SetDomPDFOptions.php');
+
 $Title = __('No Sales Items Searching');
 
 if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
@@ -11,7 +13,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	$FromDate = FormatDateForSQL(DateAdd(date($_SESSION['DefaultDateFormat']),'d', -filter_number_format($_POST['NumberOfDays'])));
 	if ($_POST['StockCat']=='All'){
 		$WhereStockCat = "";
-	}else{
+	} else {
 		$WhereStockCat = " AND stockmaster.categoryid = '" . $_POST['StockCat'] ."'";
 	}
 
@@ -46,7 +48,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 									AND stockmoves.qty >0)
 				GROUP BY stockmaster.stockid
 				ORDER BY stockmaster.stockid";
-	}else{
+	} else {
 		$WhereLocation = '';
 		if (sizeof($_POST['Location']) == 1) {
 			$WhereLocation = " AND locstock.loccode ='" . $_POST['Location'][0] . "' ";
@@ -186,17 +188,17 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 		</html>';
 
 	if (isset($_POST['PrintPDF'])) {
-		$dompdf = new Dompdf(['chroot' => __DIR__]);
-		$dompdf->loadHtml($HTML);
+		$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+		$DomPDF->loadHtml($HTML);
 
 		// (Optional) Setup the paper size and orientation
-		$dompdf->setPaper($_SESSION['PageSize'], 'landscape');
+		$DomPDF->setPaper($_SESSION['PageSize'], 'landscape');
 
 		// Render the HTML as PDF
-		$dompdf->render();
+		$DomPDF->render();
 
 		// Output the generated PDF to Browser
-		$dompdf->stream($_SESSION['DatabaseName'] . '_NoSalesItems_' . date('Y-m-d') . '.pdf', array(
+		$DomPDF->stream($_SESSION['DatabaseName'] . '_NoSalesItems_' . date('Y-m-d') . '.pdf', array(
 			"Attachment" => false
 		));
 	} else {
@@ -234,7 +236,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	$LocationResult = DB_query($SQL);
 	$i=0;
 	while ($MyRow = DB_fetch_array($LocationResult)) {
-		if(isset($_POST['Location'][$i]) AND $MyRow['loccode'] == $_POST['Location'][$i]){
+		if (isset($_POST['Location'][$i]) AND $MyRow['loccode'] == $_POST['Location'][$i]){
 		echo '<option selected="selected" value="' . $MyRow['loccode'] . '">' . $MyRow['locationname'] . '</option>';
 		$i++;
 		} else {

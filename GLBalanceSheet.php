@@ -21,6 +21,8 @@ if (!isset($IsIncluded)) {// Runs normally if this script is NOT included in ano
 
 use Dompdf\Dompdf;
 
+include('includes/SetDomPDFOptions.php');
+
 $Title = __('Balance Sheet');
 $Title2 = __('Statement of Financial Position'); // Name as IAS.
 $ViewTopic = 'GeneralLedger';
@@ -31,13 +33,13 @@ include_once('includes/AccountSectionsDef.php'); // This loads the $Sections var
 include_once('includes/CurrenciesArray.php');// Array to retrieve currency name.
 
 // Merges GETs into POSTs:
-if(isset($_GET['PeriodTo'])) {
+if (isset($_GET['PeriodTo'])) {
 	$_POST['PeriodTo'] = $_GET['PeriodTo'];
 }
-if(isset($_GET['ShowDetail'])) {// Select period from.
+if (isset($_GET['ShowDetail'])) {// Select period from.
 	$_POST['ShowDetail'] = $_GET['ShowDetail'];
 }
-if(isset($_GET['ShowZeroBalance'])) {// Select period from.
+if (isset($_GET['ShowZeroBalance'])) {// Select period from.
 	$_POST['ShowZeroBalance'] = $_GET['ShowZeroBalance'];
 }
 if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
@@ -425,17 +427,17 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 	if (isset($_POST['PrintPDF'])) {
 		$HTML .= '</body></html>';
-		$dompdf = new Dompdf(['chroot' => __DIR__]);
-		$dompdf->loadHtml($HTML);
+		$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+		$DomPDF->loadHtml($HTML);
 
 		// (Optional) Setup the paper size and orientation
-		$dompdf->setPaper($_SESSION['PageSize'], 'portrait');
+		$DomPDF->setPaper($_SESSION['PageSize'], 'portrait');
 
 		// Render the HTML as PDF
-		$dompdf->render();
+		$DomPDF->render();
 
 		// Output the generated PDF to Browser
-		$dompdf->stream($_SESSION['DatabaseName'] . '_Balance_Sheet_' . date('Y-m-d') . '.pdf', array(
+		$DomPDF->stream($_SESSION['DatabaseName'] . '_Balance_Sheet_' . date('Y-m-d') . '.pdf', array(
 			"Attachment" => false
 		));
 	} else {
@@ -514,7 +516,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	echo '<field>
 			<label for="ShowDetail">', __('Detail or summary'), '</label>
 			<select name="ShowDetail" required="required" title="" >';
-	if($_POST['ShowDetail'] == 'Summary') {
+	if ($_POST['ShowDetail'] == 'Summary') {
 		echo	'<option selected="selected" value="Summary">', __('Summary'), '</option>
 				<option value="Detailed">', __('All Accounts'), '</option>';
 	} else {

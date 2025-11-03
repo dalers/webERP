@@ -1,10 +1,11 @@
 <?php
 
-// Use DomPDF for PDF generation
-use Dompdf\Dompdf;
-
 require(__DIR__ . '/includes/session.php');
 include('includes/SQL_CommonFunctions.php');
+
+use Dompdf\Dompdf;
+
+include('includes/SetDomPDFOptions.php');
 
 //Get Out if we have no order number to work with
 if (!isset($_GET['QuotationNo']) || $_GET['QuotationNo']==""){
@@ -254,13 +255,13 @@ if (mb_strlen(trim($MyRow['comments'])) > 1) {
 // Generate PDF with DomPDF
 $PdfFileName = $_SESSION['DatabaseName'] . '_Quotation_No_' . $_GET['QuotationNo'] . ' _ ' . date('Y-m-d') . '.pdf';
 // Display PDF in browser
-$dompdf = new Dompdf(['chroot' => __DIR__]);
-$dompdf->loadHtml($HTML);
+$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+$DomPDF->loadHtml($HTML);
 
-$dompdf->setPaper($_SESSION['PageSize'], $Orientation);
+$DomPDF->setPaper($_SESSION['PageSize'], $Orientation);
 
 // Render the HTML as PDF
-$dompdf->render();
+$DomPDF->render();
 
 // Output the generated PDF to Browser
-$dompdf->stream($PdfFileName, array("Attachment" => false));
+$DomPDF->stream($PdfFileName, array("Attachment" => false));

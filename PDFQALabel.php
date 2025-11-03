@@ -3,10 +3,11 @@ require (__DIR__ . '/includes/session.php');
 
 use Dompdf\Dompdf;
 
+include('includes/SetDomPDFOptions.php');
+
 if (isset($_GET['GRNNo'])) {
 	$GRNNo = $_GET['GRNNo'];
-}
-else {
+} else {
 	$GRNNo = '';
 }
 
@@ -118,11 +119,11 @@ if ($NoOfGRNs > 0) {
 		}
 	}
 
-	$DomPDF = new Dompdf(['chroot' => __DIR__]);
-	$DomPDF->setPaper('A4', 'portrait'); // You may use $PaperSize if dynamically set
 	$HTML .= '</body>
 		</html>';
 
+	$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+	$DomPDF->setPaper($_SESSION['PageSize'], 'portrait'); // You may use $PaperSize if dynamically set
 	$DomPDF->loadHtml($HTML);
 	$DomPDF->render();
 
@@ -131,8 +132,7 @@ if ($NoOfGRNs > 0) {
 	// Output the generated PDF to Browser
 	$DomPDF->stream($FileName, array("Attachment" => false));
 
-}
-else {
+} else {
 	$Title = __('GRN Error');
 	include ('includes/header.php');
 	prnMsg(__('There were no GRNs to print'), 'warn');

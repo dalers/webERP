@@ -5,6 +5,8 @@
 require(__DIR__ . '/includes/session.php');
 
 use Dompdf\Dompdf;
+
+include('includes/SetDomPDFOptions.php');
 use BarcodePack\qrCode;
 
 include('includes/SQL_CommonFunctions.php');
@@ -128,8 +130,7 @@ if (!isset($_GET['WO']) and !isset($_POST['WO'])) {
 }
 if (isset($_GET['WO'])) {
 	$SelectedWO = $_GET['WO'];
-}
-elseif (isset($_POST['WO'])) {
+} elseif (isset($_POST['WO'])) {
 	$SelectedWO = $_POST['WO'];
 }
 $Title = __('Print Work Order Number') . ' ' . $SelectedWO;
@@ -352,7 +353,7 @@ if (isset($MakePDFThenDisplayIt) or isset($MakePDFThenEmailIt)) {
 		if (isset($IssuedAlreadyRow[$RequirementsRow['stockid']])){
 			$Issued = $IssuedAlreadyRow[$RequirementsRow['stockid']];
 			unset($IssuedAlreadyRow[$RequirementsRow['stockid']]);
-		}else{
+		} else {
 			$Issued = 0;
 		}
 		$WOLine[$i]['item'] = $RequirementsRow['stockid'];
@@ -414,23 +415,23 @@ if (isset($MakePDFThenDisplayIt) or isset($MakePDFThenEmailIt)) {
 	if ($MakePDFThenDisplayIt) {
 		// Stream PDF to browser
 		$FileName = $_SESSION['DatabaseName'] . '_WorkOrder_' . $SelectedWO . '_' . date('Y-m-d') . '.pdf';
-		$dompdf = new Dompdf(['chroot' => __DIR__]);
-		$dompdf->loadHtml($HTML);
+		$DomPDF = new Dompdf($DomPDFOptions); // Pass the options object defined in SetDomPDFOptions.php containing common options
+		$DomPDF->loadHtml($HTML);
 
 		// (Optional) Setup the paper size and orientation
-		$dompdf->setPaper($_SESSION['PageSize'], 'portrait');
+		$DomPDF->setPaper($_SESSION['PageSize'], 'portrait');
 
 		// Render the HTML as PDF
-		$dompdf->render();
+		$DomPDF->render();
 
 		// Output the generated PDF to Browser
-		$dompdf->stream($FileName, array(
+		$DomPDF->stream($FileName, array(
 			"Attachment" => false
 		));
 		exit();
 	} else {
 		// Save PDF to file and send email
-		$pdfOutput = $dompdf->output();
+		$pdfOutput = $DomPDF->output();
 		$PDFFileName = $_SESSION['reports_dir'] . '/' . $_SESSION['DatabaseName'] . '_WorkOrder_' . $SelectedWO . '_' . date('Y-m-d') . '.pdf';
 		file_put_contents($PDFFileName, $pdfOutput);
 
