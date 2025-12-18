@@ -1,13 +1,15 @@
 <?php
 
-// allow work order without BOM
+// do not require a BOM for a manufactured item to create a work order
 // resolves issue "Work orders cannot be made for parts without BOMs"
 // https://github.com/timschofield/webERP/issues/793
+// TODO
 
 
-// support importing BOMs
+// support importing BOMs 
 // resolves discussion "How to Import BOMs"
 // https://github.com/timschofield/webERP/discussions/591
+// TODO Create new script? Modify Z_ImportStocks.php?
 
 
 // add "stocknote" column to stockmaster TABLE
@@ -15,7 +17,7 @@
 // https://github.com/timschofield/webERP/issues/592
 // equivalent to P&V PN:PNNotes except 64KG instead of 4GB bytes (fewer chars if multi-byte)
 // note however that the total characters per row when importing CSV is 4K Bytes
-// ALTER TABLE `stockmaster` ADD `stocknote` TEXT AFTER `actualcost`;
+// SQL: ALTER TABLE `stockmaster` ADD `stocknote` TEXT AFTER `actualcost`;
 
 
 // add stockrefs table for files and/or URLs
@@ -87,19 +89,6 @@
 //  PRIMARY KEY (`MFRPNID`)
 //) ENGINE=innodb;
 
-
-// ************************************
-// FOR GUIDANCE
-// ************************************
-// Remove script
-//   RemoveScript('Z_index.php');
-//   
-// Register new script (menu item [XXX > XXX > XXX])
-//   NewScript('fname.php', 15); // Comment on script security token
-//   
-// Insert menu item (menu item [XXX > XXX > XXX])
-//    RemoveMenuItem($Link, $Section, $Caption, $URL)
-//    NewMenuItem($Link, $Section, $Caption, $URL, $Sequence)
 
 // cleanup - set DBUpdateNumber
 if ($_SESSION['Updates']['Errors'] == 0) {
