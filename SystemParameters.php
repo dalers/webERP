@@ -341,6 +341,9 @@ if (isset($_POST['submit'])) {
 		if ($_SESSION['AutoCreateWOs'] != $_POST['X_AutoCreateWOs']){
 			$SQL[] = "UPDATE config SET confvalue='" . $_POST['X_AutoCreateWOs'] . "' WHERE confname='AutoCreateWOs'";
 		}
+		if ($_SESSION['AllowWoNoBom'] != $_POST['X_AllowWoNoBom']){
+			$SQL[] = "UPDATE config SET confvalue='" . $_POST['X_AllowWoNoBom'] . "' WHERE confname='AllowWoNoBom'";
+		}
 		if ($_SESSION['DefaultFactoryLocation'] != $_POST['X_DefaultFactoryLocation']){
 			$SQL[] = "UPDATE config SET confvalue='" . $_POST['X_DefaultFactoryLocation'] . "' WHERE confname='DefaultFactoryLocation'";
 		}
