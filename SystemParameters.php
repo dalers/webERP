@@ -1462,9 +1462,9 @@ echo '</select>
 
 //AllowWorkOrderWithoutBOM
 echo '<field>
-		<label for="X_AutoWoNoBom">' . __('Allow Work Order Without BOM') . ':</label>
-		<select name="X_AutoWoNoBom">';
-if ($_SESSION['X_AutoWoNoBom']==0) {
+		<label for="X_AllowWoNoBom">' . __('Allow Work Order with No BOM') . ':</label>
+		<select name="X_AllowWoNoBom">';
+if ($_SESSION['AllowWoNoBom']==0) {
 	echo '<option selected="selected" value="0">' . __('No') . '</option>';
 	echo '<option value="1">' . __('Yes') . '</option>';
 } else {
