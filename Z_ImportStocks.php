@@ -54,7 +54,7 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 	$FileHandle = fopen($TempName, 'r');
 
 	//get the header row
-	$HeadRow = fgetcsv($FileHandle, 10000, ",",'"');  // Modified to handle " "" " enclosed csv - useful if you need to include commas in your text descriptions
+	$HeadRow = fgetcsv($FileHandle, 10000, ",",'"');  // manage " "" " enclosed csv - useful if there are commas in text strings
 	// Remove UTF-8 BOM if present
 	if (substr($HeadRow[0], 0, 3) === "\xef\xbb\xbf") {
 		$HeadRow[0] = substr($HeadRow[0], 3);
@@ -102,23 +102,31 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 			$Value = trim($Value);
 		}
 
-		//first off check if the item already exists
+		// skip the row if StockItem already exists
+
 		$SQL = "SELECT COUNT(stockid) FROM stockmaster WHERE stockid='".$StockID."'";
 		$Result = DB_query($SQL);
 		$testrow = DB_fetch_row($Result);
+//		if ($testrow[0] != 0) {
+//			$InputError = 1;
+//			prnMsg(__('Stock item '. $StockID. ' already exists'),'error');
+//		}
 		if ($testrow[0] != 0) {
-			$InputError = 1;
-			prnMsg(__('Stock item '. $StockID. ' already exists'),'error');
+		    // Issue a warning but do not set $InputError to 1
+			prnMsg(__('Stock item '). $StockID . __(' already exists. Skipping this row.'), 'warn');
+			$Row++; // Increment row counter for the next iteration
+			continue; // Skip the rest of the loop for this specific row
 		}
 
-		//next validate inputs are sensible
-		if (!$MyRow[1] or mb_strlen($MyRow[1]) > 50 OR mb_strlen($MyRow[1])==0) {
+		// otherwise validate inputs are sensible
+		
+		if (!$MyRow[1] or mb_strlen($MyRow[1]) > 255 OR mb_strlen($MyRow[1])==0) {
 			$InputError = 1;
-			prnMsg(__('The stock item description must be entered and be fifty characters or less long') . '. ' . __('It cannot be a zero length string either') . ' - ' . __('a description is required'). ' ("'. implode('","',$MyRow). $stockid. '") ','error');
+			prnMsg(__('The stock item description must entered (max 255 characters)') . '. ' . __('It cannot be a zero length string either') . ' - ' . __('a description is required'). ' ("'. implode('","',$MyRow). $stockid. '") ','error');
 		}
 		if (mb_strlen($MyRow[2])==0) {
 			$InputError = 1;
-			prnMsg(__('The stock item description cannot be a zero length string') . ' - ' . __('a long description is required'),'error');
+			prnMsg(__('The stock item long description must be entered (approx max 1000 characters') . ' - ' . __('a long description is required'),'error');
 		}
 		if (mb_strlen($StockID) ==0) {
 			$InputError = 1;
@@ -169,7 +177,6 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 			$InputError = 1;
 			prnMsg(__('The item can only be serialised if there is lot control enabled already') . '. ' . __('Batch control') . ' - ' . __('with any number of items in a lot/bundle/roll is enabled when controlled is enabled') . '. ' . __('Serialised control requires that only one item is in the batch') . '. ' . __('For serialised control') . ', ' . __('both controlled and serialised must be enabled'),'error');
 		}
-
 		$mbflag = $MyRow[5];
 		if ($mbflag!='M' and $mbflag!='K' and $mbflag!='A' and $mbflag!='B' and $mbflag!='D' and $mbflag!='G') {
 			$InputError = 1;
@@ -254,12 +261,10 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 					$InputError = 1;
 					prnMsg(__($InsResult),'error');
 				}
-
 			} else { //item insert failed so set some useful error info
 				$InputError = 1;
 				prnMsg(__($InsResult),'error');
 			}
-
 		}
 
 		if ($InputError == 1) { //this row failed so exit loop
@@ -267,7 +272,6 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 		}
 
 		$Row++;
-
 	}
 
 	if ($InputError == 1) { //exited loop with errors so rollback
@@ -302,6 +306,5 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 		</form>';
 
 }
-
 
 include('includes/footer.php');

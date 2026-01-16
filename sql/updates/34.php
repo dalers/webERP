@@ -1,5 +1,10 @@
 <?php
 
+// increase stockmaster StockID and Description column size
+//ChangeColumnSize('password', 'emailsettings', 'VARCHAR(100)', ' NOT NULL ', '', '100');
+//ChangeColumnType('reference', 'debtortrans', 'varchar(50)', ' NOT NULL ', '');
+
+
 // add "stocknote" column to stockmaster TABLE
 // resolves issue "Schema is missing an Item "Notes" field"
 // https://github.com/timschofield/webERP/issues/592
@@ -84,7 +89,6 @@
 // TODO Modify Z_ImportStocks.php? Create new script Z_ImportBOMs.php? 
 
 
-// cleanup - set DBUpdateNumber
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Add PLM features'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Increase stockmaster StockID and Description'));
 }
