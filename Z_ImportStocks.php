@@ -103,7 +103,6 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 		}
 
 		// skip the row if StockItem already exists
-
 		$SQL = "SELECT COUNT(stockid) FROM stockmaster WHERE stockid='".$StockID."'";
 		$Result = DB_query($SQL);
 		$testrow = DB_fetch_row($Result);
@@ -118,16 +117,7 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 			continue; // Skip the rest of the loop for this specific row
 		}
 
-		// otherwise validate inputs are sensible
-		
-		if (!$MyRow[1] or mb_strlen($MyRow[1]) > 255 OR mb_strlen($MyRow[1])==0) {
-			$InputError = 1;
-			prnMsg(__('The stock item description must entered (max 255 characters)') . '. ' . __('It cannot be a zero length string either') . ' - ' . __('a description is required'). ' ("'. implode('","',$MyRow). $stockid. '") ','error');
-		}
-		if (mb_strlen($MyRow[2])==0) {
-			$InputError = 1;
-			prnMsg(__('The stock item long description must be entered (approx max 1000 characters') . ' - ' . __('a long description is required'),'error');
-		}
+		// otherwise check for sensible inputs
 		if (mb_strlen($StockID) ==0) {
 			$InputError = 1;
 			prnMsg(__('The Stock Item code cannot be empty'),'error');
@@ -136,6 +126,14 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 			$InputError = 1;
 			prnMsg(__('The stock item code cannot contain any of the following characters') . " ' & + \" \\ " . __('or a space'). " (". $StockID. ")",'error');
 			$StockID='';
+		}
+		if (!$MyRow[1] or mb_strlen($MyRow[1]) > 255 OR mb_strlen($MyRow[1])==0) {
+			$InputError = 1;
+			prnMsg(__('The stock item description must entered (max 255 characters)') . '. ' . __('It cannot be a zero length string either') . ' - ' . __('a description is required'). ' ("'. implode('","',$MyRow). $stockid. '") ','error');
+		}
+		if (mb_strlen($MyRow[2])==0) {
+			$InputError = 1;
+			prnMsg(__('The stock item long description must be entered (approx max 1000 characters') . ' - ' . __('a long description is required'),'error');
 		}
 		if (mb_strlen($MyRow[4]) >20) {
 			$InputError = 1;

@@ -1,8 +1,9 @@
 <?php
 
-// increase stockmaster StockID and Description column size
-//ChangeColumnSize('password', 'emailsettings', 'VARCHAR(100)', ' NOT NULL ', '', '100');
-//ChangeColumnType('reference', 'debtortrans', 'varchar(50)', ' NOT NULL ', '');
+// increase StockID to 64 char
+ChangeColumnSize('stockid', 'stockmaster', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+// increase stock Description to 255 char
+ChangeColumnSize('description', 'stockmaster', 'VARCHAR(255)', ' NOT NULL ', '', '255');
 
 
 // add "stocknote" column to stockmaster TABLE
@@ -11,6 +12,9 @@
 // equivalent to P&V PN:PNNotes except 64KG instead of 4GB bytes (fewer chars if multi-byte)
 // note however that the total characters per row when importing CSV is 4K Bytes
 // SQL: ALTER TABLE `stockmaster` ADD `stocknote` TEXT AFTER `actualcost`;
+// NO NEED IF "LONG DESCRIPTION" (65K char) is used for long form notes
+// https://github.com/timschofield/webERP/issues/592#issuecomment-3770372715
+// https://github.com/timschofield/webERP/discussions/812#discussioncomment-15543024
 
 
 // add stockrefs table for files and/or URLs
@@ -90,5 +94,5 @@
 
 
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Increase stockmaster StockID and Description'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Increase size of stockID and Description'));
 }
