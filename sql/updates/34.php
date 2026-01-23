@@ -1,6 +1,8 @@
 <?php
 
 // 1) INCREASE SIZE OF STOCK ID TO 65 CHAR (FROM 20)
+//    - max 50 char in Parts&Vendors
+//    - max 65 for @pakricard OpenCart store
 // 
 // step 1 - delete all fk constraints in child tables
 //
@@ -268,22 +270,29 @@ if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
 //ChangeColumnSize('stkcode', 'salesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 
 
-// 2) INCREASE SIZE OF DESCRIPTION STOCK ID TO 255 CHAR (FROM ??)
+// 2) INCREASE SIZE OF DESCRIPTION STOCK ID TO 255 CHAR (FROM 50)
+//    - max 255 char in Parts&Vendors
+//    - max 255 for @pakricard OpenCart store
 //ChangeColumnSize('description', 'stockmaster', 'VARCHAR(255)', ' NOT NULL ', '', '255');
 
+
 // 3) ADD STOCK ITEM NOTE
+// - the Notes field provides a place to keep comments about a stock item
 // - resolves issue 592 "Schema is missing an Item "Notes" field" https://github.com/timschofield/webERP/issues/592
 //
-// the "note" column will be imported from the Parts&Vendors PN table PNNotes column,
-// which is only 64KB vs 4GB/char (less if multi-byte characters),
-// but the total char per row when importing is limited to 4KB in Z_ImportStocks.php.
+// The "note" column will be imported from the Parts&Vendors PN table PNNotes
+// field which is "approximately 60K" (from page 149 of the P&V v6 User Manual,
+// presumably meaning 60,000 ASCII characters), or just less than the 65K max
+// for the MariaDB "text" column type. However, Z_ImportStocks.php limits the
+// total char per row in a CSV to only 4KB (TODO CONFIRM)
 //
 // Equivalent SQL: ALTER TABLE `stockmaster` ADD `note` TEXT AFTER `actualcost`;
 // 
-// Note that since "longdescription" is max 65K char it _could_ be used to store the
-// P&V Description _AND_ Notes fields (concatenated, 255 + 4K(?) = 5K << 65K)
-// but "LongDescription" has established use (at least for a e-store product
-// long desription by @pakricard) while in P&V Notes is a truly ad hoc comment.
+// Also note that "longdescription" in the webERP stockmaster table has a max
+// 65K char so it could be used to store the P&V Notes (perhaps pre-pending
+// with the P&V part Description (255 char + 60K char < 65K)
+// but longdescription use has been established (e.g. used by @pakricard for
+// an e-store product description) while Notes in P&V is purely ad hoc.
 // 
 // Related discussions:
 //   https://github.com/timschofield/webERP/issues/592#issuecomment-3770372715
@@ -369,5 +378,5 @@ if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
 
 
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Do nothing'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Adapt schema for PLM'));
 }
