@@ -3,11 +3,13 @@
 // drop all fk constraints
 
 if (ConstraintExists('bom', 'bom_ibfk_1'))
-	DropConstraint('bom','bom_ifgk_1');
+	DropConstraint('bom', 'bom_ibfk_1');
+
+var_dump();
 die();
 
 if (ConstraintExists('bom', 'bom_ibfk_2'))
-	DropConstraint('bom','bom_ifgk_1');
+	DropConstraint('bom','bom_ibfk_2');
 if (ConstraintExists('contractbom', 'contractbom_ibfk_3'))
 	DropConstraint('contractbom', 'contractbom_ibfk_3');
 if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
