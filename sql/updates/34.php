@@ -51,17 +51,18 @@
 //   +-----------------------------+--------------------+------------------------------------+
 //   26 rows in set (0.259 sec)
 
-if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
-	DropConstraint('custitem', '` custitem _ibfk_1`');
-
 //if (ConstraintExists('bom', 'bom_ibfk_1'))
 //	DropConstraint('bom', 'bom_ibfk_1');
 //if (ConstraintExists('bom', 'bom_ibfk_2'))
 //	DropConstraint('bom','bom_ibfk_2');
 //if (ConstraintExists('contractbom', 'contractbom_ibfk_3'))
 //	DropConstraint('contractbom', 'contractbom_ibfk_3');
-//if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
-//	DropConstraint('custitem', '` custitem _ibfk_1`');
+
+if (ConstraintExists('custitem', ' custitem _ibfk_1'))
+	DropConstraint('custitem', ' custitem _ibfk_1');
+if (ConstraintExists('custitem', 'custitem_ibfk_1'))
+	DropConstraint('custitem', 'custitem_ibfk_1');
+
 //if (ConstraintExists('locstock', 'locstock_ibfk_2'))
 //	DropConstraint('locstock', 'locstock_ibfk_2');
 //if (ConstraintExists('loctransfers', 'loctransfers_ibfk_3'))
@@ -270,13 +271,21 @@ if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
 //ChangeColumnSize('stkcode', 'salesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 
 
-// 2) INCREASE SIZE OF DESCRIPTION STOCK ID TO 255 CHAR (FROM 50)
+// 2) CORRECT TYPO IN CUSTITEM TABLE FK NAME
+//    - found when investigating stockitem FK
+//    TODO COMPLETE
+//if (ConstraintExists('custitem', ' custitem _ibfk_2')) {
+//	DropConstraint('custitem', ' custitem _ibfk_2');
+//	AddConstraint('stockid', 'custitem_ibfk_2', 'stockid', 'stockmaster', 'stockid');
+//};
+
+// 3) INCREASE SIZE OF DESCRIPTION STOCK ID TO 255 CHAR (FROM 50)
 //    - max 255 char in Parts&Vendors
 //    - max 255 for @pakricard OpenCart store
 //ChangeColumnSize('description', 'stockmaster', 'VARCHAR(255)', ' NOT NULL ', '', '255');
 
 
-// 3) ADD STOCK ITEM NOTE
+// 4) ADD STOCK ITEM NOTE
 // - the Notes field provides a place to keep comments about a stock item
 // - resolves issue 592 "Schema is missing an Item "Notes" field" https://github.com/timschofield/webERP/issues/592
 //
@@ -300,7 +309,7 @@ if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
 //AddColumn('notes', stockmaster, text, 'NULL', '', longdescription);
 
 
-// 4) ADD STOCK DOCUMENT REFERENCES
+// 5) ADD STOCK DOCUMENT REFERENCES
 // - for files and/or URLs (equivalent to P&V FIL table)
 //DROP TABLE IF EXISTS `stockrefs`;
 //CREATE TABLE `stockrefs` (
@@ -318,7 +327,7 @@ if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
 //) ENGINE=innodb;
 
 
-// 5) ADD VENDOR LINE CARD REFERENCE
+// 6) ADD VENDOR LINE CARD REFERENCE
 // - manufacturers sold by a particular supplier (equivalent to P&V LIN table)
 //DROP TABLE IF EXISTS `supplinecard`;
 //CREATE TABLE `supplinecard` (
@@ -331,7 +340,7 @@ if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
 //) ENGINE=innodb;
 
 
-// 6) ADD MFR REFERENCE
+// 7) ADD MFR REFERENCE
 // - stockmfr table for manufacturer information (equivalent to P&V MFR table)
 // NOTE "manufacturers" table already exists for sales reporting (iiuc)
 //DROP TABLE IF EXISTS `stockmfr`;
@@ -357,7 +366,7 @@ if (ConstraintExists('custitem', '` custitem _ibfk_1`'))
 //) ENGINE=innodb;
 
 
-// 7) ADD MFR PN REFERENCE
+// 8) ADD MFR PN REFERENCE
 // stockmfrpn table for mfr part number (equivalent to P&V MFRPN table)
 //DROP TABLE IF EXISTS `stockmfrpn`;
 //CREATE TABLE `stockmfrpn` (
