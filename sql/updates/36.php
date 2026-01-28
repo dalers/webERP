@@ -1,12 +1,12 @@
 <?php
 
-// 1) INCREASE SIZE OF STOCK ID TO 65 CHAR (FROM 20)
-//    - max 50 char in Parts&Vendors
-//    - max 65 for @pakricard OpenCart store
+// 1. INCREASE SIZE OF STOCK ID TO 65 CHAR (FROM 20)
+//    - Parts&Vendors allows 50 char
+//    - @pakricard OpenCart store allows 65 char 
 // 
-// step 1 - delete all fk constraints in child tables
+// 1.1 delete all fk constraints in child tables
 //
-// Use list of explicit constraints obtained using SQL query.
+// Use SQL query to obtain list of explicit constraints.
 //
 //     SELECT 
 //         TABLE_NAME AS 'Referencing Table', 
@@ -25,7 +25,7 @@
 //   | bom                         | parent             | bom_ibfk_1                         |
 //   | bom                         | component          | bom_ibfk_2                         |
 //   | contractbom                 | stockid            | contractbom_ibfk_3                 |
-//   | custitem                    | stockid            |  custitem _ibfk_1                  |
+//   | custitem                    | stockid            | custitem_ibfk_1                    |
 //   | locstock                    | stockid            | locstock_ibfk_2                    |
 //   | loctransfers                | stockid            | loctransfers_ibfk_3                |
 //   | mrpdemands                  | stockid            | mrpdemands_ibfk_2                  |
@@ -51,67 +51,40 @@
 //   +-----------------------------+--------------------+------------------------------------+
 //   26 rows in set (0.259 sec)
 
-//if (ConstraintExists('bom', 'bom_ibfk_1'))
-//	DropConstraint('bom', 'bom_ibfk_1');
-//if (ConstraintExists('bom', 'bom_ibfk_2'))
-//	DropConstraint('bom','bom_ibfk_2');
-//if (ConstraintExists('contractbom', 'contractbom_ibfk_3'))
-//	DropConstraint('contractbom', 'contractbom_ibfk_3');
+DropConstraint('bom', 'bom_ibfk_1');
+DropConstraint('bom','bom_ibfk_2');
+DropConstraint('contractbom', 'contractbom_ibfk_3');
+DropConstraint('custitem', 'custitem_ibfk_1');
+DropConstraint('locstock', 'locstock_ibfk_2');
+DropConstraint('loctransfers', 'loctransfers_ibfk_3');
+DropConstraint('mrpdemands', 'mrpdemands_ibfk_2');
+DropConstraint('offers', 'offers_ibfk_2');
+DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1');
+DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1');
+DropConstraint('prices', 'prices_ibfk_1');
+DropConstraint('purchdata', 'purchdata_ibfk_1');
+DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2');
+DropConstraint('salescatprod', 'salescatprod_ibfk_1');
+DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2');
+DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1');
+DropConstraint('stockcounts', 'stockcounts_ibfk_1');
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1');
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3');
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5');
+DropConstraint('stockmoves', 'stockmoves_ibfk_1');
+DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2');
+DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4');
+DropConstraint('stockserialitems', 'stockserialitems_ibfk_1');
+DropConstraint('woitems', 'woitems_ibfk_1');
+DropConstraint('worequirements', 'worequirements_ibfk_2');
+// 26 constraints 
 
-if (ConstraintExists('custitem', ' custitem _ibfk_1'))
-	DropConstraint('custitem', ' custitem _ibfk_1');
-if (ConstraintExists('custitem', 'custitem_ibfk_1'))
-	DropConstraint('custitem', 'custitem_ibfk_1');
+// 1.2 change size of stockid parent
 
-//if (ConstraintExists('locstock', 'locstock_ibfk_2'))
-//	DropConstraint('locstock', 'locstock_ibfk_2');
-//if (ConstraintExists('loctransfers', 'loctransfers_ibfk_3'))
-//	DropConstraint('loctransfers', 'loctransfers_ibfk_3');
-//if (ConstraintExists('mrpdemands', 'mrpdemands_ibfk_2'))
-//	DropConstraint('mrpdemands', 'mrpdemands_ibfk_2');
-//if (ConstraintExists('offers', 'offers_ibfk_2'))
-//	DropConstraint('offers', 'offers_ibfk_2');
-//if (ConstraintExists('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1'))
-//	DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1');
-//if (ConstraintExists('pickreqdetails', 'pickreqdetails_ibfk_1'))
-//	DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1');
-//if (ConstraintExists('prices', 'prices_ibfk_1'))
-//	DropConstraint('prices', 'prices_ibfk_1');
-//if (ConstraintExists('purchdata', 'purchdata_ibfk_1'))
-//	DropConstraint('purchdata', 'purchdata_ibfk_1');
-//if (ConstraintExists('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2'))
-//	DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2');
-//if (ConstraintExists('salescatprod', 'salescatprod_ibfk_1'))
-//	DropConstraint('salescatprod', 'salescatprod_ibfk_1');
-//if (ConstraintExists('salesorderdetails', 'salesorderdetails_ibfk_2'))
-//	DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2');
-//if (ConstraintExists('stockcheckfreeze', 'stockcheckfreeze_ibfk_1'))
-//	DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1');
-//if (ConstraintExists('stockcounts', 'stockcounts_ibfk_1'))
-//	DropConstraint('stockcounts', 'stockcounts_ibfk_1');
-//if (ConstraintExists('stockitemproperties', 'stockitemproperties_ibfk_1'))
-//	DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1');
-//if (ConstraintExists('stockitemproperties', 'stockitemproperties_ibfk_3'))
-//	DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3');
-//if (ConstraintExists('stockitemproperties', 'stockitemproperties_ibfk_5'))
-//	DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5');
-//if (ConstraintExists('stockmoves', 'stockmoves_ibfk_1'))
-//	DropConstraint('stockmoves', 'stockmoves_ibfk_1');
-//if (ConstraintExists('stockrequestitems', 'stockrequestitems_ibfk_2'))
-//	DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2');
-//if (ConstraintExists('stockrequestitems', 'stockrequestitems_ibfk_4'))
-//	DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4');
-//if (ConstraintExists('stockserialitems', 'stockserialitems_ibfk_1'))
-//	DropConstraint('stockserialitems', 'stockserialitems_ibfk_1');
-//if (ConstraintExists('woitems', 'woitems_ibfk_1'))
-//	DropConstraint('woitems', 'woitems_ibfk_1');
-//if (ConstraintExists('worequirements', 'worequirements_ibfk_2'))
-//	DropConstraint('worequirements', 'worequirements_ibfk_2');
+ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 
+// 1.3 change size of stockid children
 
-// step 2 - change size of stockid parent and children
-
-//ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('parent', 'bom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('component', 'bom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('stockid', 'contractbom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
@@ -138,11 +111,12 @@ if (ConstraintExists('custitem', 'custitem_ibfk_1'))
 //ChangeColumnSize('stockid', 'stockserialitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('stockid', 'woitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('stockid', 'worequirements', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+// 26 foreign key columns
 
+// 1.4 restore foreign key constraints
 
-// step 3 - restore fk constraints (without spaces in names for custitem table)
-//    TODO also fix "other" fk constraint in custitem
-//    TODO also fix installer file custitem.sql
+// TODO something wrong here, stkcode is not listed but should appear twice
+
 //AddConstraint('parent', 'bom_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 //AddConstraint('component', 'bom_ibfk_2', 'stockid', 'stockmaster', 'stockid');
 //AddConstraint('stockid', 'contractbom_ibfk_3', 'stockid', 'stockmaster', 'stockid');
@@ -169,12 +143,14 @@ if (ConstraintExists('custitem', 'custitem_ibfk_1'))
 //AddConstraint('stockid', 'stockserialitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 //AddConstraint('stockid', 'woitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 //AddConstraint('stockid', 'worequirements_ibfk_2', 'stockid', 'stockmaster', 'stockid');
+// 26 constraints
 
+// 1.5 change size of implicit stockid foreign key columns
 
-// step 4 - change size of implicit stockid fk relationships
-//
-// step 4.2 assume fk columns are named "stockid". The difference from step 1
-//      is presumed to be implicit fk relationships
+// 1.5.1 columns named stockid same as parent
+// 
+// Use SQL query to obtain list of constraints named "stockid" and then remove the explicit
+// constraints found in step 1.
 //
 //   SELECT 
 //       TABLE_NAME, 
@@ -244,10 +220,15 @@ if (ConstraintExists('custitem', 'custitem_ibfk_1'))
 //ChangeColumnSize('stockid', 'supplierdiscounts',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('stockid', 'tenderitems',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('stockid', 'woserialnos',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+// 16 foreign key columns
 
-// step 4.2 assume fk columns named "stkcode". The difference from step 1
-//      is also presumed to be implicit fk relationships.
+// Step 1.5.2 named stkcode (also used as an explicit fk)
+
+// Use SQL query to obtain list of constraints named "stkcode" and remove explicit
+// constraints with same name found in step 1.
 //
+// TODO something wrong here, why aren't the two columns named stkcode in Step 1 listed?
+// 
 //   SELECT 
 //       TABLE_NAME, 
 //       COLUMN_NAME, 
@@ -269,29 +250,23 @@ if (ConstraintExists('custitem', 'custitem_ibfk_1'))
 //
 //ChangeColumnSize('stkcode', 'recurrsalesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('stkcode', 'salesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+// 2 foreign key columns
 
 
-// 2) CORRECT TYPO IN CUSTITEM TABLE FK NAME
-//    - found when investigating stockitem FK
-//    TODO COMPLETE
-//if (ConstraintExists('custitem', ' custitem _ibfk_2')) {
-//	DropConstraint('custitem', ' custitem _ibfk_2');
-//	AddConstraint('stockid', 'custitem_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-//};
-
-// 3) INCREASE SIZE OF DESCRIPTION STOCK ID TO 255 CHAR (FROM 50)
-//    - max 255 char in Parts&Vendors
-//    - max 255 for @pakricard OpenCart store
+// 2. INCREASE SIZE OF DESCRIPTION STOCK ID TO 255 CHAR (FROM 50)
+//    - Parts&Vendors allows 255 char
+//    - @pakricard OpenCart store allows 255 char 
 //ChangeColumnSize('description', 'stockmaster', 'VARCHAR(255)', ' NOT NULL ', '', '255');
 
 
-// 4) ADD STOCK ITEM NOTE
+// 3. ADD STOCK ITEM NOTE
 // - the Notes field provides a place to keep comments about a stock item
 // - resolves issue 592 "Schema is missing an Item "Notes" field" https://github.com/timschofield/webERP/issues/592
+// - Parts&Vendors allows "approximately 60K" char
 //
 // The "note" column will be imported from the Parts&Vendors PN table PNNotes
-// field which is "approximately 60K" (from page 149 of the P&V v6 User Manual,
-// presumably meaning 60,000 ASCII characters), or just less than the 65K max
+// field which is "approximately 60K" (from page 149 of the P&V v6 User Manual),
+// presumably meaning 60,000 ASCII characters or just less than the 65K max
 // for the MariaDB "text" column type. However, Z_ImportStocks.php limits the
 // total char per row in a CSV to only 4KB (TODO CONFIRM)
 //
@@ -309,8 +284,10 @@ if (ConstraintExists('custitem', 'custitem_ibfk_1'))
 //AddColumn('notes', stockmaster, text, 'NULL', '', longdescription);
 
 
-// 5) ADD STOCK DOCUMENT REFERENCES
+// 4. ADD STOCK DOCUMENT REFERENCES
 // - for files and/or URLs (equivalent to P&V FIL table)
+//  - Parts&Vendors allows ?? char TODO confirm number of characters
+//    
 //DROP TABLE IF EXISTS `stockrefs`;
 //CREATE TABLE `stockrefs` (
 //  `FILID` INTEGER NOT NULL AUTO_INCREMENT, 
@@ -327,8 +304,9 @@ if (ConstraintExists('custitem', 'custitem_ibfk_1'))
 //) ENGINE=innodb;
 
 
-// 6) ADD VENDOR LINE CARD REFERENCE
+// 5. ADD VENDOR LINE CARD REFERENCE
 // - manufacturers sold by a particular supplier (equivalent to P&V LIN table)
+//    
 //DROP TABLE IF EXISTS `supplinecard`;
 //CREATE TABLE `supplinecard` (
 //  `LINID` INTEGER NOT NULL AUTO_INCREMENT, 
@@ -340,10 +318,13 @@ if (ConstraintExists('custitem', 'custitem_ibfk_1'))
 //) ENGINE=innodb;
 
 
-// 7) ADD MFR REFERENCE
+// 6. ADD MFR REFERENCE
 // - stockmfr table for manufacturer information (equivalent to P&V MFR table)
+//  - Parts&Vendors allows ?? char TODO confirm number of characters
+//
 // NOTE "manufacturers" table already exists for sales reporting (iiuc)
-//DROP TABLE IF EXISTS `stockmfr`;
+//
+////DROP TABLE IF EXISTS `stockmfr`;
 //CREATE TABLE `stockmfr` (
 //  `MFRID` INTEGER NOT NULL AUTO_INCREMENT, 
 //  `MFRMfrName` VARCHAR(50) NOT NULL, 
@@ -366,8 +347,10 @@ if (ConstraintExists('custitem', 'custitem_ibfk_1'))
 //) ENGINE=innodb;
 
 
-// 8) ADD MFR PN REFERENCE
+// 7. ADD MFR PN REFERENCE
 // stockmfrpn table for mfr part number (equivalent to P&V MFRPN table)
+//  - Parts&Vendors allows ?? char TODO confirm number of characters
+//
 //DROP TABLE IF EXISTS `stockmfrpn`;
 //CREATE TABLE `stockmfrpn` (
 //  `MFRPNID` INTEGER NOT NULL AUTO_INCREMENT, 
