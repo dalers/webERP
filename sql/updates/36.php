@@ -1,6 +1,7 @@
 <?php
 
 // 1. INCREASE SIZE OF STOCK ID TO 65 CHAR (FROM 20)
+// https://github.com/timschofield/webERP/discussions/812
 //    - Parts&Vendors allows 50 char
 //    - @pakricard OpenCart store allows 65 char 
 // 
@@ -51,32 +52,32 @@
 //   +-----------------------------+--------------------+------------------------------------+
 //   26 rows in set (0.259 sec)
 
-DropConstraint('bom', 'bom_ibfk_1');
-DropConstraint('bom','bom_ibfk_2');
-DropConstraint('contractbom', 'contractbom_ibfk_3');
-DropConstraint('custitem', 'custitem_ibfk_1');
-DropConstraint('locstock', 'locstock_ibfk_2');
-DropConstraint('loctransfers', 'loctransfers_ibfk_3');
-DropConstraint('mrpdemands', 'mrpdemands_ibfk_2');
-DropConstraint('offers', 'offers_ibfk_2');
-DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1');
-DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1');
-DropConstraint('prices', 'prices_ibfk_1');
-DropConstraint('purchdata', 'purchdata_ibfk_1');
-DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2');
-DropConstraint('salescatprod', 'salescatprod_ibfk_1');
-DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2');
-DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1');
-DropConstraint('stockcounts', 'stockcounts_ibfk_1');
-DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1');
-DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3');
-DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5');
-DropConstraint('stockmoves', 'stockmoves_ibfk_1');
-DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2');
-DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4');
-DropConstraint('stockserialitems', 'stockserialitems_ibfk_1');
-DropConstraint('woitems', 'woitems_ibfk_1');
-DropConstraint('worequirements', 'worequirements_ibfk_2');
+//DropConstraint('bom', 'bom_ibfk_1');
+//DropConstraint('bom','bom_ibfk_2');
+//DropConstraint('contractbom', 'contractbom_ibfk_3');
+//DropConstraint('custitem', 'custitem_ibfk_1');
+//DropConstraint('locstock', 'locstock_ibfk_2');
+//DropConstraint('loctransfers', 'loctransfers_ibfk_3');
+//DropConstraint('mrpdemands', 'mrpdemands_ibfk_2');
+//DropConstraint('offers', 'offers_ibfk_2');
+//DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1');
+//DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1');
+//DropConstraint('prices', 'prices_ibfk_1');
+//DropConstraint('purchdata', 'purchdata_ibfk_1');
+//DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2');
+//DropConstraint('salescatprod', 'salescatprod_ibfk_1');
+//DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2');
+//DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1');
+//DropConstraint('stockcounts', 'stockcounts_ibfk_1');
+//DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1');
+//DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3');
+//DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5');
+//DropConstraint('stockmoves', 'stockmoves_ibfk_1');
+//DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2');
+//DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4');
+//DropConstraint('stockserialitems', 'stockserialitems_ibfk_1');
+//DropConstraint('woitems', 'woitems_ibfk_1');
+//DropConstraint('worequirements', 'worequirements_ibfk_2');
 // 26 constraints 
 
 // 1.2 change size of stockid parent
@@ -253,14 +254,17 @@ ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64
 // 2 foreign key columns
 
 
-// 2. INCREASE SIZE OF DESCRIPTION STOCK ID TO 255 CHAR (FROM 50)
-//    - Parts&Vendors allows 255 char
-//    - @pakricard OpenCart store allows 255 char 
+// 2. INCREASE SIZE OF DESCRIPTION TO 255 CHAR (FROM 50)
+// https://github.com/timschofield/webERP/discussions/812
+// - Parts&Vendors allows 255 char
+// - @pakricard OpenCart store allows 255 char 
 //ChangeColumnSize('description', 'stockmaster', 'VARCHAR(255)', ' NOT NULL ', '', '255');
 
 
 // 3. ADD STOCK ITEM NOTE
-// - the Notes field provides a place to keep comments about a stock item
+// https://github.com/timschofield/webERP/issues/592#issuecomment-3770372715
+// https://github.com/timschofield/webERP/discussions/812#discussioncomment-15543024
+// - Notes column is intended for ad hoc notes about a stock item
 // - resolves issue 592 "Schema is missing an Item "Notes" field" https://github.com/timschofield/webERP/issues/592
 // - Parts&Vendors allows "approximately 60K" char
 //
@@ -279,8 +283,6 @@ ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64
 // an e-store product description) while Notes in P&V is purely ad hoc.
 // 
 // Related discussions:
-//   https://github.com/timschofield/webERP/issues/592#issuecomment-3770372715
-//   https://github.com/timschofield/webERP/discussions/812#discussioncomment-15543024
 //AddColumn('notes', stockmaster, text, 'NULL', '', longdescription);
 
 
@@ -370,5 +372,5 @@ ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64
 
 
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Adapt schema for PLM'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Add PLM schema (WIP do nothing)'));
 }

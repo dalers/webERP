@@ -102,14 +102,17 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 			$Value = trim($Value);
 		}
 
-		// skip the row if StockItem already exists
+		// does the stockid already exist
 		$SQL = "SELECT COUNT(stockid) FROM stockmaster WHERE stockid='".$StockID."'";
 		$Result = DB_query($SQL);
 		$testrow = DB_fetch_row($Result);
-//		if ($testrow[0] != 0) {
+//      abort import if stockid exists
+//        if ($testrow[0] != 0) {
 //			$InputError = 1;
 //			prnMsg(__('Stock item '. $StockID. ' already exists'),'error');
 //		}
+
+		// skip row if stockid already exists
 		if ($testrow[0] != 0) {
 		    // Issue a warning but do not set $InputError to 1
 			prnMsg(__('Stock item '). $StockID . __(' already exists. Skipping this row.'), 'warn');
@@ -117,7 +120,7 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 			continue; // Skip the rest of the loop for this specific row
 		}
 
-		// otherwise check for sensible inputs
+		// if made this far, check for sensible inputs
 		if (mb_strlen($StockID) ==0) {
 			$InputError = 1;
 			prnMsg(__('The Stock Item code cannot be empty'),'error');
