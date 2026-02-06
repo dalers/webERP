@@ -102,7 +102,7 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 			$Value = trim($Value);
 		}
 
-		// does the stockid already exist
+		// check if the stockid already exists
 		$SQL = "SELECT COUNT(stockid) FROM stockmaster WHERE stockid='".$StockID."'";
 		$Result = DB_query($SQL);
 		$testrow = DB_fetch_row($Result);
@@ -111,8 +111,7 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 //			$InputError = 1;
 //			prnMsg(__('Stock item '. $StockID. ' already exists'),'error');
 //		}
-
-		// skip row if stockid already exists
+		// and skip the row if it does
 		if ($testrow[0] != 0) {
 		    // Issue a warning but do not set $InputError to 1
 			prnMsg(__('Stock item '). $StockID . __(' already exists. Skipping this row.'), 'warn');

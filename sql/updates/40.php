@@ -82,7 +82,7 @@
 
 // 1.2 change size of stockid parent
 
-ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 
 // 1.3 change size of stockid children
 
