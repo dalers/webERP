@@ -1,6 +1,6 @@
 <?php
 
-// 1. INCREASE SIZE OF STOCK ID TO 65 CHAR (FROM 20)
+// 1. INCREASE SIZE OF stockmaster.stockid TO 65 CHAR (FROM 20)
 // https://github.com/timschofield/webERP/discussions/812
 //    - Parts&Vendors allows 50 char
 //    - @pakricard OpenCart store allows 65 char 
@@ -53,7 +53,7 @@
 //   26 rows in set (0.259 sec)
 
 //DropConstraint('bom', 'bom_ibfk_1');
-//DropConstraint('bom','bom_ibfk_2');
+//DropConstraint('bom', 'bom_ibfk_2');
 //DropConstraint('contractbom', 'contractbom_ibfk_3');
 //DropConstraint('custitem', 'custitem_ibfk_1');
 //DropConstraint('locstock', 'locstock_ibfk_2');
@@ -115,8 +115,6 @@
 // 26 foreign key columns
 
 // 1.4 restore foreign key constraints
-
-// TODO something wrong here, stkcode is not listed but should appear twice
 
 //AddConstraint('parent', 'bom_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 //AddConstraint('component', 'bom_ibfk_2', 'stockid', 'stockmaster', 'stockid');
@@ -223,7 +221,7 @@
 //ChangeColumnSize('stockid', 'woserialnos',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 // 16 foreign key columns
 
-// Step 1.5.2 named stkcode (also used as an explicit fk)
+// Step 1.5.2 columns named stkcode (also used as an explicit fk)
 
 // Use SQL query to obtain list of constraints named "stkcode" and remove explicit
 // constraints with same name found in step 1.
@@ -261,14 +259,14 @@
 //ChangeColumnSize('description', 'stockmaster', 'VARCHAR(255)', ' NOT NULL ', '', '255');
 
 
-// 3. ADD STOCK ITEM NOTE
+// 3. ADD stockmaster.notes
 // https://github.com/timschofield/webERP/issues/592#issuecomment-3770372715
 // https://github.com/timschofield/webERP/discussions/812#discussioncomment-15543024
 // - Notes column is intended for ad hoc notes about a stock item
 // - resolves issue 592 "Schema is missing an Item "Notes" field" https://github.com/timschofield/webERP/issues/592
 // - Parts&Vendors allows "approximately 60K" char
 //
-// The "note" column will be imported from the Parts&Vendors PN table PNNotes
+// The "notes" column will be imported from the Parts&Vendors PN table PNNotes
 // field which is "approximately 60K" (from page 149 of the P&V v6 User Manual),
 // presumably meaning 60,000 ASCII characters or just less than the 65K max
 // for the MariaDB "text" column type. However, Z_ImportStocks.php limits the
