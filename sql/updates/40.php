@@ -1,6 +1,6 @@
 <?php
 
-// 1. INCREASE SIZE OF stockmaster.stockid TO 65 CHAR (FROM 20)
+// 1. INCREASE SIZE OF stockmaster.stockid TO 64 CHAR (FROM 20)
 // https://github.com/timschofield/webERP/discussions/812
 //    - Parts&Vendors allows 50 char
 //    - @pakricard OpenCart store allows 65 char 
@@ -52,97 +52,124 @@
 //   +-----------------------------+--------------------+------------------------------------+
 //   26 rows in set (0.259 sec)
 
-//DropConstraint('bom', 'bom_ibfk_1');
-//DropConstraint('bom', 'bom_ibfk_2');
-//DropConstraint('contractbom', 'contractbom_ibfk_3');
-//DropConstraint('custitem', 'custitem_ibfk_1');
-//DropConstraint('locstock', 'locstock_ibfk_2');
-//DropConstraint('loctransfers', 'loctransfers_ibfk_3');
-//DropConstraint('mrpdemands', 'mrpdemands_ibfk_2');
-//DropConstraint('offers', 'offers_ibfk_2');
-//DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1');
-//DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1');
-//DropConstraint('prices', 'prices_ibfk_1');
-//DropConstraint('purchdata', 'purchdata_ibfk_1');
-//DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2');
-//DropConstraint('salescatprod', 'salescatprod_ibfk_1');
-//DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2');
-//DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1');
-//DropConstraint('stockcounts', 'stockcounts_ibfk_1');
-//DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1');
-//DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3');
-//DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5');
-//DropConstraint('stockmoves', 'stockmoves_ibfk_1');
-//DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2');
-//DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4');
-//DropConstraint('stockserialitems', 'stockserialitems_ibfk_1');
-//DropConstraint('woitems', 'woitems_ibfk_1');
-//DropConstraint('worequirements', 'worequirements_ibfk_2');
+
+// function DropConstraint($Table, $Constraint)
+DropConstraint('bom', 'bom_ibfk_1');
+DropConstraint('bom', 'bom_ibfk_2');
+DropConstraint('contractbom', 'contractbom_ibfk_3');
+DropConstraint('custitem', 'custitem_ibfk_1');
+DropConstraint('locstock', 'locstock_ibfk_2');
+DropConstraint('loctransfers', 'loctransfers_ibfk_3');
+DropConstraint('mrpdemands', 'mrpdemands_ibfk_2');
+DropConstraint('offers', 'offers_ibfk_2');
+DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1');
+DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1');
+DropConstraint('prices', 'prices_ibfk_1');
+DropConstraint('purchdata', 'purchdata_ibfk_1');
+DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2');
+DropConstraint('salescatprod', 'salescatprod_ibfk_1');
+DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2');
+DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1');
+DropConstraint('stockcounts', 'stockcounts_ibfk_1');
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1');
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3');
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5');
+DropConstraint('stockmoves', 'stockmoves_ibfk_1');
+DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2');
+DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4');
+DropConstraint('stockserialitems', 'stockserialitems_ibfk_1');
+DropConstraint('woitems', 'woitems_ibfk_1');
+DropConstraint('worequirements', 'worequirements_ibfk_2');
 // 26 constraints 
 
-// 1.2 change size of stockid parent
+// drop secondary foreign key constraints
+//
+// Warning: mysqli_query():
+// (HY000/1833): Cannot change column 'stockid': used in a foreign key constraint 'weberp_kayden/stockserialmoves_ibfk_2' of table 'weberp_kayden/stockserialmoves' in...
+//
+// Warning: mysqli_query():
+// (HY000/1833): Cannot change column 'stockid': used in a foreign key constraint 'worequirements_ibfk_3' of table 'weberp_kayden.worequirements' in...
+// 
+DropConstraint('stockserialmoves', 'stockserialmoves_ibfk_2');
+DropConstraint('worequirements', 'worequirements_ibfk_3');
 
-//ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 
-// 1.3 change size of stockid children
+// 1.2 change size of parent (stockmaster.stockid)
+ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 
-//ChangeColumnSize('parent', 'bom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('component', 'bom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'contractbom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'custitem', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'locstock, 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'loctransfers,  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'mrpdemands', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'offers', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'orderdeliverydifferenceslog', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'pickreqdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'prices', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'purchdata', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stkcode', 'recurrsalesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'salescatprod', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stkcode', 'salesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockcheckfreeze', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockcounts', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockitemproperties', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockitemproperties', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockitemproperties', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockmoves', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockrequestitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockrequestitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockserialitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'woitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'worequirements', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+// 1.3 change size of children
+
+ChangeColumnSize('parent', 'bom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('component', 'bom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'contractbom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'custitem', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'locstock', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'loctransfers',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'mrpdemands', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'offers', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'orderdeliverydifferenceslog', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'pickreqdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'prices', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'purchdata', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stkcode', 'recurrsalesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'salescatprod', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stkcode', 'salesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockcheckfreeze', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockcounts', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockitemproperties', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockitemproperties', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockitemproperties', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockmoves', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockrequestitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockrequestitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'woitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 // 26 foreign key columns
 
-// 1.4 restore foreign key constraints
+// change size of grand-children
+ChangeColumnSize('stockid', 'stockserialitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'worequirements', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 
-//AddConstraint('parent', 'bom_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('component', 'bom_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'contractbom_ibfk_3', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'custitem_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'locstock_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'loctransfers_ibfk_3', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'mrpdemands_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'offers_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'orderdeliverydifferenceslog_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'pickreqdetails_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'prices_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'purchdata_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stkcode', 'recurrsalesorderdetails_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'salescatprod_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stkcode', 'salesorderdetails_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'stockcheckfreeze_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'stockcounts_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'stockitemproperties_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'stockitemproperties_ibfk_3', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'stockitemproperties_ibfk_5', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'stockmoves_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'stockrequestitems_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'stockrequestitems_ibfk_4', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'stockserialitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'woitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-//AddConstraint('stockid', 'worequirements_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-// 26 constraints
+// 1.4 restore foreign key constraints
+// AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
+//
+// grand-children first
+//AddConstraint('stockserialmoves', 'stockserialmoves_ibfk_2', 'stockid', 'stockserialitems', 'stockid');
+//AddConstraint('worequirements', 'worequirements_ibfk_3', 'stockid', 'woitems', 'stockid');
+// then children
+//AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
+//AddConstraint('bom', 'bom_ibfk_1', 'parent', 'stockmaster', 'stockid');
+//AddConstraint('bom', 'bom_ibfk_2', 'component', 'stockmaster', 'stockid');
+//AddConstraint('contractbom', 'contractbom_ibfk_3', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('custitem', 'custitem_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('locstock', 'locstock_ibfk_2', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('loctransfers', 'loctransfers_ibfk_3', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('mrpdemands', 'mrpdemands_ibfk_2', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('offers', 'offers_ibfk_2', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('pickreqdetails', 'pickreqdetails_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('prices', 'prices_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('purchdata', 'purchdata_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2', 'stkcode', 'stockmaster', 'stockid');
+//AddConstraint('salescatprod', 'salescatprod_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('salesorderdetails', 'salesorderdetails_ibfk_2', 'stkcode', 'stockmaster', 'stockid');
+//AddConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('stockcounts', 'stockcounts_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//
+//AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+// TODO do not re-create if redundant
+//AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_3', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_5', 'stockid', 'stockmaster', 'stockid');
+//
+//AddConstraint('stockmoves', 'stockmoves_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//
+// TODO do not re-create if redundant
+//AddConstraint('stockrequestitems', 'stockrequestitems_ibfk_2', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('stockrequestitems', 'stockrequestitems_ibfk_4', 'stockid', 'stockmaster', 'stockid');
+//
+//AddConstraint('stockserialitems', 'stockserialitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('woitems', 'woitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
+//AddConstraint('worequirements', 'worequirements_ibfk_2', 'stockid', 'stockmaster', 'stockid');
+
 
 // 1.5 change size of implicit stockid foreign key columns
 
@@ -370,5 +397,5 @@
 
 
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Add PLM schema (WIP do nothing)'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Change stockid size 1.3 child size'));
 }
