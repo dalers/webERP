@@ -174,12 +174,11 @@ AddConstraint('woitems', 'woitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 AddConstraint('worequirements', 'worequirements_ibfk_2', 'stockid', 'stockmaster', 'stockid');
 
 
-// 1.6 change size of implicit stockid foreign key columns
-
+// 1.6 change size of IMPLICIT stockid child foreign key columns
 // 1.6.1 columns named stockid same as parent
 // 
-// Use SQL query to obtain list of constraints named "stockid" and then remove the explicit
-// constraints found in step 1.
+// Use SQL query to obtain columns named "stockid" and manually remove those with explicit
+// fk constraints found in step 1.1
 //
 //   SELECT 
 //       TABLE_NAME, 
@@ -191,70 +190,69 @@ AddConstraint('worequirements', 'worequirements_ibfk_2', 'stockid', 'stockmaster
 //       COLUMN_NAME = 'stockid'
 //       AND TABLE_SCHEMA = DATABASE()
 //       AND TABLE_NAME != 'stockmaster';
-//
+//   
 //   +------------------------------+-------------+-----------+
 //   | TABLE_NAME                   | COLUMN_NAME | DATA_TYPE |
 //   +------------------------------+-------------+-----------+
 //   | assetmanager                 | stockid     | varchar   |
-//   | contractbom                  | stockid     | varchar   |
-//   | custitem                     | stockid     | varchar   |
 //   | ediitemmapping               | stockid     | varchar   |
 //   | employees                    | stockid     | varchar   |
 //   | lastcostrollup               | stockid     | char      |
-//   | locstock                     | stockid     | varchar   |
 //   | loctransfercancellations     | stockid     | varchar   |
-//   | loctransfers                 | stockid     | varchar   |
-//   | mrpdemands                   | stockid     | varchar   |
-//   | offers                       | stockid     | varchar   |
-//   | orderdeliverydifferenceslog  | stockid     | varchar   |
-//   | pickreqdetails               | stockid     | varchar   |
 //   | pickserialdetails            | stockid     | varchar   |
 //   | pricematrix                  | stockid     | varchar   |
-//   | prices                       | stockid     | varchar   |
-//   | purchdata                    | stockid     | char      |
 //   | relateditems                 | stockid     | varchar   |
 //   | salesanalysis                | stockid     | varchar   |
-//   | salescatprod                 | stockid     | varchar   |
 //   | sellthroughsupport           | stockid     | varchar   |
 //   | shipmentcharges              | stockid     | varchar   |
-//   | stockcheckfreeze             | stockid     | varchar   |
-//   | stockcounts                  | stockid     | varchar   |
 //   | stockdescriptiontranslations | stockid     | varchar   |
-//   | stockitemproperties          | stockid     | varchar   |
-//   | stockmoves                   | stockid     | varchar   |
-//   | stockrequestitems            | stockid     | varchar   |
-//   | stockserialitems             | stockid     | varchar   |
 //   | stockserialmoves             | stockid     | varchar   |
 //   | supplierdiscounts            | stockid     | varchar   |
 //   | tenderitems                  | stockid     | varchar   |
-//   | woitems                      | stockid     | char      |
-//   | worequirements               | stockid     | varchar   |
 //   | woserialnos                  | stockid     | varchar   |
 //   +------------------------------+-------------+-----------+
-//   35 rows in set (0.015 sec)
+//   16 implicit foreign key columns
 //
-//ChangeColumnSize('stockid', 'assetmanager',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'ediitemmapping',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'employees',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'lastcostrollup',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'loctransfercancellations',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'pickserialdetails',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'pricematrix',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'relateditems',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'salesanalysis',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'sellthroughsupport',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'shipmentcharges',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'stockdescriptiontranslations',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+
+// first drop foreign key constraint on stockserialmoves.stockid
+//
+//   ChangeColumnSize('stockid', 'stockserialmoves',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//   Warning: mysqli_query(): (HY000/1832): Cannot change column 'stockid': used in a foreign key constraint 'weberp_scc/stockserialmoves_ibfk_2' in...
+
+// function DropConstraint($Table, $Constraint)
+//DropConstraint('stockserialmoves', stockserialmoves_ibfk_2');
+
+// changes sizes of implicit child fk columns
+ChangeColumnSize('stockid', 'assetmanager',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'ediitemmapping',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'employees',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'lastcostrollup',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'loctransfercancellations',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'pickserialdetails',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'pricematrix',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'relateditems',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'salesanalysis',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'sellthroughsupport',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'shipmentcharges',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockdescriptiontranslations',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+
 //ChangeColumnSize('stockid', 'stockserialmoves',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'supplierdiscounts',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'tenderitems',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//ChangeColumnSize('stockid', 'woserialnos',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-// 16 foreign key columns
+
+ChangeColumnSize('stockid', 'supplierdiscounts',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'tenderitems',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'woserialnos',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+// 16 implicit foreign key child columns
+
+// and finally re-add foreign key constraint
+// TODO make same as current - compound constraint from stockserialmoves.stockid AND stockserialmoves.serialno to stockserialitems.stockid AND stockserialitems.serialno 
+// AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
+//AddConstraint('stockserialmoves', 'stockserialmoves_ibfk_2', 'stockid', 'stockserialitems', 'stockid');
+
 
 // Step 1.6.2 columns named stkcode (also used as an explicit fk)
 
 // Use SQL query to obtain list of constraints named "stkcode" and remove explicit
-// constraints with same name found in step 1.
+// constraints having the same name as those found in step 1.1
 //
 //   SELECT 
 //       TABLE_NAME, 
@@ -273,11 +271,16 @@ AddConstraint('worequirements', 'worequirements_ibfk_2', 'stockid', 'stockmaster
 //   | recurrsalesorderdetails | stkcode     | varchar   |
 //   | salesorderdetails       | stkcode     | varchar   |
 //   +-------------------------+-------------+-----------+
-//   2 rows in set (0.015 sec)
+//   2 rows in set
 //
 //ChangeColumnSize('stkcode', 'recurrsalesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('stkcode', 'salesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-// 2 foreign key columns
+// 2 implicit foreign key child columns
+
+
+// Step 1.6.3 columns defined as "varchar(20)"
+// Step 1.6.4 columns with "code" in their name
+// Step 1.6.5 columns with "id" in their name
 
 
 // 2. INCREASE SIZE OF DESCRIPTION TO 255 CHAR (FROM 50)
@@ -398,5 +401,5 @@ AddConstraint('worequirements', 'worequirements_ibfk_2', 'stockid', 'stockmaster
 
 
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Change stockid size 1.5 add child fks'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Change stockid size 1.6.1 WIP implicit stockid'));
 }
