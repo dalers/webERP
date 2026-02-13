@@ -5,9 +5,9 @@
 //      - Parts&Vendors allows 50 char
 //      - @pakricard OpenCart store allows 64 char
 // 
-// 1.1 first delete all foreign key constraints in child tables
+// 1.1 delete foreign key constraints (Bottom-Up-Drop aka BUD)
 //
-// Use SQL query to obtain list of explicit foreign key constraints.
+// SQL query to list foreign key constraints on stockmaster.stockid:
 //
 //     SELECT 
 //         TABLE_NAME AS 'Referencing Table', 
@@ -52,53 +52,50 @@
 //   +-----------------------------+--------------------+------------------------------------+
 //   26 rows in set (0.259 sec)
 
-// function DropConstraint($Table, $Constraint)
-DropConstraint('bom', 'bom_ibfk_1');
-DropConstraint('bom', 'bom_ibfk_2');
-DropConstraint('contractbom', 'contractbom_ibfk_3');
-DropConstraint('custitem', 'custitem_ibfk_1');
-DropConstraint('locstock', 'locstock_ibfk_2');
-DropConstraint('loctransfers', 'loctransfers_ibfk_3');
-DropConstraint('mrpdemands', 'mrpdemands_ibfk_2');
-DropConstraint('offers', 'offers_ibfk_2');
-DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1');
-DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1');
-DropConstraint('prices', 'prices_ibfk_1');
-DropConstraint('purchdata', 'purchdata_ibfk_1');
-DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2');
-DropConstraint('salescatprod', 'salescatprod_ibfk_1');
-DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2');
-DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1');
-DropConstraint('stockcounts', 'stockcounts_ibfk_1');
-DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1');
-DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3');
-DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5');
-DropConstraint('stockmoves', 'stockmoves_ibfk_1');
-DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2');
-DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4');
-DropConstraint('stockserialitems', 'stockserialitems_ibfk_1');
-DropConstraint('woitems', 'woitems_ibfk_1');
-DropConstraint('worequirements', 'worequirements_ibfk_2');
+// 1.1.1 drop grandchild fk constraints
+// - indicated by error when attempting to resize grandchild foreign key columns without first deleting constraints
+// DropConstraint($Table, $Constraint)
+DropConstraint('stockserialmoves', 'stockserialmoves_ibfk_2'); // TODO re-add compound fk constraint after changing size
+DropConstraint('worequirements', 'worequirements_ibfk_3'); // TODO re-add compound fk constraint after changing size
+
+// 1.1.2 drop child fk constraints
+// DropConstraint($Table, $Constraint)
+DropConstraint('bom', 'bom_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('bom', 'bom_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('contractbom', 'contractbom_ibfk_3'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('custitem', 'custitem_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('locstock', 'locstock_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('loctransfers', 'loctransfers_ibfk_3'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('mrpdemands', 'mrpdemands_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('offers', 'offers_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1'); // ok AddConstraint() (1 constraint table-column) FYI orderdeliverydifferenceslog_ibfk_2 has 2 constraint table-columns
+DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('prices', 'prices_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('purchdata', 'purchdata_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('salescatprod', 'salescatprod_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('stockcounts', 'stockcounts_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('stockmoves', 'stockmoves_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('stockserialitems', 'stockserialitems_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('woitems', 'woitems_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
+DropConstraint('worequirements', 'worequirements_ibfk_2');  // ok AddConstraint() (1 constraint table-column) FYI worequirements_ibfk_3 has 2 constraint table-columns
 // 26 constraints 
 
-// drop secondary foreign key constraints
-//
-// Warning: mysqli_query():
-// (HY000/1833): Cannot change column 'stockid': used in a foreign key constraint 'weberp_kayden/stockserialmoves_ibfk_2' of table 'weberp_kayden/stockserialmoves' in...
-//
-// Warning: mysqli_query():
-// (HY000/1833): Cannot change column 'stockid': used in a foreign key constraint 'worequirements_ibfk_3' of table 'weberp_kayden.worequirements' in...
-// 
-// function DropConstraint($Table, $Constraint)
-DropConstraint('stockserialmoves', 'stockserialmoves_ibfk_2');
-DropConstraint('worequirements', 'worequirements_ibfk_3');
 
-
-// 1.2 change size of parent (stockmaster.stockid)
+// 1.2 change "stockid" parent, child and grandchild foreign key columns (bottom-up order, same as BUD for fk constraints)
+// 1.2.1 change grandchild fk columns
 // ChangeColumnSize($Column, $Table, $Type, $Null, $Default, $Size)
-ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockserialitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'worequirements', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 
-// 1.3 change size of children
+// 1.2.2 change child fk columns
 // ChangeColumnSize($Column, $Table, $Type, $Null, $Default, $Size)
 ChangeColumnSize('parent', 'bom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 ChangeColumnSize('component', 'bom', 'VARCHAR(64)', ' NOT NULL ', '', '64');
@@ -121,22 +118,15 @@ ChangeColumnSize('stockid', 'stockitemproperties', 'VARCHAR(64)', ' NOT NULL ', 
 ChangeColumnSize('stockid', 'stockmoves', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 ChangeColumnSize('stockid', 'stockrequestitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 ChangeColumnSize('stockid', 'woitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-// 21 actual foreign key columns
+// 21 columns
 
-// TODO review correctness and structure of foreign key constraints
-// in woitems and worequirements
-
-// change size of grand-children
+// 1.2.3 change parent key column (stockmaster.stockid)
 // ChangeColumnSize($Column, $Table, $Type, $Null, $Default, $Size)
-ChangeColumnSize('stockid', 'stockserialitems', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'worequirements', 'VARCHAR(64)', ' NOT NULL ', '', '64');
+ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 
-// 1.4 restore grandchild foreign key constraints
-// AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
-AddConstraint('stockserialmoves', 'stockserialmoves_ibfk_2', 'stockid', 'stockserialitems', 'stockid');
-AddConstraint('worequirements', 'worequirements_ibfk_3', 'stockid', 'woitems', 'stockid');
 
-// 1.5 restore child foreign key constraints
+// 1.3 add (re-add) fk constraints (Top-Down-Add aka TDA)
+// 1.3.1 add child fk constraints
 // AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
 AddConstraint('bom', 'bom_ibfk_1', 'parent', 'stockmaster', 'stockid');
 AddConstraint('bom', 'bom_ibfk_2', 'component', 'stockmaster', 'stockid');
@@ -157,28 +147,37 @@ AddConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1', 'stockid', 'stockma
 AddConstraint('stockcounts', 'stockcounts_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 //
 AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-// TODO determine if folling 2 constraints are redundant and if so, do not add
+// TODO next 2 constraints may be redundant
 AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_3', 'stockid', 'stockmaster', 'stockid');
 AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_5', 'stockid', 'stockmaster', 'stockid');
 
-// TODO investiate possible additional redundant foreign key constraints in stockitemproperties table
+// TODO review potential redundant foreign key constraints in stockitemproperties table
 
 AddConstraint('stockmoves', 'stockmoves_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 
 AddConstraint('stockrequestitems', 'stockrequestitems_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-// TODO determine if following 1 constraint is redundant and if so, do not add
+// TODO next 1 constraint may be redundant
 AddConstraint('stockrequestitems', 'stockrequestitems_ibfk_4', 'stockid', 'stockmaster', 'stockid');
 
 AddConstraint('stockserialitems', 'stockserialitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 AddConstraint('woitems', 'woitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 AddConstraint('worequirements', 'worequirements_ibfk_2', 'stockid', 'stockmaster', 'stockid');
 
+// 1.3.2 add (re-add) grandchild fk constraints
+// AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
+AddConstraint('stockserialmoves', 'stockserialmoves_ibfk_2', 'stockid', 'stockserialitems', 'stockid');
+// TODO FIX re-add complex fk relationship:
+//   ALTER TABLE `stockserialmoves` ADD CONSTRAINT `stockserialmoves_ibfk_2` FOREIGN KEY (`stockid`, `serialno`) REFERENCES `stockserialitems`(`stockid`, `serialno`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+AddConstraint('worequirements', 'worequirements_ibfk_3', 'stockid', 'woitems', 'stockid');
+// TODO FIX re-add complex fk relationship:
+//   ALTER TABLE `worequirements` ADD CONSTRAINT `worequirements_ibfk_3` FOREIGN KEY (`wo`, `parentstockid`) REFERENCES `woitems`(`wo`, `stockid`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
-// 1.6 change size of IMPLICIT stockid child foreign key columns
-// 1.6.1 columns named stockid same as parent
+
+// 1.4 change size of IMPLICIT stockid child foreign key columns
+// 1.4.1 columns named stockid (same as parent)
 // 
 // Use SQL query to obtain columns named "stockid" and manually remove those with explicit
-// fk constraints found in step 1.1
+// fk constraints that were found in step 1.1
 //
 //   SELECT 
 //       TABLE_NAME, 
@@ -211,48 +210,44 @@ AddConstraint('worequirements', 'worequirements_ibfk_2', 'stockid', 'stockmaster
 //   | tenderitems                  | stockid     | varchar   |
 //   | woserialnos                  | stockid     | varchar   |
 //   +------------------------------+-------------+-----------+
-//   16 implicit foreign key columns
-//
+//   16 columns
 
-// first drop foreign key constraint on stockserialmoves.stockid
-//
-//   ChangeColumnSize('stockid', 'stockserialmoves',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-//   Warning: mysqli_query(): (HY000/1832): Cannot change column 'stockid': used in a foreign key constraint 'weberp_scc/stockserialmoves_ibfk_2' in...
-
+// 1.4.1.1 drop foreign key constraint on stockserialmoves.stockid
+// - indicated by error when attempting to resize columns without first deleting constraints
 // function DropConstraint($Table, $Constraint)
 //DropConstraint('stockserialmoves', stockserialmoves_ibfk_2');
 
-// changes sizes of implicit child fk columns
-ChangeColumnSize('stockid', 'assetmanager',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'ediitemmapping',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'employees',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'lastcostrollup',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'loctransfercancellations',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'pickserialdetails',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'pricematrix',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'relateditems',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'salesanalysis',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'sellthroughsupport',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'shipmentcharges',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'stockdescriptiontranslations',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+// 1.4.1.2 changes sizes of implicit child fk columns
+//ChangeColumnSize('stockid', 'assetmanager',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'ediitemmapping',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'employees',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'lastcostrollup',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'loctransfercancellations',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'pickserialdetails',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'pricematrix',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'relateditems',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'salesanalysis',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'sellthroughsupport',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'shipmentcharges',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'stockdescriptiontranslations',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 
 //ChangeColumnSize('stockid', 'stockserialmoves',  'VARCHAR(64)', ' NOT NULL ', '', '64');
 
-ChangeColumnSize('stockid', 'supplierdiscounts',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'tenderitems',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-ChangeColumnSize('stockid', 'woserialnos',  'VARCHAR(64)', ' NOT NULL ', '', '64');
-// 16 implicit foreign key child columns
+//ChangeColumnSize('stockid', 'supplierdiscounts',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'tenderitems',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+//ChangeColumnSize('stockid', 'woserialnos',  'VARCHAR(64)', ' NOT NULL ', '', '64');
+// 16 columns
 
-// and finally re-add foreign key constraint
-// TODO make same as current - compound constraint from stockserialmoves.stockid AND stockserialmoves.serialno to stockserialitems.stockid AND stockserialitems.serialno 
+// 1.4.1.3 add (re-add) foreign key constraint
 // AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
 //AddConstraint('stockserialmoves', 'stockserialmoves_ibfk_2', 'stockid', 'stockserialitems', 'stockid');
+// TODO FIX re-add complex fk relationship (compound constraint from stockserialmoves.stockid AND stockserialmoves.serialno to stockserialitems.stockid AND stockserialitems.serialno)
 
 
-// Step 1.6.2 columns named stkcode (also used as an explicit fk)
+// 1.4.2 columns named stkcode (because it was used as an explit fk constraint name)
 
-// Use SQL query to obtain list of constraints named "stkcode" and remove explicit
-// constraints having the same name as those found in step 1.1
+// Use SQL query to obtain list of constraints named "stkcode" (because the name had been used
+// as an explit fk contraint) and remove explicit constraints having the same name as those found in step 1.1
 //
 //   SELECT 
 //       TABLE_NAME, 
@@ -271,16 +266,15 @@ ChangeColumnSize('stockid', 'woserialnos',  'VARCHAR(64)', ' NOT NULL ', '', '64
 //   | recurrsalesorderdetails | stkcode     | varchar   |
 //   | salesorderdetails       | stkcode     | varchar   |
 //   +-------------------------+-------------+-----------+
-//   2 rows in set
-//
+//   2 rows
+
 //ChangeColumnSize('stkcode', 'recurrsalesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
 //ChangeColumnSize('stkcode', 'salesorderdetails', 'VARCHAR(64)', ' NOT NULL ', '', '64');
-// 2 implicit foreign key child columns
 
 
-// Step 1.6.3 columns defined as "varchar(20)"
-// Step 1.6.4 columns with "code" in their name
-// Step 1.6.5 columns with "id" in their name
+// Step 1.4.3 columns defined as "varchar(20)"
+// Step 1.4.4 columns with "code" in their name
+// Step 1.4.5 columns with "id" in their name
 
 
 // 2. INCREASE SIZE OF DESCRIPTION TO 255 CHAR (FROM 50)
