@@ -55,37 +55,37 @@
 // 1.1.1 drop grandchild fk constraints
 // - indicated by error when attempting to resize grandchild foreign key columns without first deleting constraints
 // DropConstraint($Table, $Constraint)
-DropConstraint('stockserialmoves', 'stockserialmoves_ibfk_2'); // TODO re-add compound fk constraint after changing size
-DropConstraint('worequirements', 'worequirements_ibfk_3'); // TODO re-add compound fk constraint after changing size
+DropConstraint('stockserialmoves', 'stockserialmoves_ibfk_2'); // complex fk constraint after changing size
+DropConstraint('worequirements', 'worequirements_ibfk_3'); // complex fk constraint
 
 // 1.1.2 drop child fk constraints
 // DropConstraint($Table, $Constraint)
-DropConstraint('bom', 'bom_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('bom', 'bom_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('contractbom', 'contractbom_ibfk_3'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('custitem', 'custitem_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('locstock', 'locstock_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('loctransfers', 'loctransfers_ibfk_3'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('mrpdemands', 'mrpdemands_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('offers', 'offers_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1'); // ok AddConstraint() (1 constraint table-column) FYI orderdeliverydifferenceslog_ibfk_2 has 2 constraint table-columns
-DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('prices', 'prices_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('purchdata', 'purchdata_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('salescatprod', 'salescatprod_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('stockcounts', 'stockcounts_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('stockmoves', 'stockmoves_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('stockserialitems', 'stockserialitems_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('woitems', 'woitems_ibfk_1'); // ok AddConstraint() (1 constraint table-column)
-DropConstraint('worequirements', 'worequirements_ibfk_2');  // ok AddConstraint() (1 constraint table-column) FYI worequirements_ibfk_3 has 2 constraint table-columns
+DropConstraint('bom', 'bom_ibfk_1');
+DropConstraint('bom', 'bom_ibfk_2');
+DropConstraint('contractbom', 'contractbom_ibfk_3');
+DropConstraint('custitem', 'custitem_ibfk_1');
+DropConstraint('locstock', 'locstock_ibfk_2');
+DropConstraint('loctransfers', 'loctransfers_ibfk_3');
+DropConstraint('mrpdemands', 'mrpdemands_ibfk_2');
+DropConstraint('offers', 'offers_ibfk_2');
+DropConstraint('orderdeliverydifferenceslog', 'orderdeliverydifferenceslog_ibfk_1');
+DropConstraint('pickreqdetails', 'pickreqdetails_ibfk_1');
+DropConstraint('prices', 'prices_ibfk_1');
+DropConstraint('purchdata', 'purchdata_ibfk_1');
+DropConstraint('recurrsalesorderdetails', 'recurrsalesorderdetails_ibfk_2');
+DropConstraint('salescatprod', 'salescatprod_ibfk_1');
+DropConstraint('salesorderdetails', 'salesorderdetails_ibfk_2');
+DropConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1');
+DropConstraint('stockcounts', 'stockcounts_ibfk_1');
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_1');
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_3');
+DropConstraint('stockitemproperties', 'stockitemproperties_ibfk_5');
+DropConstraint('stockmoves', 'stockmoves_ibfk_1');
+DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_2');
+DropConstraint('stockrequestitems', 'stockrequestitems_ibfk_4');
+DropConstraint('stockserialitems', 'stockserialitems_ibfk_1');
+DropConstraint('woitems', 'woitems_ibfk_1');
+DropConstraint('worequirements', 'worequirements_ibfk_2');
 // 26 constraints 
 
 
@@ -147,7 +147,7 @@ AddConstraint('stockcheckfreeze', 'stockcheckfreeze_ibfk_1', 'stockid', 'stockma
 AddConstraint('stockcounts', 'stockcounts_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 //
 AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_1', 'stockid', 'stockmaster', 'stockid');
-// TODO next 2 constraints may be redundant
+// TODO determine if following (2) constraints are redundant
 AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_3', 'stockid', 'stockmaster', 'stockid');
 AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_5', 'stockid', 'stockmaster', 'stockid');
 
@@ -156,7 +156,7 @@ AddConstraint('stockitemproperties', 'stockitemproperties_ibfk_5', 'stockid', 's
 AddConstraint('stockmoves', 'stockmoves_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 
 AddConstraint('stockrequestitems', 'stockrequestitems_ibfk_2', 'stockid', 'stockmaster', 'stockid');
-// TODO next 1 constraint may be redundant
+// TODO determine if next (1) constraint is redundant
 AddConstraint('stockrequestitems', 'stockrequestitems_ibfk_4', 'stockid', 'stockmaster', 'stockid');
 
 AddConstraint('stockserialitems', 'stockserialitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
@@ -164,20 +164,19 @@ AddConstraint('woitems', 'woitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 AddConstraint('worequirements', 'worequirements_ibfk_2', 'stockid', 'stockmaster', 'stockid');
 
 // 1.3.2 add (re-add) grandchild fk constraints
-// AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
-AddConstraint('stockserialmoves', 'stockserialmoves_ibfk_2', 'stockid', 'stockserialitems', 'stockid');
-// TODO FIX re-add complex fk relationship:
-//   ALTER TABLE `stockserialmoves` ADD CONSTRAINT `stockserialmoves_ibfk_2` FOREIGN KEY (`stockid`, `serialno`) REFERENCES `stockserialitems`(`stockid`, `serialno`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-AddConstraint('worequirements', 'worequirements_ibfk_3', 'stockid', 'woitems', 'stockid');
-// TODO FIX re-add complex fk relationship:
-//   ALTER TABLE `worequirements` ADD CONSTRAINT `worequirements_ibfk_3` FOREIGN KEY (`wo`, `parentstockid`) REFERENCES `woitems`(`wo`, `stockid`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+// complex fk relationship requires direct SQL query
+$SQL = "ALTER TABLE `stockserialmoves` ADD CONSTRAINT `stockserialmoves_ibfk_2` FOREIGN KEY (`stockid`, `serialno`) REFERENCES `stockserialitems`(`stockid`, `serialno`) ON DELETE RESTRICT ON UPDATE RESTRICT";
+$Result = DB_query($SQL);
+// complex fk relationship requires direct SQL query
+$SQL = "ALTER TABLE `worequirements` ADD CONSTRAINT `worequirements_ibfk_3` FOREIGN KEY (`wo`, `parentstockid`) REFERENCES `woitems`(`wo`, `stockid`) ON DELETE RESTRICT ON UPDATE RESTRICT";
+$Result = DB_query($SQL);
 
 
 // 1.4 change size of IMPLICIT stockid child foreign key columns
 // 1.4.1 columns named stockid (same as parent)
 // 
-// Use SQL query to obtain columns named "stockid" and manually remove those with explicit
-// fk constraints that were found in step 1.1
+// Use SQL query to obtain columns named "stockid" and manually remove columns
+// listed in step 1.1
 //
 //   SELECT 
 //       TABLE_NAME, 
@@ -215,7 +214,7 @@ AddConstraint('worequirements', 'worequirements_ibfk_3', 'stockid', 'woitems', '
 // 1.4.1.1 drop foreign key constraint on stockserialmoves.stockid
 // - indicated by error when attempting to resize columns without first deleting constraints
 // function DropConstraint($Table, $Constraint)
-//DropConstraint('stockserialmoves', stockserialmoves_ibfk_2');
+DropConstraint('stockserialmoves', 'stockserialmoves_ibfk_2');
 
 // 1.4.1.2 changes sizes of implicit child fk columns
 //ChangeColumnSize('stockid', 'assetmanager',  'VARCHAR(64)', ' NOT NULL ', '', '64');
@@ -240,12 +239,11 @@ AddConstraint('worequirements', 'worequirements_ibfk_3', 'stockid', 'woitems', '
 
 // 1.4.1.3 add (re-add) foreign key constraint
 // AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
-//AddConstraint('stockserialmoves', 'stockserialmoves_ibfk_2', 'stockid', 'stockserialitems', 'stockid');
-// TODO FIX re-add complex fk relationship (compound constraint from stockserialmoves.stockid AND stockserialmoves.serialno to stockserialitems.stockid AND stockserialitems.serialno)
-
+//$SQL = "ALTER TABLE `stockserialmoves` ADD CONSTRAINT `stockserialmoves_ibfk_2` FOREIGN KEY (`stockid`, `serialno`) REFERENCES `stockserialitems`(`stockid`, `serialno`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
+//$Result = DB_query($SQL);
 
 // 1.4.2 columns named stkcode (because it was used as an explit fk constraint name)
-
+//
 // Use SQL query to obtain list of constraints named "stkcode" (because the name had been used
 // as an explit fk contraint) and remove explicit constraints having the same name as those found in step 1.1
 //
@@ -393,7 +391,6 @@ AddConstraint('worequirements', 'worequirements_ibfk_3', 'stockid', 'woitems', '
 // https://github.com/timschofield/webERP/discussions/591
 // TODO Modify Z_ImportStocks.php? Create new script Z_ImportBOMs.php? 
 
-
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Change stockid size 1.6.1 WIP implicit stockid'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Change stockid size 1.4.1.1'));
 }
