@@ -88,7 +88,6 @@ DropConstraint('woitems', 'woitems_ibfk_1');
 DropConstraint('worequirements', 'worequirements_ibfk_2');
 // 26 constraints 
 
-
 // 1.2 change "stockid" parent, child and grandchild foreign key columns (bottom-up order, same as BUD for fk constraints)
 // 1.2.1 change grandchild fk columns
 // ChangeColumnSize($Column, $Table, $Type, $Null, $Default, $Size)
@@ -126,6 +125,7 @@ ChangeColumnSize('stockid', 'stockmaster',  'VARCHAR(64)', ' NOT NULL ', '', '64
 
 
 // 1.3 add (re-add) fk constraints (Top-Down-Add aka TDA)
+// 
 // 1.3.1 add child fk constraints
 // AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
 AddConstraint('bom', 'bom_ibfk_1', 'parent', 'stockmaster', 'stockid');
@@ -222,7 +222,7 @@ AddConstraint('worequirements', 'worequirements_ibfk_3', array('wo', 'parentstoc
 // 1.4.1.1 drop foreign key constraint on stockserialmoves.stockid
 // - indicated by error when attempting to resize columns without first deleting constraints
 // function DropConstraint($Table, $Constraint)
-DropConstraint('stockserialmoves', 'stockserialmoves_ibfk_2');
+//DropConstraint('stockserialmoves', 'stockserialmoves_ibfk_2');  // this was dropped in 1.1.1 and re-added in 1.3.2
 
 // 1.4.1.2 changes sizes of implicit child fk columns
 //ChangeColumnSize('stockid', 'assetmanager',  'VARCHAR(64)', ' NOT NULL ', '', '64');
