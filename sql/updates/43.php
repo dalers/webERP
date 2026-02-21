@@ -1,12 +1,17 @@
 <?php
 
-// 1. ADD stockmaster.notes (MAX 65KB but Z_ImportStocks.php only allows 3.5K)
-//    - related discussion
-//      - https://github.com/timschofield/webERP/issues/592#issuecomment-3770372715
-//      - https://github.com/timschofield/webERP/discussions/812#discussioncomment-15543024
+// ENHANCE PLM FEATURES
+//
+// Related issues and discussion
+// - Supporting "lite but rigorous" PLM https://github.com/timschofield/webERP/discussions/813
+// - PLM Features https://github.com/timschofield/webERP/wiki/PLM-Features
+
+
+// 1. ADD stockmaster.notes FOR AD HOC STOCK ITEM NOTES
 //    - Notes column is intended for ad hoc notes about a stock item
-//    - Resolves issue 592 "Schema is missing an Item "Notes" field" https://github.com/timschofield/webERP/issues/592
 //    - Parts&Vendors allows "approximately 60K" char
+//    - resolves issue 592 "Schema is missing an Item "Notes" field" https://github.com/timschofield/webERP/issues/592
+//    - !! Allows max 65KB but Z_ImportStocks.php only allows 3.5K
 //
 //    The "notes" column will accomodate the Parts&Vendors PN table PNNotes
 //    column per "approximately 60K" on pg 149 of the P&V v6 User Manual, which
@@ -19,10 +24,11 @@
 //    Note while stockmaster.longdescription would be large enough to store the P&V
 //    Notes column, perhaps even concatenated with (prefixed by) the Detail field
 //    (255 char + 60K char < 65K char), use of longdescription is already
-//    established (e.g. by @pakricard for an e-store product description).
+//    established (e.g. by @pakricard for e-commerce store product description
+//    https://github.com/timschofield/webERP/discussions/812#discussioncomment-15543024)).
 
 // AddColumn($Column, $Table, $Type, $Null, $Default, $After)
-//AddColumn('notes', 'stockmaster', 'text', 'NULL', '', 'actualcost');
+AddColumn('notes', 'stockmaster', 'text', 'NULL', '', 'actualcost');
 
 
 // 2. ADD TABLE "stockfils" STOCK ITEM RELATED FILE/URL TABLE
@@ -32,6 +38,7 @@
 //    - has foreign key constraint to stockmaster.stockid
 
 // CreateTable($Table, $SQL)
+// TODO remove back ticks from definition?
 //CreateTable('stockfils', 'CREATE TABLE `stockfils` (
 //  `filid` INTEGER NOT NULL AUTO_INCREMENT, 
 //  `filstockid` VARCHAR(64),
@@ -42,20 +49,7 @@
 //  INDEX (`filid`, `filstockid`), 
 //  INDEX (`filstockid`), 
 //  PRIMARY KEY (`filid`)
-//)');
-
-// CREATE TABLE stockfils (
-// filid INTEGER NOT NULL AUTO_INCREMENT,
-// filstockid VARCHAR(64),
-// filfilepath VARCHAR(255),
-// filefilename VARCHAR(255),
-// filview TINYINT(1) DEFAULT 0,
-// filnotes VARCHAR(50),
-// INDEX (filid, filstockid),
-// INDEX (filstockid),
-// PRIMARY KEY (filid)
-// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+//) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
 
 // foreign key constraint
 // AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
@@ -140,5 +134,5 @@
 
 
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Add stock item file/URL and mfr-related tables'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Enhance data for PLM'));
 }

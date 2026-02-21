@@ -157,7 +157,7 @@ AddConstraint('stockserialitems', 'stockserialitems_ibfk_1', 'stockid', 'stockma
 AddConstraint('woitems', 'woitems_ibfk_1', 'stockid', 'stockmaster', 'stockid');
 AddConstraint('worequirements', 'worequirements_ibfk_2', 'stockid', 'stockmaster', 'stockid');
 
-// 3.2 add (re-add) grandchild fk constraints (note both are compound constraints)
+// 3.2 add grandchild fk constraints
 AddConstraint('stockserialmoves', 'stockserialmoves_ibfk_2', array('stockid', 'serialno'), 'stockserialitems', array('stockid', 'serialno'));
 AddConstraint('worequirements', 'worequirements_ibfk_3', array('wo', 'parentstockid'), 'woitems', array('wo', 'stockid'));
 
@@ -202,7 +202,6 @@ AddConstraint('worequirements', 'worequirements_ibfk_3', array('wo', 'parentstoc
 //   16 columns
 
 // 4.1.1 drop foreign key constraint on stockserialmoves.stockid
-// - indicated by error when attempting to resize columns without first deleting constraints
 // DropConstraint($Table, $Constraint)
 DropConstraint('stockserialmoves', 'stockserialmoves_ibfk_2');  // fwiw this key was also dropped in 1.1.1 (and re-added in 1.3.2)
 
@@ -308,5 +307,5 @@ ChangeColumnSize('description', 'stockmaster', 'VARCHAR(255)', ' NOT NULL ', '',
 
 
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Increase stockid and description size'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Increase stockmaster.stockid and description size'));
 }
