@@ -140,5 +140,5 @@
 
 
 if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Add stock file/URL and mfr-related tables (NOT)'));
+	UpdateDBNo(basename(__FILE__, '.php'), __('Add stock item file/URL and mfr-related tables'));
 }
