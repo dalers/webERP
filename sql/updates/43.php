@@ -38,7 +38,6 @@ AddColumn('notes', 'stockmaster', 'text', 'NULL', '', 'actualcost');
 //    - has foreign key constraint to stockmaster.stockid
 
 // CreateTable($Table, $SQL)
-// TODO remove back ticks from definition?
 //CreateTable('stockfils', 'CREATE TABLE `stockfils` (
 //  `filid` INTEGER NOT NULL AUTO_INCREMENT, 
 //  `filstockid` VARCHAR(64),
@@ -55,8 +54,25 @@ AddColumn('notes', 'stockmaster', 'text', 'NULL', '', 'actualcost');
 // AddConstraint($Table, $Constraint, $Field, $ReferenceTable, $ReferenceField)
 //AddConstraint('stockfils', 'stockfils_ibfk_1', 'filstockid', 'stockmaster', 'stockid');
 
-// ALTER TABLE `stockfils` ADD CONSTRAINT `stockfils_ibfk_1` FOREIGN KEY (`filstockid`) REFERENCES `stockmaster`(`stockid`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-// phpMyAdmin: Error creating foreign key on filstockid (check data types)
+// must use SQL directly due to CreateTable() error
+ 
+$SQL = "CREATE TABLE stockfils (
+  filid INTEGER NOT NULL AUTO_INCREMENT,
+  filstockid VARCHAR(64),
+  filfilepath VARCHAR(255),
+  filefilename VARCHAR(255),
+  filview TINYINT(1) DEFAULT 0,
+  filnotes VARCHAR(50),
+  INDEX (filid, filstockid),
+  INDEX (filstockid),
+  PRIMARY KEY (filid)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+$ErrMsg = __('Error creating stockfils table');
+$Result = DB_query($SQL, $ErrMsg);
+
+$SQL = "ALTER TABLE stockfils ADD CONSTRAINT stockfils_ibfk_1 FOREIGN KEY (filstockid) REFERENCES stockmaster(stockid) ON DELETE RESTRICT ON UPDATE RESTRICT";
+$ErrMsg = __('Error creating stockfils_ibfk_1 fk constraint');
+$Result = DB_query($SQL, $ErrMsg);
 
 
 // 3. ADD "supplierlin" SUPPLIER LINE CARD
