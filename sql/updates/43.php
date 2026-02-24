@@ -195,7 +195,7 @@ $SQL = "CREATE TABLE manufacturerspn (
 $ErrMsg = __('Error creating manufacturerspn table');
 $Result = DB_query($SQL, $ErrMsg);
 
-// TODO CHANGE mfnufacturerspnid TO VARCHAR(64) IF FK TO STOCKMASTER.STOCKID
+// TODO CHANGE manufacturerspnid TO VARCHAR(64) IF FK TO stockmaster.stockid
 
 // foreign key constraints
 // TODO add foreign key constraints for manufacturerspn table
@@ -203,7 +203,7 @@ $Result = DB_query($SQL, $ErrMsg);
 //  - is manufacturerspnmfrid a fk to stockmaster.stockid? TODO change column type to VARCHAR(64)
 
 
-// TODO ADD BOM IMPORT (JUST A REMINDER - NOTHING TO DO WITH UPGRADE) 
+// TODO ADD BOM IMPORT (JUST A REMINDER - NOTHING TO DO WITH PLM SCHEMA CHANGES) 
 // resolves discussion "How to Import BOMs"
 // https://github.com/timschofield/webERP/discussions/591
 // TODO Modify Z_ImportStocks.php? Create new script Z_ImportBOMs.php? 
