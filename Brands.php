@@ -91,7 +91,7 @@ if (isset($_POST['submit'])) {
 			}
 		}
 
-		$SQL = "UPDATE manufacturers SET manufacturers_name='" . $_POST['BrandsName'] . "',
+		$SQL = "UPDATE brands SET manufacturers_name='" . $_POST['BrandsName'] . "',
 									manufacturers_url='" . $_POST['BrandsURL'] . "'";
 		if (isset($_POST['BrandsImage'])){
 			$SQL .= ", manufacturers_image='" . $_POST['BrandsImage'] . "'";
