@@ -7,7 +7,7 @@
 // - PLM Features https://github.com/timschofield/webERP/wiki/PLM-Features
 
 
-// 1. ADD STOCK ITEM NOTES COLUMN stockmaster.notes
+// 1. ADD STOCK ITEM NOTES table
 //    - Notes column is intended for ad hoc notes about a stock item
 //    - Parts&Vendors allows "approximately 60K" char
 //    - resolves issue 592 "Schema is missing an Item "Notes" field" https://github.com/timschofield/webERP/issues/592
@@ -17,18 +17,20 @@
 //    column per "approximately 60K" on pg 149 of the P&V v6 User Manual, which
 //    presumably means 60,000 ASCII characters - or just less than the 65K max
 //    for a MariaDB "text" column (if 8-bit characters)
+//    
+//    Existing "Customer Notes" feature is re-factored for "Stock Notes"
 // 
 //    Z_ImportStocks.php LIMITS CSV IMPORT ROW TO 4KB!!!
 //    - should still allow 3.5K+ for Notes
 //
-//    Note while stockmaster.longdescription would be large enough to store the P&V
-//    Notes column, perhaps even concatenated with (prefixed by) the Detail field
-//    (255 char + 60K char < 65K char), use of longdescription is already
-//    established (e.g. by @pakricard for e-commerce store product description
+//    The stockmaster.longdescription column is large enough to store P&V
+//    Notes column data, perhaps even concatenated with (prefixed by) the the
+//    P&V Detail field (255 char + 60K char < 65K char), but longdescription use
+//    is already established (e.g. by @pakricard for e-commerce store product description
 //    https://github.com/timschofield/webERP/discussions/812#discussioncomment-15543024)).
 
-// AddColumn($Column, $Table, $Type, $Null, $Default, $After)
-AddColumn('notes', 'stockmaster', 'text', 'NULL', '', 'actualcost');
+// CreateTable($Table, $SQL)
+//CreateTable('stocknotes', 'SQL'); // TODO fix CreateTable() call
 
 
 // 2. ADD TABLE STOCK ITEM RELATED FILE/URL TABLE stockfils
