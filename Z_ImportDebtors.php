@@ -34,60 +34,61 @@ if (isset($_POST['FormID'])) {
 // If this script is called with a file object, then the file contents are imported
 // If this script is called with the gettemplate flag, then a template file is served
 // Otherwise, a file upload form is displayed
-$FieldHeadings = array('debtorno', //0
-'name', //1
-'address1', //2
-'address2', //3
-'address3', //4
-'address4', //5
-'address5', //6
-'address6', //7
-'currcode', //8
-'salestype', //9
-'clientsince', //10
-'holdreason', //11
-'paymentterms', //12
-'discount', //13
-'pymtdiscount', //14
-'lastpaid', //15
-'lastpaiddate', //16
-'creditlimit', //17
-'invaddrbranch', //18
-'discountcode', //19
-'Languageid', //20
-'ediinvoices', //21
-'ediorders', //22
-'edireference', //23
-'editransport', //24
-'ediaddress', //25
-'ediserveruser', //26
-'ediserverpwd', //27
-'taxref', //28
-'customerpoline', //29
-'typeid', //30
-'lat', //31
-'lng', //32
-'estdeliverydays', //33
-'area', //34
-'salesman', //35
-'fwddate', //36
-'phoneno', //37
-'faxno', //38
-'contactname', //39
-'email', //40
-'defaultlocation', //41
-'taxgroupid', //42
-'defaultshipvia', //43
-'deliverblind', //44
-'disabletrans', //45
-'brpostaddr1', //46
-'brpostaddr2', //47
-'brpostaddr3', //48
-'brpostaddr4', //49
-'brpostaddr5', //50
-'brpostaddr6', //51
-'specialinstructions', //52
-'custbranchcode', //53
+$FieldHeadings = array(
+'debtorno', //0              //A   //DebtorNo
+'name', //1                  //B   //CustName
+'address1', //2              //C   //Address1
+'address2', //3              //D   //Address2
+'address3', //4              //E   //Address3
+'address4', //5              //F   //Address4
+'address5', //6              //G   //Address5
+'address6', //7              //H   //Address6
+'currcode', //8              //I   //CurrCode
+'salestype', //9             //J   //SalesType
+'clientsince', //10          //K   //ClientSince
+'holdreason', //11           //L   //HoldReason
+'paymentterms', //12         //M   //PaymentTerms
+'discount', //13             //N   //Discount
+'pymtdiscount', //14         //O   //PymtDiscount
+'lastpaid', //15             //P   //lastpaid
+'lastpaiddate', //16         //Q   //lastpaiddate
+'creditlimit', //17          //R   //CreditLimit
+'invaddrbranch', //18        //S   //InvAddrBranch
+'discountcode', //19         //T   //DiscountCode
+'Languageid', //20           //U   //LanguageID
+'ediinvoices', //21          //V   //EDIInvoices
+'ediorders', //22            //W   //EDIOrders
+'edireference', //23         //X   //EDIReference
+'editransport', //24         //Y   //EDITransport
+'ediaddress', //25           //Z   //EDIAddress
+'ediserveruser', //26        //AA  //EDIServerUser
+'ediserverpwd', //27         //AB  //EDIServerPwd
+'taxref', //28               //AC  //TaxRef
+'customerpoline', //29       //AD  //CustomerPOLine
+'typeid', //30               //AE  //typeid
+'lat', //31                  //AF  //Latitude
+'lng', //32                  //AG  //Longitude
+'estdeliverydays', //33      //AH  //EstDeliveryDays
+'area', //34                 //AI  //Area
+'salesman', //35             //AJ  //Salesman
+'fwddate', //36              //AK  //FwdDate
+'phoneno', //37              //AL  //PhoneNo
+'faxno', //38                //AM  //FaxNo
+'contactname', //39          //AN  //ContactName
+'email', //40                //AO  //Email
+'defaultlocation', //41      //AP  //DefaultLocation
+'taxgroupid', //42           //AQ  //TaxGroup
+'defaultshipvia', //43       //AR  //DefaultShipVia
+'deliverblind', //44         //AS  //DeliverBlind
+'disabletrans', //45         //AT  //DisableTrans
+'brpostaddr1', //46          //AU  //BRpostAddr1
+'brpostaddr2', //47          //AV  //BRPostAddr2
+'brpostaddr3', //48          //AW  //BRPostAddr3
+'brpostaddr4', //49          //AX  //BRPostAddr4
+'brpostaddr5', //50          //AY  //BRPostAddr5
+'brpostaddr6', //51          //AZ  //BRPostAddr6
+'specialinstructions', //52  //BA  //SpecialInstructions
+'custbranchcode', //53       //BB  //CustBranchCode
 );
 
 if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file processing
@@ -218,8 +219,9 @@ if (isset($_FILES['userfile']) and $_FILES['userfile']['name']) { //start file p
 		$_POST['BrPostAddr3'] = $Filerow[48];
 		$_POST['BrPostAddr4'] = $Filerow[49];
 		$_POST['BrPostAddr5'] = $Filerow[50];
-		$_POST['CustBranchCode'] = $Filerow[51];
+		$_POST['BrPostAddr6'] = $Filerow[51];
 		$_POST['SpecialInstructions'] = $Filerow[52];
+		$_POST['CustBranchCode'] = $Filerow[53];
 
 		$i = 0;
 		if ($_POST['AutoDebtorNo'] == 0 and mb_strlen($_POST['DebtorNo']) == 0) {
