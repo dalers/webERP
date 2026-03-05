@@ -163,9 +163,9 @@ if (!isset($_POST['continue'])) {
 	$ForceConfigReload = false;
 
 	echo '<div class="centre">
-		<a href="' . $RootPath . '/Logout.php" title="' . __('Log out of') . ' ' . 'webERP">
-			'. __('Click here to login again for changes to take affect') . '
-		</a>
+		<a class="button" href="' . $RootPath . '/Logout.php">' .
+			__('You must click here to log in again for changes to take affect') .
+		'</a>
 	</div>';
 }
 
