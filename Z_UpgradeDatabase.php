@@ -162,11 +162,22 @@ if (!isset($_POST['continue'])) {
 	include(__DIR__ . '/includes/GetConfig.php');
 	$ForceConfigReload = false;
 
+	// is rendered as a button but not exactly like "Continue" button (using Xenos theme)
 	echo '<div class="centre">
-		<a class="button" href="' . $RootPath . '/Logout.php">' .
-			__('You must click here to log in again for changes to take affect') .
-		'</a>
+		<form action="' . $RootPath . '/Logout.php" method="post">
+			<input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />
+			<input type="submit" name="submit" 
+	            style="background: linear-gradient(to bottom, #4a7eb0 0%, #2f5d8a 100%); 
+					color: white; 
+					border: 1px solid #1f4266; 
+					padding: 8px 16px; 
+					border-radius: 4px; 
+					font-weight: bold; 
+					cursor: pointer;" 
+		        value="' . __('Login again for changes to take affect') . '" />
+		</form>
 	</div>';
+
 }
 
 include(__DIR__ . '/includes/footer.php');
