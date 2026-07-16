@@ -371,7 +371,6 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 						<th>', __('Note'), '</th>
 						<th>', __('Edit'), '</th>
 						<th>', __('Delete'), '</th>
-						<th> <a href="', $RootPath, '/AddStockItemNotes.php?StockID=', urlencode($StockID), '">', __('Add New Note'), '</a> </th>
 					</tr>
 				</thead>';
 		echo '<tbody>';
@@ -381,11 +380,11 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 					<td>', nl2br(htmlspecialchars($ItemNoteRow['note'], ENT_QUOTES, 'UTF-8', false)), '</td>
 					<td><a href="', $RootPath, '/AddStockItemNotes.php?Id=', urlencode($ItemNoteRow['noteid']), '&amp;StockID=', urlencode($ItemNoteRow['stockid']), '">', __('Edit'), '</a></td>
 					<td><a href="', $RootPath, '/AddStockItemNotes.php?Id=', urlencode($ItemNoteRow['noteid']), '&amp;StockID=', urlencode($ItemNoteRow['stockid']), '&amp;delete=1" onclick="return confirm(\'' . __('Are you sure you wish to delete this item note?') . '\');">', __('Delete'), '</a></td>
-					<td></td>
 				</tr>';
 		}
 		echo '</tbody>
 			</table>';
+		echo '<div class="centre"><a href="' . $RootPath . '/AddStockItemNotes.php?StockID=' . urlencode($StockID) . '">' . __('Add New Note') . '</a></div>';
 	} else {
 		echo '<p class="page_title_text">
 				<img src="', $RootPath, '/css/', $Theme, '/images/note_add.png" title="', __('Item Notes'), '" alt="" />
