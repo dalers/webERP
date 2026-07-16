@@ -384,14 +384,14 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 		}
 		echo '</tbody>
 			</table>';
-		echo '<div class="centre"><a href="' . $RootPath . '/AddStockItemNotes.php?StockID=' . urlencode($StockID) . '">' . __('Add New Note') . '</a></div>';
+		echo '<div class="centre" style="margin-top: 12px;"><a href="' . $RootPath . '/AddStockItemNotes.php?StockID=' . urlencode($StockID) . '">' . __('Add New Note') . '</a></div>';
 	} else {
 		echo '<p class="page_title_text">
 				<img src="', $RootPath, '/css/', $Theme, '/images/note_add.png" title="', __('Item Notes'), '" alt="" />
 				<a href="', $RootPath, '/AddStockItemNotes.php?StockID=', urlencode($StockID), '">', __('Add New Note for this Item'), '</a>
 			</p>';
 	}
-		echo '<div class="page_help_text">', __('Select a menu option to operate using this inventory item.'), '</div>',// Page help text.
+		echo '<div class="page_help_text" style="margin-top: 16px;">', __('Choose a menu item for the selected stock item.'), '</div>',// Page help text.
 		'<br />',
 		$TableHead,
 			'<tr>
