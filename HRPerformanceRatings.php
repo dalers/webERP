@@ -10,6 +10,8 @@ $BookMark = 'HRPerformanceRatings';
 
 include(__DIR__ . '/includes/header.php');
 
+require_once(__DIR__ . '/includes/HRPerformanceHelper.php');
+
 echo '<p class="page_title_text">
 		<img alt="" src="' . $RootPath . '/css/' . $Theme . '/images/award.png" title="' . __('Performance Ratings') . '" /> ' .
 		__('Performance Criteria Ratings') . '
@@ -17,14 +19,17 @@ echo '<p class="page_title_text">
 
 // Handle form submission
 if (isset($_POST['SubmitRatings'])) {
-	$ReviewID = (int)$_POST['ReviewID'];
-
-	if ($ReviewID > 0) {
+	if (!hash_equals($_SESSION['FormID'], $_POST['FormID'])) {
+		prnMsg(__('Form token validation failed'), 'error');
+	} elseif (isset($_POST['ReviewID']) && (int)$_POST['ReviewID'] > 0) {
+		$ReviewID = (int)$_POST['ReviewID'];
 		DB_Txn_Begin();
 
-		// Delete existing ratings for this review
+		/* Delete existing ratings inside a transaction so that if any
+		 * subsequent insert fails, the connection close rolls back the
+		 * delete automatically — leaving the original data intact. */
 		$SQL = "DELETE FROM hrperformanceratings WHERE reviewid = " . $ReviewID;
-		DB_query($SQL);
+		DB_query($SQL, __('Could not delete existing ratings'));
 
 		// Insert new ratings
 		$TotalWeightedScore = 0;
@@ -41,6 +46,10 @@ if (isset($_POST['SubmitRatings'])) {
 				$SQL = "SELECT weight FROM hrperformancecriteria WHERE criteriaid = " . $CriteriaID;
 				$Result = DB_query($SQL);
 				$CriteriaRow = DB_fetch_array($Result);
+				if ($CriteriaRow === false) {
+					/* Criteria no longer exists — skip this rating */
+					continue;
+				}
 				$Weight = $CriteriaRow['weight'];
 
 				$WeightedScore = $Rating * ($Weight / 100);
@@ -57,7 +66,7 @@ if (isset($_POST['SubmitRatings'])) {
 							'" . $_SESSION['UserID'] . "',
 							NOW()
 						)";
-				DB_query($SQL);
+				DB_query($SQL, __('Could not insert performance rating'));
 
 				$TotalWeightedScore += $WeightedScore;
 				$TotalWeight += $Weight;
@@ -68,15 +77,20 @@ if (isset($_POST['SubmitRatings'])) {
 		// Calculate overall score
 		$OverallScore = $TotalWeight > 0 ? $TotalWeightedScore : 0;
 
-		// Update review with overall score
+		// Map numeric score to rating label and update review record
+		$MappedRating = MapScoreToRating($OverallScore);
+		$RatingLabels = GetRatingLabels();
+		$OverallLabel = ($MappedRating !== null && isset($RatingLabels[$MappedRating])) ? $RatingLabels[$MappedRating] : '';
+
 		$SQL = "UPDATE hrperformancereviews
-				SET overallscore = " . $OverallScore . "
+				SET overallscore = " . $OverallScore . ",
+				    overallrating = '" . DB_escape_string($OverallLabel) . "' 
 				WHERE reviewid = " . $ReviewID;
 		DB_query($SQL);
 
 		DB_Txn_Commit();
 
-		prnMsg($RatingCount . ' ' . __('criteria ratings have been saved successfully. Overall Score') . ': ' . number_format($OverallScore, 2), 'success');
+		prnMsg($RatingCount . ' ' . __('criteria ratings have been saved successfully. Overall Score') . ': ' . number_format($OverallScore, 2) . ' - ' . ($OverallLabel ? __($OverallLabel) : __('Pending')), 'success');
 	}
 }
 
@@ -105,32 +119,46 @@ if (!isset($_GET['ReviewID']) && !isset($_POST['ReviewID'])) {
 			ORDER BY pr.reviewdate DESC, e.lastname, e.firstname";
 	$Result = DB_query($SQL);
 
-	while ($Row = DB_fetch_array($Result)) {
-		echo '<option value="' . $Row['reviewid'] . '">' .
-			$Row['employeenumber'] . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] .
-			' (' . ConvertSQLDate($Row['reviewdate']) . ' - ' . $Row['reviewtype'] . ')' .
-			'</option>';
-	}
-
-	echo '</select></td>
+	if (DB_num_rows($Result) == 0) {
+		echo '</select></td>
 			</tr>
 			</table>
 		</form>';
+		echo '<div style="background-color: #fff3cd; padding: 15px; margin: 20px 0; border: 1px solid #ffc107; border-radius: 4px;">
+				<p><strong>' . __('No Performance Reviews Found') . '</strong></p>
+				<p>' . __('Before you can add performance ratings, you need to create a performance review first.') . '</p>
+				<p>' . __('Please visit') . ' <a href="' . htmlspecialchars($RootPath . '/HRPerformanceReviews.php', ENT_QUOTES, 'UTF-8') . '">' . __('Performance Reviews') . '</a> ' . __('to create a new review.') . '</p>
+			</div>';
+	} else {
+		while ($Row = DB_fetch_array($Result)) {
+			echo '<option value="' . $Row['reviewid'] . '">' .
+				$Row['employeenumber'] . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] .
+				' (' . ConvertSQLDate($Row['reviewdate']) . ' - ' . $Row['reviewtype'] . ')' .
+				'</option>';
+		}
+
+		echo '</select></td>
+			</tr>
+			</table>
+		</form>';
+	}
 }
 
-// Display rating form
+	// Display rating form
 if (isset($_GET['ReviewID']) || isset($_POST['ReviewID'])) {
 	$ReviewID = isset($_GET['ReviewID']) ? (int)$_GET['ReviewID'] : (int)$_POST['ReviewID'];
 
-	// Get review details
+	// Get review details with scale information
 	$SQL = "SELECT pr.*,
 				e.firstname, e.lastname, e.employeenumber,
 				d.description,
-				p.positiontitle
+				p.positiontitle,
+				hs.minvalue, hs.maxvalue
 			FROM hrperformancereviews pr
 			INNER JOIN hremployees e ON pr.employeeid = e.employeeid
 			LEFT JOIN departments d ON e.departmentid = d.departmentid
 			LEFT JOIN hrpositions p ON e.positionid = p.positionid
+			LEFT JOIN hrratingscales hs ON pr.scaleid = hs.scaleid
 			WHERE pr.reviewid = " . $ReviewID;
 	$Result = DB_query($SQL);
 	$ReviewRow = DB_fetch_array($Result);
@@ -154,7 +182,7 @@ if (isset($_GET['ReviewID']) || isset($_POST['ReviewID'])) {
 					<td><strong>' . __('Review Type') . ':</strong></td>
 					<td>' . __($ReviewRow['reviewtype']) . '</td>
 					<td><strong>' . __('Overall Rating') . ':</strong></td>
-					<td>' . __($ReviewRow['overallrating']) . '</td>
+					<td>' . ($ReviewRow['status'] == 'Draft' ? __('Pending') : htmlspecialchars($ReviewRow['overallrating'], ENT_QUOTES, 'UTF-8')) . '</td>
 				</tr>
 			</table>
 		</div>';
@@ -210,13 +238,17 @@ if (isset($_GET['ReviewID']) || isset($_POST['ReviewID'])) {
 					<td class="number">' . number_format($Row['weight'], 1) . '%</td>
 					<td>
 						<select name="Rating_' . $Row['criteriaid'] . '" required="required">
-							<option value="">' . __('Select') . '</option>
-							<option value="5"' . ($ExistingRating == 5 ? ' selected="selected"' : '') . '>5 - ' . __('Outstanding') . '</option>
-							<option value="4"' . ($ExistingRating == 4 ? ' selected="selected"' : '') . '>4 - ' . __('Exceeds Expectations') . '</option>
-							<option value="3"' . ($ExistingRating == 3 ? ' selected="selected"' : '') . '>3 - ' . __('Meets Expectations') . '</option>
-							<option value="2"' . ($ExistingRating == 2 ? ' selected="selected"' : '') . '>2 - ' . __('Needs Improvement') . '</option>
-							<option value="1"' . ($ExistingRating == 1 ? ' selected="selected"' : '') . '>1 - ' . __('Unsatisfactory') . '</option>
-						</select>
+							<option value="">' . __('Select') . '</option>';
+
+			/* Use rating scale from review if available, otherwise default to 1-5 */
+			$MinRating = isset($ReviewRow['minvalue']) && $ReviewRow['minvalue'] !== NULL ? (int)$ReviewRow['minvalue'] : 1;
+			$MaxRating = isset($ReviewRow['maxvalue']) && $ReviewRow['maxvalue'] !== NULL ? (int)$ReviewRow['maxvalue'] : 5;
+
+			for ($i = $MaxRating; $i >= $MinRating; $i--) {
+				echo '<option value="' . $i . '"' . ($ExistingRating == $i ? ' selected="selected"' : '') . '>' . $i . '</option>';
+			}
+
+			echo '</select>
 					</td>
 					<td><input type="text" name="Comments_' . $Row['criteriaid'] . '" value="' . htmlspecialchars($ExistingComments) . '" size="50" /></td>
 				</tr>';
@@ -232,10 +264,14 @@ if (isset($_GET['ReviewID']) || isset($_POST['ReviewID'])) {
 
 		echo '</div>';
 
-		// Display existing overall score if available
+		/* Display existing overall score if available */
 		if ($ReviewRow['overallscore'] > 0) {
+			$MinRating = isset($ReviewRow['minvalue']) && $ReviewRow['minvalue'] !== NULL ? (int)$ReviewRow['minvalue'] : 1;
+			$MaxRating = isset($ReviewRow['maxvalue']) && $ReviewRow['maxvalue'] !== NULL ? (int)$ReviewRow['maxvalue'] : 5;
+			$MaxPossibleScore = $MaxRating;
+
 			echo '<div style="margin-top: 20px; padding: 15px; background-color: #c8e6c9; border: 1px solid #4caf50;">
-					<h3>' . __('Current Overall Score') . ': ' . number_format($ReviewRow['overallscore'], 2) . ' / 5.00</h3>
+					<h3>' . __('Current Overall Score') . ': ' . number_format($ReviewRow['overallscore'], 2) . ' / ' . number_format($MaxPossibleScore, 2) . '</h3>
 				</div>';
 		}
 

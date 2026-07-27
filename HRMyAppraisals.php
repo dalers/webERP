@@ -10,10 +10,13 @@ $BookMark = 'HRMyAppraisals';
 
 include(__DIR__ . '/includes/header.php');
 
-echo '<a class="toplink" href="' . $RootPath . '/HRDashboard.php">' . __('Return to HR Dashboard') . '</a>';
+require_once(__DIR__ . '/includes/HRPerformanceHelper.php');
+
+/* Rating labels for hrperfappraisals.overallrating (INT 1-5) */
+$RatingLabels = GetRatingLabels();
 
 echo '<p class="page_title_text">
-		<img alt="" src="' . $RootPath . '/css/' . $Theme . '/images/star.png" title="' . __('My Appraisals') . '" /> ' .
+		<img alt="" src="' . $RootPath . '/css/' . $Theme . '/images/star.png" title="' . __('View My Appraisals') . '" /> ' .
 		__('My Performance Appraisals') . '
 	</p>';
 
@@ -22,7 +25,8 @@ $SQL = "SELECT employeenumber FROM hremployees WHERE userid = '" . DB_escape_str
 $Result = DB_query($SQL);
 
 if (DB_num_rows($Result) == 0) {
-	prnMsg(__('Your user account is not linked to an employee record'), 'warn');
+	// it should never happen that a user is not linked to an employee record, but just in case
+	prnMsg(__('Your webERP user account is not linked to an employee record'), 'warn');
 	include(__DIR__ . '/includes/footer.php');
 	exit;
 }
@@ -76,10 +80,11 @@ if (DB_num_rows($Result) > 0) {
 				<td>' . ConvertSQLDate($MyRow['reviewperiodstart']) . ' - ' . ConvertSQLDate($MyRow['reviewperiodend']) . '</td>
 				<td>' . ConvertSQLDate($MyRow['duedate']) . '</td>
 				<td>' . htmlspecialchars($MyRow['status'], ENT_QUOTES, 'UTF-8') . '</td>
-				<td>' . ($MyRow['overallrating'] ? htmlspecialchars($MyRow['overallrating'], ENT_QUOTES, 'UTF-8') : '-') . '</td>
+				<td>' . (isset($RatingLabels[$MyRow['overallrating']]) ? htmlspecialchars($RatingLabels[$MyRow['overallrating']], ENT_QUOTES, 'UTF-8') : '-') . '</td>
 				<td>' . htmlspecialchars($MyRow['managername'], ENT_QUOTES, 'UTF-8') . '</td>
 				<td class="centre">
-					<a href="' . $RootPath . '/HRAppraisalEntry.php?AppraisalID=' . urlencode($MyRow['appraisalid']) . '&View=1">' . __('View') . '</a>
+					<a href="' . $RootPath . '/HRAppraisalCriteriaSummary.php?AppraisalID=' .
+						urlencode($MyRow['appraisalid']) . '&amp;From=HRMyAppraisals">' . __('View') . '</a>
 				</td>
 			</tr>';
 

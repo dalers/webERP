@@ -3,6 +3,7 @@
 /* Human Resources Management System Dashboard */
 
 require(__DIR__ . '/includes/session.php');
+require_once(__DIR__ . '/includes/HRPerformanceHelper.php');
 
 $Title = __('Human Resources Management');
 $ViewTopic = 'HumanResources';
@@ -18,6 +19,7 @@ while ($OptionRow = DB_fetch_array($OptionsResult)) {
 	$SystemOptions[$OptionRow['optionname']] = $OptionRow['optionvalue'];
 }
 $AppraisalFrequency = isset($SystemOptions['AppraisalFrequency']) ? $SystemOptions['AppraisalFrequency'] : 365;
+$ColleagueFeedbackFrequency = isset($SystemOptions['ColleagueFeedbackFrequency']) ? $SystemOptions['ColleagueFeedbackFrequency'] : 365;
 
 echo '<p class="page_title_text">
 		<img alt="" src="' . $RootPath . '/css/' . $Theme . '/images/group_add.png" title="' . __('Human Resources') . '" /> ' .
@@ -59,6 +61,39 @@ $Result = DB_query($SQL, '', '', false, false);
 $Row = DB_fetch_array($Result);
 $ActiveRequisitions = isset($Row['total']) ? $Row['total'] : 0;
 
+$ColleagueFeedbackTableExists = false;
+$Result = DB_query("SHOW TABLES LIKE 'hrcolleaguefeedback'", '', '', false, false);
+if (DB_num_rows($Result) > 0) {
+	$ColleagueFeedbackTableExists = true;
+}
+
+$PendingColleagueFeedback = 0;
+$EmployeesDueForFeedback = 0;
+if ($ColleagueFeedbackTableExists) {
+	$SQL = "SELECT COUNT(*) as total
+			FROM hrcolleaguefeedback
+			WHERE status IN ('Not Started', 'In Progress')
+				AND (duedate IS NULL OR duedate <= DATE_ADD(CURDATE(), INTERVAL 30 DAY))";
+	$Result = DB_query($SQL, '', '', false, false);
+	$Row = DB_fetch_array($Result);
+	$PendingColleagueFeedback = isset($Row['total']) ? $Row['total'] : 0;
+
+	$SQL = "SELECT COUNT(DISTINCT e.employeeid) as total
+			FROM hremployees e
+			LEFT JOIN (
+				SELECT aboutemployeeid, MAX(feedbackperiodend) as lastfeedback
+				FROM hrcolleaguefeedback
+				WHERE status = 'Completed'
+				GROUP BY aboutemployeeid
+			) f ON e.employeeid = f.aboutemployeeid
+			WHERE e.employmentstatus = 'Active'
+			AND (f.lastfeedback IS NULL
+				OR DATEDIFF(CURDATE(), f.lastfeedback) >= " . (int)$ColleagueFeedbackFrequency . ")";
+	$Result = DB_query($SQL, '', '', false, false);
+	$Row = DB_fetch_array($Result);
+	$EmployeesDueForFeedback = isset($Row['total']) ? $Row['total'] : 0;
+}
+
 // Find employees due for appraisal based on system frequency
 $SQL = "SELECT COUNT(DISTINCT e.employeeid) as total
 		FROM hremployees e
@@ -82,15 +117,21 @@ echo '<h2 style="text-align: center; margin: 20px 0;">' . __('HR Statistics Over
 echo '<div class="hr-stats-grid">
 		<div class="hr-stat-card" style="background-color: #e3f2fd;">
 			<h3 style="color: #0A314F;">' . __('Active Employees') . '</h3>
-			<div class="hr-stat-value">' . number_format($TotalEmployees) . '</div>
+			<div class="hr-stat-value">
+				<a href="' . $RootPath . '/HREmployees.php" style="color: #0A314F; text-decoration: none;">' . number_format($TotalEmployees) . '</a>
+			</div>
 		</div>
 		<div class="hr-stat-card" style="background-color: #f1f8e9;">
 			<h3 style="color: #004303;">' . __('Open Positions') . '</h3>
-			<div class="hr-stat-value">' . number_format($OpenPositions) . '</div>
+			<div class="hr-stat-value">
+				<a href="' . $RootPath . '/HRPositions.php" style="color: #004303; text-decoration: none;">' . number_format($OpenPositions) . '</a>
+			</div>
 		</div>
 		<div class="hr-stat-card" style="background-color: #fff3e0;">
 			<h3 style="color: #6F4404;">' . __('Pending Appraisals') . '</h3>
-			<div class="hr-stat-value">' . number_format($PendingAppraisals) . '</div>
+			<div class="hr-stat-value">
+				<a href="' . $RootPath . '/HRPerformanceAppraisals.php" style="color: #6F4404; text-decoration: none;">' . number_format($PendingAppraisals) . '</a>
+			</div>
 		</div>
 		<div class="hr-stat-card" style="background-color: #ffe0e0;">
 			<h3 style="color: #8B0000;">' . __('Due for Appraisal') . '</h3>
@@ -100,7 +141,21 @@ echo '<div class="hr-stats-grid">
 		</div>
 		<div class="hr-stat-card" style="background-color: #f3e5f5;">
 			<h3 style="color: #9C27B0;">' . __('Active Requisitions') . '</h3>
-			<div class="hr-stat-value">' . number_format($ActiveRequisitions) . '</div>
+			<div class="hr-stat-value">
+				<a href="' . $RootPath . '/HRRequisitions.php" style="color: #9C27B0; text-decoration: none;">' . number_format($ActiveRequisitions) . '</a>
+			</div>
+		</div>
+		<div class="hr-stat-card" style="background-color: #e0f7fa;">
+			<h3 style="color: #006064;">' . __('Pending Colleague Feedback') . '</h3>
+			<div class="hr-stat-value">
+				<a href="' . $RootPath . '/HRColleagueFeedback.php" style="color: #006064; text-decoration: none;">' . number_format($PendingColleagueFeedback) . '</a>
+			</div>
+		</div>
+		<div class="hr-stat-card" style="background-color: #e8f5e9;">
+			<h3 style="color: #1b5e20;">' . __('Due for Feedback') . '</h3>
+			<div class="hr-stat-value">
+				<a href="' . $RootPath . '/HRColleagueFeedbackDue.php" style="color: #1b5e20; text-decoration: none;">' . number_format($EmployeesDueForFeedback) . '</a>
+			</div>
 		</div>
 	</div>';
 
@@ -116,7 +171,7 @@ echo '<div class="hr-module-card">
 		</h3>
 		<ul>
 			<li><a href="' . $RootPath . '/HREmployees.php">' . __('Employee Directory') . '</a></li>
-			<li><a href="' . $RootPath . '/HREmployeeEntry.php">' . __('Add/Edit Employee') . '</a></li>
+			<li><a href="' . $RootPath . '/HREmployees.php">' . __('Add/Edit Employee') . '</a></li>
 			<li><a href="' . $RootPath . '/HRPositions.php">' . __('Positions') . '</a></li>
 			<li><a href="' . $RootPath . '/HRDepartments.php">' . __('Departments') . '</a></li>
 		</ul>
@@ -147,8 +202,19 @@ echo '<div class="hr-module-card">
 			<li><a href="' . $RootPath . '/HRPerformanceAppraisals.php">' . __('Performance Appraisals') . '</a></li>
 			<li><a href="' . $RootPath . '/HRAppraisalEntry.php">' . __('Create Appraisal') . '</a></li>
 			<li><a href="' . $RootPath . '/HRAppraisalsDue.php">' . __('Employees Due for Appraisal') . '</a></li>
-			<li><a href="' . $RootPath . '/HRMyAppraisals.php">' . __('My Appraisals') . '</a></li>
-			<li><a href="' . $RootPath . '/HRRatingScales.php">' . __('Rating Scales') . '</a></li>
+		</ul>
+	</div>';
+
+// Colleague Feedback
+echo '<div class="hr-module-card">
+		<h3 style="color: #006064;">
+			<img src="' . $RootPath . '/css/' . $Theme . '/images/award.png" alt="" />
+			' . __('Colleague Feedback') . '
+		</h3>
+		<ul>
+			<li><a href="' . $RootPath . '/HRColleagueFeedback.php">' . __('All Colleague Feedback') . '</a></li>
+			<li><a href="' . $RootPath . '/HRColleagueFeedbackEntry.php">' . __('Create Feedback') . '</a></li>
+			<li><a href="' . $RootPath . '/HRColleagueFeedbackDue.php">' . __('Colleague Feedback Due') . '</a></li>
 		</ul>
 	</div>';
 
@@ -183,13 +249,11 @@ echo '<div class="hr-module-card">
 echo '<div class="hr-module-card">
 		<h3 style="color: #795548;">
 			<img src="' . $RootPath . '/css/' . $Theme . '/images/currency.png" alt="" />
-			' . __('Budget & Safety') . '
+			' . __('Budget & Incidents') . '
 		</h3>
 		<ul>
 			<li><a href="' . $RootPath . '/HRPositionBudgets.php">' . __('Position Budgets') . '</a></li>
-			<li><a href="' . $RootPath . '/HRSafetyIncidents.php">' . __('Safety Incidents') . '</a></li>
-			<li><a href="' . $RootPath . '/HRSystemOptions.php">' . __('System Options') . '</a></li>
-			<li><a href="' . $RootPath . '/HRAuditTrail.php">' . __('Audit Trail') . '</a></li>
+			<li><a href="' . $RootPath . '/HRSafetyIncidents.php">' . __('Incidents') . '</a></li>
 		</ul>
 	</div>';
 
@@ -198,11 +262,11 @@ echo '</div>';
 // Recent Activity
 echo '<table class="selection" style="width: 90%; margin: 20px auto;">
 		<tr>
-			<th colspan="5">' . __('Recently Added Employees') . '</th>
+			<th colspan="5">' . __('5 Recently Added Employees') . '</th>
 		</tr>';
 
 $SQL = "SELECT e.employeenumber, e.firstname, e.lastname, e.hiredate,
-			d.description, p.positiontitle
+			e.departmentid, d.description, p.positiontitle
 		FROM hremployees e
 		LEFT JOIN departments d ON e.departmentid = d.departmentid
 		LEFT JOIN hrpositions p ON e.positionid = p.positionid
@@ -221,11 +285,14 @@ if (DB_num_rows($Result) > 0) {
 		</tr>';
 
 	while ($Row = DB_fetch_array($Result)) {
+		$EmpLink = $RootPath . '/HREmployees.php?SelectedEmployee=' . urlencode($Row['employeenumber']);
+		$DeptLink = $RootPath . '/HRDepartments.php?SelectedDepartment=' . urlencode($Row['departmentid']);
+		$PaddedEmpNum = PadEmployeeNumber($Row['employeenumber']);
 		echo '<tr class="striped_row">
-				<td>' . $Row['employeenumber'] . '</td>
-				<td>' . $Row['firstname'] . ' ' . $Row['lastname'] . '</td>
-				<td>' . $Row['description'] . '</td>
-				<td>' . $Row['positiontitle'] . '</td>
+				<td><a href="' . $EmpLink . '">' . htmlspecialchars($PaddedEmpNum, ENT_QUOTES, 'UTF-8') . '</a></td>
+				<td><a href="' . $EmpLink . '">' . htmlspecialchars((string)$Row['firstname'] . ' ' . $Row['lastname'], ENT_QUOTES, 'UTF-8') . '</a></td>
+				<td><a href="' . $DeptLink . '">' . htmlspecialchars((string)$Row['description'], ENT_QUOTES, 'UTF-8') . '</a></td>
+				<td>' . htmlspecialchars((string)$Row['positiontitle'], ENT_QUOTES, 'UTF-8') . '</td>
 				<td>' . ConvertSQLDate($Row['hiredate']) . '</td>
 			</tr>';
 	}

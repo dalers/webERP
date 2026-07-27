@@ -59,6 +59,15 @@ if (isset($_POST['Submit']) or isset($_POST['update']) or isset($SelectedTabs) o
 	}
 	$SucessfullyAuthorized = 0;
 
+	/* Retrieve decimal places to display */
+	$SQLDecimalPlaces = "SELECT decimalplaces
+			FROM currencies,pctabs
+			WHERE currencies.currabrev = pctabs.currency
+				AND tabcode = '" . $SelectedTabs . "'";
+	$ResultDecimalPlaces = DB_query($SQLDecimalPlaces);
+	$MyRowDecimalPlaces = DB_fetch_array($ResultDecimalPlaces);
+	$CurrDecimalPlaces = $MyRowDecimalPlaces['decimalplaces'];
+
 	//Limit expenses history to X days
 	echo '<fieldset>
 			<field>
@@ -81,8 +90,7 @@ if (isset($_POST['Submit']) or isset($_POST['update']) or isset($SelectedTabs) o
 				pctabs.glaccountpcash,
 				pctabs.usercode,
 				pctabs.currency,
-				currencies.rate,
-				currencies.decimalplaces
+				currencies.rate
 			FROM pcashdetails, pctabs, currencies
 			WHERE pcashdetails.tabcode = pctabs.tabcode
 				AND pctabs.currency = currencies.currabrev
@@ -109,7 +117,6 @@ if (isset($_POST['Submit']) or isset($_POST['update']) or isset($SelectedTabs) o
 			<tbody>';
 
 	while ($MyRow = DB_fetch_array($Result)) {
-		$CurrDecimalPlaces = $MyRow['decimalplaces'];
 		//update database if update pressed
 		$PeriodNo = GetPeriod(ConvertSQLDate($MyRow['date']));
 		$TaxTotalSQL = "SELECT SUM(amount) as totaltax FROM pcashdetailtaxes WHERE pccashdetail='" . $MyRow['counterindex'] . "'";
@@ -344,15 +351,16 @@ if (isset($_POST['Submit']) or isset($_POST['update']) or isset($SelectedTabs) o
 	/*The option to submit was not hit so display form */
 	echo '<form method="post" action="', htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8'), '">';
 	echo '<input type="hidden" name="FormID" value="', $_SESSION['FormID'], '" />';
-	echo '<fieldset>'; //Main table
+
 	$SQL = "SELECT tabcode
 		FROM pctabs
-		WHERE authorizerexpenses='" . $_SESSION['UserID'] . "'
+		WHERE authorizerexpenses LIKE '%" . $_SESSION['UserID'] . "%'
 		ORDER BY tabcode";
 	$Result = DB_query($SQL);
-	echo '<field>
-			<td>', __('Authorise expenses on petty cash tab'), ':</td>
-			<td><select required="required" name="SelectedTabs">';
+	echo '<fieldset>
+			<field>
+				<label>', __('Authorise expenses on petty cash tab'), '</label>
+				<select required="required" name="SelectedTabs">';
 	while ($MyRow = DB_fetch_array($Result)) {
 		if (isset($_POST['SelectTabs']) and $MyRow['tabcode'] == $_POST['SelectTabs']) {
 			echo '<option selected="selected" value="', $MyRow['tabcode'], '">', $MyRow['tabcode'], '</option>';

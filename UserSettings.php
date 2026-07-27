@@ -3,10 +3,12 @@
 // Allows the user to change system-wide defaults for the theme - appearance, the number of records to show in searches and the language to display messages in.
 
 require(__DIR__ . '/includes/session.php');
+require_once(__DIR__ . '/includes/PasswordValidations.php');
 
 $Title = __('User Settings');
 $ViewTopic = 'GettingStarted';
 $BookMark = 'UserSettings';
+
 include(__DIR__ . '/includes/header.php');
 
 echo '<p class="page_title_text"><img alt="" src="', $RootPath, '/css/', $Theme,
@@ -43,17 +45,14 @@ if (isset($_POST['Modify'])) {
  	$UpdatePassword = 'N';
 
 	if ($_POST['PasswordCheck'] != '') {
-		if (mb_strlen($_POST['Password']) < 5) {
+		if (($PasswordValidationError = ValidatePasswordQuality($_POST['Password'], $_SESSION['UserID'])) != '') {
 			$InputError = 1;
-			prnMsg(__('The password entered must be at least 5 characters long'),'error');
-		} elseif (mb_strstr($_POST['Password'],$_SESSION['UserID'])!= false) {
-			$InputError = 1;
-			prnMsg(__('The password cannot contain the user id'), 'error');
+			prnMsg($PasswordValidationError, 'error');
 		}
 		if ($_POST['Password'] != $_POST['PasswordCheck']) {
 			$InputError = 1;
 			prnMsg(__('The password and password confirmation fields entered do not match'), 'error');
-		} else {
+		} elseif ($PasswordValidationError == '') {
 			$UpdatePassword = 'Y';
 		}
 	}
@@ -64,33 +63,33 @@ if (isset($_POST['Modify'])) {
 			$_POST['Language'] = $DefaultLanguage;
 		}
 
+		$SQL = "UPDATE www_users
+				SET displayrecordsmax='" . $_POST['DisplayRecordsMax'] . "',
+					theme='" . $_POST['Theme'] . "',
+                    fontsize='" . $_POST['FontSize'] . "',
+					language='" . $_POST['Language'] . "',
+					email='" . $_POST['email'] . "',
+					showpagehelp='" . $_POST['ShowPageHelp'] . "',
+					showfieldhelp='" . $_POST['ShowFieldHelp'] . "',
+					pdflanguage='" . $_POST['PDFLanguage'] . "'";
+
+		if ($UpdatePassword == 'Y') {
+			$SQL .= ",
+					password='" . CryptPass($_POST['Password']) . "',
+					forcepasswordchange=0";
+		}
+
+		$SQL .= " WHERE userid = '" . $_SESSION['UserID'] . "'";
+
+		$ErrMsg = __('The user alterations could not be processed because');
+		$Result = DB_query($SQL, $ErrMsg);
+
 		if ($UpdatePassword != 'Y') {
-			$SQL = "UPDATE www_users
-					SET displayrecordsmax='" . $_POST['DisplayRecordsMax'] . "',
-						theme='" . $_POST['Theme'] . "',
-						language='" . $_POST['Language'] . "',
-						email='" . $_POST['email'] . "',
-						showpagehelp='" . $_POST['ShowPageHelp'] . "',
-						showfieldhelp='" . $_POST['ShowFieldHelp'] . "',
-						pdflanguage='" . $_POST['PDFLanguage'] . "'
-					WHERE userid = '" . $_SESSION['UserID'] . "'";
-			$ErrMsg = __('The user alterations could not be processed because');
-			$Result = DB_query($SQL, $ErrMsg);
 			prnMsg( __('The user settings have been updated') . '. ' . __('Be sure to remember your password for the next time you login'),'success');
 		} else {
-			$SQL = "UPDATE www_users
-					SET displayrecordsmax='" . $_POST['DisplayRecordsMax'] . "',
-						theme='" . $_POST['Theme'] . "',
-						language='" . $_POST['Language'] . "',
-						email='" . $_POST['email'] ."',
-						showpagehelp='" . $_POST['ShowPageHelp'] . "',
-						showfieldhelp='" . $_POST['ShowFieldHelp'] . "',
-						pdflanguage='" . $_POST['PDFLanguage'] . "',
-						password='" . CryptPass($_POST['Password']) . "'
-					WHERE userid = '" . $_SESSION['UserID'] . "'";
-			$ErrMsg = __('The user alterations could not be processed because');
-			$Result = DB_query($SQL, $ErrMsg);
 			prnMsg(__('The user settings have been updated'),'success');
+			// update the flag in this session, so user does not get bothered to change password again
+			$_SESSION['ForcePasswordChange'] = 0;
 		}
 		// Update the session variables to reflect user changes on-the-fly:
 		$_SESSION['DisplayRecordsMax'] = $_POST['DisplayRecordsMax'];
@@ -108,8 +107,10 @@ $SQL = "SELECT
 			email,
 			showpagehelp,
 			showfieldhelp,
+            fontsize,
 			language
-		from www_users WHERE userid = '" . $_SESSION['UserID'] . "'";
+		FROM www_users
+		WHERE userid = '" . $_SESSION['UserID'] . "'";
 $Result = DB_query($SQL);
 $MyRow = DB_fetch_array($Result);
 
@@ -119,6 +120,7 @@ if (!isset($_POST['email'])) {
 $_POST['ShowPageHelp'] = $MyRow['showpagehelp'];
 $_POST['ShowFieldHelp'] = $MyRow['showfieldhelp'];
 $_POST['Language'] = $MyRow['language'];
+$_POST['FontSize'] = $MyRow['fontsize'];
 
 echo '<form action="', htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8'), '" method="post">',
 	'<input name="FormID" value="', $_SESSION['FormID'], '" type="hidden" />';
@@ -185,15 +187,44 @@ echo '</select>
 	</field>';
 
 echo '<field>
+        <label for="FontSize">', __('Display Font'), '</label>
+        <select name="FontSize">';
+switch ($_POST['FontSize']) {
+    case 0:
+        echo '<option selected value="0">', __('Small'), '</option>
+            <option value="1">', __('Medium'), '</option>
+            <option value="2">', __('Large'), '</option>';
+        break;
+    case 1:
+        echo '<option value="0">', __('Small'), '</option>
+            <option selected value="1">', __('Medium'), '</option>
+            <option value="2">', __('Large'), '</option>';
+        break;
+    case 2:
+        echo '<option value="0">', __('Small'), '</option>
+            <option value="1">', __('Medium'), '</option>
+            <option selected value="2">', __('Large'), '</option>';
+        break;                                                                                          
+    default:
+        echo '<option value="0">', __('Small'), '</option>
+            <option value="1">', __('Medium'), '</option>
+            <option value="2">', __('Large'), '</option>';
+        break;
+}
+echo '</select>
+        <fieldhelp>', __('Select the size of the screen font') , '</fieldhelp>
+    </field>';
+
+echo '<field>
 		<label for="Password">', __('New Password'), ':</label>
-		<input name="Password" pattern="(?!^', $_SESSION['UserID'], '$).{5,}" placeholder="', __('More than 5 characters'), '" size="20" title="', __('Must be more than 5 characters and cannot be as same as userid'), '" type="password" value="', $_POST['Password'], '" />
-		<fieldhelp>', __('If you leave the password boxes empty your password will not change'), '</fieldhelp>
+		<input id="password" name="Password" placeholder="', __('At least'), ' ', (isset($_SESSION['PasswordMinLenght']) ? $_SESSION['PasswordMinLenght'] : 5), ' ', __('characters'), '" size="20" type="password" value="', $_POST['Password'], '" />
+        <img class="eye" id="eye" alt="" src="', $RootPath, '/css/eye.png" title="' . __('Show Password') . '" />
 	</field>';
 
 echo '<field>
 		<label for="PasswordCheck">', __('Confirm Password'), ':</label>
-		<input name="PasswordCheck" pattern="(?!^', $_SESSION['UserID'], '$).{5,}" placeholder="', __('More than 5 characters'), '" size="20" title="', __('Must be more than 5 characters and cannot be as same as userid'), '" type="password" value="', $_POST['PasswordCheck'], '" />
-		<fieldhelp>', __('Confirm the password you entered above'), '</fieldhelp>
+		<input id="confirmpassword" name="PasswordCheck" placeholder="', __('At least'), ' ', (isset($_SESSION['PasswordMinLenght']) ? $_SESSION['PasswordMinLenght'] : 5), ' ', __('characters'), '" size="20" type="password" value="', $_POST['PasswordCheck'], '" />
+        <img class="eye" id="confirmeye" alt="" src="', $RootPath, '/css/eye.png" title="' . __('Show Password') . '" />
 	</field>';
 
 echo '<field>

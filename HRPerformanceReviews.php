@@ -3,6 +3,7 @@
 /* HR Performance Reviews Management */
 
 require(__DIR__ . '/includes/session.php');
+require_once(__DIR__ . '/includes/HRPerformanceHelper.php');
 
 $Title = __('Performance Reviews');
 $ViewTopic = 'HumanResources';
@@ -30,7 +31,7 @@ if (isset($_POST['Submit'])) {
 
 	if ($InputError != 1) {
 		$ReviewDate = FormatDateForSQL($_POST['ReviewDate']);
-		$NextReviewDate = !empty($_POST['NextReviewDate']) && is_date($_POST['NextReviewDate']) ? "'" . FormatDateForSQL($_POST['NextReviewDate']) . "'" : 'NULL';
+		$NextReviewDate = !empty($_POST['NextReviewDate']) && is_date(ConvertSQLDate($_POST['NextReviewDate'])) ? "'" . FormatDateForSQL($_POST['NextReviewDate']) . "'" : 'NULL';
 
 		if (isset($_POST['ReviewID']) && $_POST['ReviewID'] > 0) {
 			// Update existing review
@@ -49,6 +50,7 @@ if (isset($_POST['Submit'])) {
 						reviewercomments = '" . $_POST['ReviewerComments'] . "',
 						employeecomments = '" . $_POST['EmployeeComments'] . "',
 						nextreviewdate = " . $NextReviewDate . ",
+						scaleid = " . (isset($_POST['ScaleID']) && (int)$_POST['ScaleID'] > 0 ? (int)$_POST['ScaleID'] : 'NULL') . ",
 						modifiedby = '" . $_SESSION['UserID'] . "',
 						modifieddate = NOW()
 					WHERE reviewid = " . (int)$_POST['ReviewID'];
@@ -64,7 +66,7 @@ if (isset($_POST['Submit'])) {
 						reviewerid, overallrating, reviewtype, status,
 						strengths, areasforimprovement, goals,
 						reviewercomments, employeecomments, nextreviewdate,
-						createdby, createddate
+						scaleid, createdby, createddate
 					) VALUES (
 						" . (int)$_POST['EmployeeID'] . ",
 						'" . $ReviewDate . "',
@@ -80,6 +82,7 @@ if (isset($_POST['Submit'])) {
 						'" . $_POST['ReviewerComments'] . "',
 						'" . $_POST['EmployeeComments'] . "',
 						" . $NextReviewDate . ",
+						" . (isset($_POST['ScaleID']) && (int)$_POST['ScaleID'] > 0 ? (int)$_POST['ScaleID'] : 'NULL') . ",
 						'" . $_SESSION['UserID'] . "',
 						NOW()
 					)";
@@ -119,6 +122,7 @@ if (isset($_GET['edit']) || isset($_GET['new']) || !isset($_GET['view'])) {
 	$ReviewerComments = '';
 	$EmployeeComments = '';
 	$NextReviewDate = '';
+	$ScaleID = 0;
 
 	if ($ReviewID > 0) {
 		$SQL = "SELECT * FROM hrperformancereviews WHERE reviewid = " . $ReviewID;
@@ -139,11 +143,11 @@ if (isset($_GET['edit']) || isset($_GET['new']) || !isset($_GET['view'])) {
 			$ReviewerComments = $Row['reviewercomments'];
 			$EmployeeComments = $Row['employeecomments'];
 			$NextReviewDate = ConvertSQLDate($Row['nextreviewdate']);
+			$ScaleID = $Row['scaleid'];
 		}
 	}
 
-	echo '
-			<form method="post" action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '">
+	echo '<form method="post" action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '">
 			<input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />';
 
 	echo '<fieldset>
@@ -161,12 +165,12 @@ if (isset($_GET['edit']) || isset($_GET['new']) || !isset($_GET['view'])) {
 	$SQL = "SELECT employeeid, employeenumber, firstname, lastname
 			FROM hremployees
 			WHERE employmentstatus = 'Active'
-			ORDER BY lastname, firstname";
+			ORDER BY firstname, lastname";
 	$Result = DB_query($SQL);
 	while ($Row = DB_fetch_array($Result)) {
 		echo '<option value="' . $Row['employeeid'] . '"' .
 			($EmployeeID == $Row['employeeid'] ? ' selected="selected"' : '') .
-			'>' . $Row['employeenumber'] . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</option>';
+			'>' . PadEmployeeNumber($Row['employeenumber']) . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</option>';
 	}
 
 	echo '</select>
@@ -180,12 +184,12 @@ if (isset($_GET['edit']) || isset($_GET['new']) || !isset($_GET['view'])) {
 	$SQL = "SELECT employeeid, employeenumber, firstname, lastname
 			FROM hremployees
 			WHERE employmentstatus = 'Active'
-			ORDER BY lastname, firstname";
+			ORDER BY firstname, lastname";
 	$Result = DB_query($SQL);
 	while ($Row = DB_fetch_array($Result)) {
 		echo '<option value="' . $Row['employeeid'] . '"' .
 			($ReviewerID == $Row['employeeid'] ? ' selected="selected"' : '') .
-			'>' . $Row['employeenumber'] . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</option>';
+			'>' . PadEmployeeNumber($Row['employeenumber']) . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</option>';
 	}
 
 	echo '</select>
@@ -208,12 +212,29 @@ if (isset($_GET['edit']) || isset($_GET['new']) || !isset($_GET['view'])) {
 
 			<field>
 				<label for="ReviewType">' . __('Review Type') . ':</label>
-				<select name="ReviewType">
-					<option value="Annual"' . ($ReviewType == 'Annual' ? ' selected="selected"' : '') . '>' . __('Annual') . '</option>
-					<option value="Probation"' . ($ReviewType == 'Probation' ? ' selected="selected"' : '') . '>' . __('Probation') . '</option>
-					<option value="Mid-Year"' . ($ReviewType == 'Mid-Year' ? ' selected="selected"' : '') . '>' . __('Mid-Year') . '</option>
-					<option value="Special"' . ($ReviewType == 'Special' ? ' selected="selected"' : '') . '>' . __('Special') . '</option>
-				</select>
+								<select name="ReviewType">
+									<option value="Performance"' . ($ReviewType == 'Performance' ? ' selected="selected"' : '') . '>' . __('Performance') . '</option>
+									<option value="Probation"' . ($ReviewType == 'Probation' ? ' selected="selected"' : '') . '>' . __('Probation') . '</option>
+									<option value="Annual"' . ($ReviewType == 'Annual' ? ' selected="selected"' : '') . '>' . __('Annual') . '</option>
+									<option value="Mid-Year"' . ($ReviewType == 'Mid-Year' ? ' selected="selected"' : '') . '>' . __('Mid-Year') . '</option>
+									<option value="Project"' . ($ReviewType == 'Project' ? ' selected="selected"' : '') . '>' . __('Project') . '</option>
+								</select>
+			</field>
+
+			<field>
+				<label for="ScaleID">' . __('Rating Scale') . ':</label>
+				<select name="ScaleID">
+					<option value="">' . __('Select Rating Scale (Optional)') . '</option>';
+
+	$SQL = "SELECT scaleid, scalename FROM hrratingscales WHERE active = 1 ORDER BY scalename";
+	$Result = DB_query($SQL);
+	while ($Row = DB_fetch_array($Result)) {
+		echo '<option value="' . $Row['scaleid'] . '"' .
+			($ScaleID == $Row['scaleid'] ? ' selected="selected"' : '') .
+			'>' . htmlspecialchars($Row['scalename'], ENT_QUOTES, 'UTF-8') . '</option>';
+	}
+
+	echo '</select>
 			</field>
 
 			<field>
@@ -296,7 +317,7 @@ if (isset($_GET['view'])) {
 
 			<table width="100%" style="margin-top: 20px;">
 				<tr>
-					<td width="50%"><strong>' . __('Employee') . ':</strong> ' . $ReviewRow['firstname'] . ' ' . $ReviewRow['lastname'] . ' (' . $ReviewRow['employeenumber'] . ')</td>
+					<td width="50%"><strong>' . __('Employee') . ':</strong> ' . $ReviewRow['firstname'] . ' ' . $ReviewRow['lastname'] . ' (' . PadEmployeeNumber($ReviewRow['employeenumber']) . ')</td>
 					<td><strong>' . __('Review Date') . ':</strong> ' . ConvertSQLDate($ReviewRow['reviewdate']) . '</td>
 				</tr>
 				<tr>
@@ -315,7 +336,7 @@ if (isset($_GET['view'])) {
 
 			<hr style="margin: 20px 0;" />
 
-			<h3>' . __('Overall Rating') . ': <span style="color: #d32f2f;">' . __($ReviewRow['overallrating']) . '</span></h3>
+			<h3>' . __('Overall Rating') . ': <span style="color: #d32f2f;">' . ($ReviewRow['status'] == 'Draft' ? __('Pending') : htmlspecialchars($ReviewRow['overallrating'], ENT_QUOTES, 'UTF-8')) . '</span></h3>
 
 			<h3>' . __('Key Strengths') . '</h3>
 			<p style="white-space: pre-wrap; padding: 10px; background-color: white; border: 1px solid #ccc;">' . htmlspecialchars($ReviewRow['strengths']) . '</p>
@@ -358,12 +379,12 @@ if (!isset($_GET['view'])) {
 	$SQL = "SELECT employeeid, employeenumber, firstname, lastname
 			FROM hremployees
 			WHERE employmentstatus = 'Active'
-			ORDER BY lastname, firstname";
+			ORDER BY firstname, lastname";
 	$Result = DB_query($SQL);
 	while ($Row = DB_fetch_array($Result)) {
 		echo '<option value="' . $Row['employeeid'] . '"' .
 			($FilterEmployee == $Row['employeeid'] ? ' selected="selected"' : '') .
-			'>' . $Row['employeenumber'] . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</option>';
+			'>' . PadEmployeeNumber($Row['employeenumber']) . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</option>';
 	}
 
 	echo '</select></td>
@@ -375,12 +396,13 @@ if (!isset($_GET['view'])) {
 					<option value="Acknowledged"' . ($FilterStatus == 'Acknowledged' ? ' selected="selected"' : '') . '>' . __('Acknowledged') . '</option>
 				</select></td>
 				<td>' . __('Review Type') . ':</td>
-				<td><select name="FilterReviewType" onchange="this.form.submit()">
-					<option value="">' . __('All Types') . '</option>
-					<option value="Annual"' . ($FilterReviewType == 'Annual' ? ' selected="selected"' : '') . '>' . __('Annual') . '</option>
-					<option value="Probation"' . ($FilterReviewType == 'Probation' ? ' selected="selected"' : '') . '>' . __('Probation') . '</option>
-					<option value="Mid-Year"' . ($FilterReviewType == 'Mid-Year' ? ' selected="selected"' : '') . '>' . __('Mid-Year') . '</option>
-					<option value="Special"' . ($FilterReviewType == 'Special' ? ' selected="selected"' : '') . '>' . __('Special') . '</option>
+				<td>				<select name="FilterReviewType" onchange="this.form.submit()">
+				<option value="">' . __('All Types') . '</option>
+				<option value="Performance"' . ($FilterReviewType == 'Performance' ? ' selected="selected"' : '') . '>' . __('Performance') . '</option>
+				<option value="Probation"' . ($FilterReviewType == 'Probation' ? ' selected="selected"' : '') . '>' . __('Probation') . '</option>
+				<option value="Annual"' . ($FilterReviewType == 'Annual' ? ' selected="selected"' : '') . '>' . __('Annual') . '</option>
+				<option value="Mid-Year"' . ($FilterReviewType == 'Mid-Year' ? ' selected="selected"' : '') . '>' . __('Mid-Year') . '</option>
+				<option value="Project"' . ($FilterReviewType == 'Project' ? ' selected="selected"' : '') . '>' . __('Project') . '</option>
 				</select></td>
 			</tr>
 			</fieldset>
@@ -439,11 +461,11 @@ if (!isset($_GET['view'])) {
 			}
 
 			echo '<tr ' . $StatusColor . '>
-					<td>' . $Row['employeenumber'] . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</td>
+					<td>' . PadEmployeeNumber($Row['employeenumber']) . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</td>
 					<td>' . ConvertSQLDate($Row['reviewdate']) . '</td>
 					<td>' . ConvertSQLDate($Row['reviewperiodstart']) . ' to ' . ConvertSQLDate($Row['reviewperiodend']) . '</td>
 					<td>' . __($Row['reviewtype']) . '</td>
-					<td><strong>' . __($Row['overallrating']) . '</strong></td>
+					<td><strong>' . ($Row['status'] == 'Draft' ? __('Pending') : htmlspecialchars($Row['overallrating'], ENT_QUOTES, 'UTF-8')) . '</strong></td>
 					<td>' . ($Row['reviewerfirstname'] ? $Row['reviewerfirstname'] . ' ' . $Row['reviewerlastname'] : '-') . '</td>
 					<td>' . __($Row['status']) . '</td>
 					<td>

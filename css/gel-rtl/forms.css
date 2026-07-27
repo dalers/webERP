@@ -34,11 +34,17 @@ form fieldset field {
 display:block;
 text-align:right;
 margin-bottom:3px;
+clear:both;
 }
 form fieldset field label {
 float:right;
 width:24.5em;
 text-align:right;
+}
+form fieldset field img.eye {
+width:16px;
+vertical-align:center;
+cursor:pointer;
 }
 form fieldset field .fieldtext {
 margin-bottom:8px;
