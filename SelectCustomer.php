@@ -781,9 +781,7 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 							<th>', __('note'), '</th>
 							<th>', __('hyperlink'), '</th>
 							<th class="SortedColumn">', __('priority'), '</th>
-							<th>', __('Edit'), '</th>
-							<th>', __('Delete'), '</th>
-							<th> <a href="' . $RootPath . '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', ' ', __('Add New Note'), '</a> </th>
+							<th colspan="2" style="width:12%">', __('Action'), '</th>
 						</tr>
 					</thead>';
 			$k = 0; // row colour counter
@@ -794,13 +792,13 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 						<td>', $MyRow['note'], '</td>
 						<td><a href="', $MyRow['href'], '">', $MyRow['href'], '</a></td>
 						<td>', $MyRow['priority'], '</td>
-						<td><a href="' . $RootPath . '/AddCustomerNotes.php?Id=', urlencode($MyRow['noteid']), '&amp;DebtorNo=', urlencode($MyRow['debtorno']), '">', __('Edit'), '</a></td>
-						<td><a href="' . $RootPath . '/AddCustomerNotes.php?Id=', urlencode($MyRow['noteid']), '&amp;DebtorNo=', urlencode($MyRow['debtorno']), '&amp;delete=1">', __('Delete'), '</a></td>
-						<td></td>
+						<td style="text-align:center; width:6%; white-space:nowrap"><a href="' . $RootPath . '/AddCustomerNotes.php?Id=', urlencode($MyRow['noteid']), '&amp;DebtorNo=', urlencode($MyRow['debtorno']), '">', __('Edit'), '</a></td>
+						<td style="text-align:center; width:6%; white-space:nowrap"><a href="' . $RootPath . '/AddCustomerNotes.php?Id=', urlencode($MyRow['noteid']), '&amp;DebtorNo=', urlencode($MyRow['debtorno']), '&amp;delete=1" onclick="return confirm(\'' . __('Are you sure you wish to delete this customer note?') . '\');">', __('Delete'), '</a></td>
 					</tr>';
 			} // END WHILE LIST LOOP
 			echo '</tbody>';
 			echo '</table>';
+			echo '<div class="centre" style="margin-top: 12px;"><a href="' . $RootPath . '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add New Note'), '</a></div>';
 		} // DB_num_rows($Result) <> 0
 		else {
 			if ($_SESSION['CustomerID'] != '') {
