@@ -672,9 +672,7 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 							<th>', __('Email'), '</th>
 							<th class="text">', __('Statement'), '</th>
 							<th>', __('Notes'), '</th>
-							<th>', __('Edit'), '</th>
-							<th>', __('Delete'), '</th>
-							<th> <a href="' . $RootPath . '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add New Contact'), '</a></th>
+							<th colspan="2" style="width:16%; white-space:nowrap">', __('Action'), '</th>
 						</tr>
 					</thead>';
 
@@ -687,9 +685,8 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 						<td><a href="mailto:', $MyRow[6], '">', $MyRow[6], '</a></td>
 						<td>', ($MyRow[7] == 0) ? __('No') : __('Yes'), '</td>
 						<td>', $MyRow[5], '</td>
-						<td><a href="' . $RootPath . '/AddCustomerContacts.php?Id=', urlencode($MyRow[0]), '&DebtorNo=', urlencode($MyRow[1]), '">', __('Edit'), '</a></td>
-						<td><a href="' . $RootPath . '/AddCustomerContacts.php?Id=', urlencode($MyRow[0]), '&DebtorNo=', urlencode($MyRow[1]), '&delete=1">', __('Delete'), '</a></td>
-						<td></td>
+						<td style="text-align:center; width:8%; white-space:nowrap"><a href="' . $RootPath . '/AddCustomerContacts.php?Id=', urlencode($MyRow[0]), '&DebtorNo=', urlencode($MyRow[1]), '">', __('Edit'), '</a></td>
+						<td style="text-align:center; width:8%; white-space:nowrap"><a href="' . $RootPath . '/AddCustomerContacts.php?Id=', urlencode($MyRow[0]), '&DebtorNo=', urlencode($MyRow[1]), '&delete=1">', __('Delete'), '</a></td>
 					</tr>';
 			} // END WHILE LIST LOOP
 			// Customer Branch Contacts if selected
@@ -711,11 +708,12 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 						<td>', __('Branch Contact'), ' ', $BranchContact[0], '</td>
 						<td>', $BranchContact[3], '</td>
 						<td><a href="mailto:', $BranchContact[4], '">', $BranchContact[4], '</a></td>
-						<td colspan="5"></td>
+						<td colspan="4"></td>
 					</tr>';
 			}
 			echo '</tbody>
 				</table>';
+			echo '<div class="centre" style="margin-top: 12px; margin-bottom: 18px;"><a href="' . $RootPath . '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add New Contact'), '</a></div>';
 		} // DB_num_rows($Result) <> 0
 		else {
 			if ($_SESSION['CustomerID'] != '') {
