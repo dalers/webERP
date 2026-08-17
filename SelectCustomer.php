@@ -147,7 +147,7 @@ if ($_SESSION['CustomerID'] != '' and !isset($_POST['Search']) and !isset($_POST
 		</p>'; // Page title.
 
 	ob_start();
-	echo '<div class="page_help_text" style="margin-top: 16px; margin-bottom: 12px;">', __('Choose a menu item for the selected customer.'), '</div>';
+	echo '<div class="page_help_text" style="margin-top: 16px; margin-bottom: 12px;">', __('Chose a menu item for the selected customer.'), '</div>';
 	echo '<table cellpadding="4" width="90%" class="selection">
 			<thead>
 				<tr>
@@ -179,12 +179,13 @@ if ($_SESSION['CustomerID'] != '' and !isset($_POST['Search']) and !isset($_POST
 					<td valign="top" class="select">
 						<a href="', $RootPath, '/Customers.php">', __('Add a New Customer'), '</a><br />
 						<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Modify Customer Details'), '</a><br />
+						<a href="', $RootPath, '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Contact'), '</a><br />
+						<a href="', $RootPath, '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Note'), '</a><br />
+						<br />
 						<a href="', $RootPath, '/CustomerBranches.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add/Edit/Delete Customer Branches'), '</a><br />
 						<a href="', $RootPath, '/SelectProduct.php">', __('Special Customer Prices'), '</a><br />
 						<a href="', $RootPath, '/CustEDISetup.php">', __('Customer EDI Configuration'), '</a><br />
 						<a href="', $RootPath, '/CustLoginSetup.php">', __('Customer Login Configuration'), '</a><br />
-						<a href="', $RootPath, '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a customer contact'), '</a><br />
-						<a href="', $RootPath, '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a note on this customer'), '</a>
 					</td>
 				</tr>
 			</tbody>
