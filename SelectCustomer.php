@@ -197,6 +197,23 @@ if ($_SESSION['CustomerID'] != '' and !isset($_POST['Search']) and !isset($_POST
 
 }
 
+$TableHead =
+	'<table cellpadding="4" width="90%" class="selection">
+		<thead>
+			<tr>
+				<th style="width:33%">' .
+					'<img alt="" src="' . $RootPath . '/css/' . $_SESSION['Theme'] . '/images/reports.png" title="' . __('Inquiries and Reports') . '" />' .
+					__('Customer Inquiries') . '</th>
+				<th style="width:33%">' .
+					'<img alt="" src="' . $RootPath . '/css/' . $_SESSION['Theme'] . '/images/transactions.png" title="' . __('Customer Transactions') . '" />' .
+					__('Customer Transactions') . '</th>
+				<th style="width:33%">' .
+					'<img alt="" src="' . $RootPath . '/css/' . $_SESSION['Theme'] . '/images/maintenance.png" title="' . __('Customer Maintenance') . '" />' .
+					__('Customer Maintenance') . '</th>
+			</tr>
+		</thead>
+		<tbody>';
+
 ob_start();
 
 echo '<p class="page_title_text"><img alt="" src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/customer.png" title="', __('Customers'), '" /> ', __('Customers'), '</p>';
@@ -207,6 +224,16 @@ echo '<form action="', htmlspecialchars(basename(__FILE__), ENT_QUOTES, 'UTF-8')
 if (mb_strlen($Msg) > 1) {
 	prnMsg($Msg, 'info');
 } // mb_strlen($Msg) > 1
+if (!isset($_SESSION['CustomerID']) || $_SESSION['CustomerID'] == '') {
+	echo '<br />',
+		$TableHead,
+		'<tr>',
+			'<td class="select"></td>',
+			'<td class="select"></td>',
+			'<td class="select"><a href="', $RootPath, '/Customers.php">', __('Add a New Customer'), '</a></td>',
+		'</tr><tbody></table>';
+}
+
 echo '<p class="page_title_text">
 		<img alt="" src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/magnifier.png" title="', __('Search'), '" /> ', __('Search for Customers'), '
 	</p>'; // Page title.
