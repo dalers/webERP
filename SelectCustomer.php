@@ -29,6 +29,9 @@ if (isset($_GET['Area'])) {
 if (!isset($_SESSION['CustomerType'])) { // initialise if not already done
 	$_SESSION['CustomerType'] = '';
 } // !isset($_SESSION['CustomerType'])
+if (isset($_POST['Go1']) or isset($_POST['Go2']) or isset($_POST['Go']) or isset($_POST['Next']) or isset($_POST['Previous']) or isset($_POST['CSV']) or isset($_POST['Search'])) {
+	unset($_POST['JustSelectedACustomer']);
+}
 if (isset($_POST['JustSelectedACustomer'])) {
 	if (isset($_POST['SubmitCustomerSelection'])) {
 		foreach ($_POST['SubmitCustomerSelection'] as $CustomerID => $BranchCode) $_SESSION['CustomerID'] = $CustomerID;
@@ -386,7 +389,7 @@ if (isset($SearchResult)) {
 				$MyRow['brname'] = '';
 			}
 			echo '<tr class="striped_row">
-					<td><button type="submit" name="SubmitCustomerSelection[', htmlspecialchars($MyRow['debtorno'], ENT_QUOTES, 'UTF-8', false), ']" value="', htmlspecialchars($MyRow['branchcode'], ENT_QUOTES, 'UTF-8', false), '" >', $MyRow['debtorno'], ' ', $MyRow['branchcode'], '</button></td>
+					<td><button type="submit" name="SubmitCustomerSelection[', htmlspecialchars($MyRow['debtorno'], ENT_QUOTES, 'UTF-8', false), ']" value="', htmlspecialchars($MyRow['branchcode'], ENT_QUOTES, 'UTF-8', false), '">', $MyRow['debtorno'], '</button></td>
 					<td class="text">', htmlspecialchars($MyRow['name'], ENT_QUOTES, 'UTF-8', false), '</td>
 					<td class="text">', htmlspecialchars($MyRow['brname'], ENT_QUOTES, 'UTF-8', false), '</td>
 					<td class="text">', $MyRow['contactname'], '</td>
