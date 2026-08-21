@@ -231,8 +231,7 @@ echo '<field>
 	</field>';
 
 echo '<field>
-		<label for="CustType">', '<b>' . __('OR') . ' </b>' . __('Choose a Type'), ':</label>
-		<field>';
+		<label for="CustType">', '<b>' . __('OR') . ' </b>' . __('Choose a Type'), ':</label>';
 if (isset($_POST['CustType'])) {
 	// Show Customer Type drop down list
 	$Result2 = DB_query("SELECT typeid, typename FROM debtortype ORDER BY typename");
@@ -254,8 +253,7 @@ if (isset($_POST['CustType'])) {
 			}
 		}// end while loop
 		DB_data_seek($Result2, 0);
-		echo '</select>
-			</field>';
+		echo '</select>';
 	}
 } else {// CustType is not set
 	// No option selected="selected" yet, so show Customer Type drop down list
@@ -273,10 +271,10 @@ if (isset($_POST['CustType'])) {
 			echo '<option value="' . $MyRow['typename'] . '">' . $MyRow['typename'] . '</option>';
 		}// end while loop
 		DB_data_seek($Result2, 0);
-		echo '</select>
-			</field>';
+		echo '</select>';
 	}
 }
+echo '</field>';
 
 /* Option to select a sales area */
 echo '<field>
