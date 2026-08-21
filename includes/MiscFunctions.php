@@ -381,7 +381,7 @@ function wikiLink($WikiType, $WikiPageID) {
 	}
 
 	if ($_SESSION['WikiApp'] == __('WackoWiki')) {
-		echo '<a target="_blank" href="' . $WikiPath . $WikiType . $WikiPageID . '">' . __('Drawings, Documents and Files') . ' </a>  <br />';
+		echo '<a target="_blank" href="' . $WikiPath . $WikiType . $WikiPageID . '">' . __('Wiki ' . $WikiType . ' Knowledge Base') . ' </a>  <br />';
 	} elseif ($_SESSION['WikiApp'] == __('MediaWiki')) {
 		echo '<a target="_blank" href="' . $WikiPath . 'index.php?title=' . $WikiType . '/' . $WikiPageID . '">' . __('Wiki ' . $WikiType . ' Knowledge Base') . '</a><br />';
 	} elseif ($_SESSION['WikiApp'] == __('DokuWiki')) {
