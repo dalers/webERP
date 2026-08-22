@@ -386,7 +386,7 @@ if (isset($SearchResult)) {
 		echo '<table cellpadding="2">
 				<thead>
 					<tr>
-						<th class="SortedColumn">', __('Code'), '</th>
+						<th class="SortedColumn">', __('Code + Branch'), '</th>
 						<th class="SortedColumn">', __('Customer Name'), '</th>
 						<th class="SortedColumn">', __('Branch'), '</th>
 						<th>', __('Contact'), '</th>
@@ -418,7 +418,7 @@ if (isset($SearchResult)) {
 				$MyRow['brname'] = '';
 			}
 			echo '<tr class="striped_row">
-					<td><button type="submit" name="SubmitCustomerSelection[', htmlspecialchars($MyRow['debtorno'], ENT_QUOTES, 'UTF-8', false), ']" value="', htmlspecialchars($MyRow['branchcode'], ENT_QUOTES, 'UTF-8', false), '">', $MyRow['debtorno'], '</button></td>
+					<td><button type="submit" name="SubmitCustomerSelection[', htmlspecialchars($MyRow['debtorno'], ENT_QUOTES, 'UTF-8', false), ']" value="', htmlspecialchars($MyRow['branchcode'], ENT_QUOTES, 'UTF-8', false), '" >', $MyRow['debtorno'], ' ', $MyRow['branchcode'], '</button></td>
 					<td class="text">', htmlspecialchars($MyRow['name'], ENT_QUOTES, 'UTF-8', false), '</td>
 					<td class="text">', htmlspecialchars($MyRow['brname'], ENT_QUOTES, 'UTF-8', false), '</td>
 					<td class="text">', $MyRow['contactname'], '</td>
