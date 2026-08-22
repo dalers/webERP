@@ -29,6 +29,9 @@ if (isset($_GET['Area'])) {
 if (!isset($_SESSION['CustomerType'])) { // initialise if not already done
 	$_SESSION['CustomerType'] = '';
 } // !isset($_SESSION['CustomerType'])
+if (isset($_POST['Go1']) or isset($_POST['Go2']) or isset($_POST['Go']) or isset($_POST['Next']) or isset($_POST['Previous']) or isset($_POST['CSV']) or isset($_POST['Search'])) {
+	unset($_POST['JustSelectedACustomer']);
+}
 if (isset($_POST['JustSelectedACustomer'])) {
 	if (isset($_POST['SubmitCustomerSelection'])) {
 		foreach ($_POST['SubmitCustomerSelection'] as $CustomerID => $BranchCode) $_SESSION['CustomerID'] = $CustomerID;
@@ -194,7 +197,26 @@ if ($_SESSION['CustomerID'] != '' and !isset($_POST['Search']) and !isset($_POST
 
 }
 
+$TableHead =
+	'<table cellpadding="4" width="90%" class="selection">
+		<thead>
+			<tr>
+				<th style="width:33%">' .
+					'<img alt="" src="' . $RootPath . '/css/' . $_SESSION['Theme'] . '/images/reports.png" title="' . __('Inquiries and Reports') . '" />' .
+					__('Customer Inquiries') . '</th>
+				<th style="width:33%">' .
+					'<img alt="" src="' . $RootPath . '/css/' . $_SESSION['Theme'] . '/images/transactions.png" title="' . __('Customer Transactions') . '" />' .
+					__('Customer Transactions') . '</th>
+				<th style="width:33%">' .
+					'<img alt="" src="' . $RootPath . '/css/' . $_SESSION['Theme'] . '/images/maintenance.png" title="' . __('Customer Maintenance') . '" />' .
+					__('Customer Maintenance') . '</th>
+			</tr>
+		</thead>
+		<tbody>';
+
 ob_start();
+
+echo '<p class="page_title_text"><img alt="" src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/customer.png" title="', __('Customers'), '" /> ', __('Customers'), '</p>';
 
 // Search for customers:
 echo '<form action="', htmlspecialchars(basename(__FILE__), ENT_QUOTES, 'UTF-8'), '" method="post">
@@ -202,6 +224,16 @@ echo '<form action="', htmlspecialchars(basename(__FILE__), ENT_QUOTES, 'UTF-8')
 if (mb_strlen($Msg) > 1) {
 	prnMsg($Msg, 'info');
 } // mb_strlen($Msg) > 1
+if (!isset($_SESSION['CustomerID']) || $_SESSION['CustomerID'] == '') {
+	echo '<br />',
+		$TableHead,
+		'<tr>',
+			'<td class="select"></td>',
+			'<td class="select"></td>',
+			'<td class="select"><a href="', $RootPath, '/Customers.php">', __('Add a New Customer'), '</a></td>',
+		'</tr><tbody></table>';
+}
+
 echo '<p class="page_title_text">
 		<img alt="" src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/magnifier.png" title="', __('Search'), '" /> ', __('Search for Customers'), '
 	</p>'; // Page title.
@@ -231,8 +263,7 @@ echo '<field>
 	</field>';
 
 echo '<field>
-		<label for="CustType">', '<b>' . __('OR') . ' </b>' . __('Choose a Type'), ':</label>
-		<field>';
+		<label for="CustType">', '<b>' . __('OR') . ' </b>' . __('Choose a Type'), ':</label>';
 if (isset($_POST['CustType'])) {
 	// Show Customer Type drop down list
 	$Result2 = DB_query("SELECT typeid, typename FROM debtortype ORDER BY typename");
@@ -254,8 +285,7 @@ if (isset($_POST['CustType'])) {
 			}
 		}// end while loop
 		DB_data_seek($Result2, 0);
-		echo '</select>
-			</field>';
+		echo '</select>';
 	}
 } else {// CustType is not set
 	// No option selected="selected" yet, so show Customer Type drop down list
@@ -273,10 +303,10 @@ if (isset($_POST['CustType'])) {
 			echo '<option value="' . $MyRow['typename'] . '">' . $MyRow['typename'] . '</option>';
 		}// end while loop
 		DB_data_seek($Result2, 0);
-		echo '</select>
-			</field>';
+		echo '</select>';
 	}
 }
+echo '</field>';
 
 /* Option to select a sales area */
 echo '<field>
@@ -356,7 +386,7 @@ if (isset($SearchResult)) {
 		echo '<table cellpadding="2">
 				<thead>
 					<tr>
-						<th class="SortedColumn">', __('Code'), '</th>
+						<th class="SortedColumn">', __('Code + Branch'), '</th>
 						<th class="SortedColumn">', __('Customer Name'), '</th>
 						<th class="SortedColumn">', __('Branch'), '</th>
 						<th>', __('Contact'), '</th>
