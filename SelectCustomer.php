@@ -43,6 +43,7 @@ if (isset($_POST['JustSelectedACustomer'])) {
 
 $Msg = '';
 $CustomerMenuSection = '';
+$CustomerSearchSubmitted = isset($_POST['Search']);
 
 if (isset($_POST['Go1']) or isset($_POST['Go2'])) {
 	$_POST['PageOffset'] = (isset($_POST['Go1']) ? $_POST['PageOffset1'] : $_POST['PageOffset2']);
@@ -120,7 +121,7 @@ if (isset($_POST['Search']) or isset($_POST['CSV']) or isset($_POST['Go']) or is
 	} // DB_num_rows($Result) == 0
 
 } // end of if search
-if ($_SESSION['CustomerID'] != '' and !isset($_POST['Search']) and !isset($_POST['CSV'])) {
+if ($_SESSION['CustomerID'] != '' and !isset($_POST['CSV'])) {
 	$SQL = "SELECT debtorsmaster.name,
 				custbranch.phoneno,
 				custbranch.brname
@@ -224,7 +225,7 @@ echo '<form action="', htmlspecialchars(basename(__FILE__), ENT_QUOTES, 'UTF-8')
 if (mb_strlen($Msg) > 1) {
 	prnMsg($Msg, 'info');
 } // mb_strlen($Msg) > 1
-if (!isset($_SESSION['CustomerID']) || $_SESSION['CustomerID'] == '') {
+if (!isset($_SESSION['CustomerID']) || $_SESSION['CustomerID'] == '' || $CustomerSearchSubmitted) {
 	echo '<br />',
 		$TableHead,
 		'<tr>',
