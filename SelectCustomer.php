@@ -343,6 +343,7 @@ echo '<div class="centre">
 if (isset($_SESSION['SalesmanLogin']) and $_SESSION['SalesmanLogin'] != '') {
 	prnMsg(__('Your account enables you to see only customers allocated to you'), 'warn', __('Note: Sales-person Login'));
 } // isset($_SESSION['SalesmanLogin']) and $_SESSION['SalesmanLogin'] != ''
+echo '<div style="margin-top: 16px;">';
 if (isset($SearchResult)) {
 	unset($_SESSION['CustomerID']);
 	$ListCount = DB_num_rows($SearchResult);
@@ -463,6 +464,7 @@ if (!isset($_POST['CSV'])) {
 	// end if results to show
 
 } // !isset($_POST['CSV'])
+echo '</div>';
 echo '</form>';
 
 $CustomerSearchSection = ob_get_clean();
