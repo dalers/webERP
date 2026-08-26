@@ -961,6 +961,7 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 	echo '<input type="hidden" name="FormID" value="', $_SESSION['FormID'], '" />';
 
 	echo '<input type="hidden" name="SelectedParent" value="', $SelectedParent, '" />';
+	echo '<input type="hidden" name="ShowAllLevels" value="', $_POST['ShowAllLevels'], '" />';
 	echo '<table>';
 	echo '<tr>
 			<th colspan="16"><b><a href="', $RootPath, '/SelectProduct.php?StockID=', urlencode($SelectedParent), '">', $SelectedParent, ' - ', $MyRow[0], ' (', $MBdesc, ') </a></b></th>
@@ -1006,7 +1007,7 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 		}
 	}
 	echo '</table>
-		<input type="submit" class="noPrint" name="renumber" value="Re-Sequence the BOM" />
+		<input type="submit" class="noPrint" name="renumber" value="Re-Sequence the BOM (top-level only)" />
 	</form>';
 
 	if (!isset($SelectedComponent)) {
