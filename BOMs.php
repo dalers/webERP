@@ -198,9 +198,9 @@ if (isset($_GET['SelectedParent'])) {
 	$SelectedParent = $_POST['SelectedParent'];
 }
 
-if (!isset($SelectedParent) and isset($_GET['StockCode'])) {
+if (!isset($SelectedParent) and isset($_GET['StockID'])) {
 	$_POST['Keywords'] = '';
-	$_POST['StockCode'] = trim(mb_strtoupper($_GET['StockCode']));
+	$_POST['StockID'] = trim(mb_strtoupper($_GET['StockID']));
 	$_POST['Search'] = 'Search';
 }
 
@@ -259,7 +259,7 @@ if (isset($_POST['ComponentSearch']) or isset($_POST['Next']) or isset($_POST['P
 							AND stockmaster.mbflag !='A'
 							AND stockmaster.controlled = 0
 							AND stockmaster.stockid != '" . $SelectedParent . "'
-							AND stockmaster.stockid LIKE '%" . $_POST['StockCode'] . "%'
+							AND stockmaster.stockid LIKE '%" . $_POST['StockID'] . "%'
 							AND stockmaster.description LIKE '%" . $_POST['Keywords'] . "%'
 							AND stockmaster.categoryid LIKE '%" . $_POST['StockCat'] . "%'
 						ORDER BY stockmaster.stockid
@@ -278,7 +278,7 @@ if (isset($_POST['ComponentSearch']) or isset($_POST['Next']) or isset($_POST['P
 							AND stockmaster.mbflag !='K'
 							AND stockmaster.mbflag !='A'
 							AND stockmaster.stockid != '" . $SelectedParent . "'
-							AND stockmaster.stockid LIKE '%" . $_POST['StockCode'] . "%'
+							AND stockmaster.stockid LIKE '%" . $_POST['StockID'] . "%'
 							AND stockmaster.description LIKE '%" . $_POST['Keywords'] . "%'
 							AND stockmaster.categoryid LIKE '%" . $_POST['StockCat'] . "%'
 						ORDER BY stockmaster.stockid
@@ -312,7 +312,7 @@ if (isset($_POST['ComponentSearch']) or isset($_POST['Next']) or isset($_POST['P
 	}
 	echo '</table>';
 	echo '<input type="hidden" name="Offset" value="', $_POST['Offset'], '" />';
-	echo '<input type="hidden" name="StockCode" value="', $_POST['StockCode'], '" />';
+	echo '<input type="hidden" name="StockID" value="', $_POST['StockID'], '" />';
 	echo '<input type="hidden" name="Keywords" value="', $_POST['Keywords'], '" />';
 	echo '<input type="hidden" name="StockCat" value="', $_POST['StockCat'], '" />';
 	echo '</form>';
@@ -1053,8 +1053,8 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 				</field>
 				<td><b>', __('OR') , '</b></td>
 				<field>
-					<label for="StockCode">', __('Enter extract of the') , ' <b>', __('Stock Code') , '</b>:</label>
-					<input type="text" autofocus="autofocus" name="StockCode" size="15" maxlength="20" />
+					<label for="StockID">', __('Enter extract of the') , ' <b>', __('Stock Code') , '</b>:</label>
+					<input type="text" autofocus="autofocus" name="StockID" size="15" maxlength="20" />
 					<fieldhelp>', __('Search for the component item code to add tor the BOM') , '</fieldhelp>
 				</field>
 			</fieldset>
@@ -1070,13 +1070,13 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 
 } elseif (isset($_POST['Search'])) {
 	// Work around to auto select
-	if ($_POST['Keywords'] == '' and $_POST['StockCode'] == '') {
-		$_POST['StockCode'] = '%';
+	if ($_POST['Keywords'] == '' and $_POST['StockID'] == '') {
+		$_POST['StockID'] = '%';
 	}
-	if ($_POST['Keywords'] and $_POST['StockCode']) {
+	if ($_POST['Keywords'] and $_POST['StockID']) {
 		prnMsg(__('Stock description keywords have been used in preference to the Stock code extract entered') , 'info');
 	}
-	if ($_POST['Keywords'] == '' and $_POST['StockCode'] == '') {
+	if ($_POST['Keywords'] == '' and $_POST['StockID'] == '') {
 		prnMsg(__('At least one stock description keyword or an extract of a stock code must be entered for the search') , 'info');
 	}
 	else {
@@ -1102,7 +1102,7 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 				ORDER BY stockmaster.stockid";
 
 		}
-		elseif (mb_strlen($_POST['StockCode']) > 0) {
+		elseif (mb_strlen($_POST['StockID']) > 0) {
 			$SQL = "SELECT stockmaster.stockid,
 					stockmaster.description,
 					stockmaster.units,
@@ -1111,7 +1111,7 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 					sum(locstock.quantity) as totalonhand
 				FROM stockmaster INNER JOIN locstock
 				ON stockmaster.stockid = locstock.stockid
-				WHERE stockmaster.stockid " . LIKE . "'%" . $_POST['StockCode'] . "%'
+				WHERE stockmaster.stockid " . LIKE . "'%" . $_POST['StockID'] . "%'
 				AND (stockmaster.mbflag='M'
 					OR stockmaster.mbflag='K'
 					OR stockmaster.mbflag='G'
@@ -1128,15 +1128,15 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 		$ErrMsg = __('The SQL to find the parts selected failed with the message');
 		$Result = DB_query($SQL, $ErrMsg);
 
-	} //one of keywords or StockCode was more than a zero length string
+	} //one of keywords or StockID was more than a zero length string
 
 } //end of if search
 if (!isset($SelectedParent)) {
 	if (!isset($_POST['Keywords'])) {
 		$_POST['Keywords'] = '';
 	}
-	if (!isset($_POST['StockCode'])) {
-		$_POST['StockCode'] = '';
+	if (!isset($_POST['StockID'])) {
+		$_POST['StockID'] = '';
 	}
 
 	echo '<p class="page_title_text">
@@ -1159,27 +1159,11 @@ if (!isset($SelectedParent)) {
 			</field>
 			<b>', __('OR') , '</b>
 			<field>
-				<label for="StockCode">', __('Enter extract of the') , ' <b>', __('Stock Code') , '</b>:</label>
-				<input type="text" autofocus="autofocus" name="StockCode" size="15" maxlength="18" value="', htmlspecialchars($_POST['StockCode'], ENT_QUOTES, 'UTF-8'), '" />
+				<label for="StockID">', __('Enter extract of the') , ' <b>', __('Stock Code') , '</b>:</label>
+				<input type="text" autofocus="autofocus" name="StockID" size="15" maxlength="18" value="', htmlspecialchars($_POST['StockID'], ENT_QUOTES, 'UTF-8'), '" />
 				<fieldhelp>', __('Search for the parent item code for the BOM') , '</fieldhelp>
 			</field>';
 
-/*	echo '<field>
-			<label for="ShowAllLevels">', __('Show all levels') , '</label>
-			<select name="ShowAllLevels">';
-	if (isset($_POST['ShowAllLevels']) and $_POST['ShowAllLevels'] == 'Yes') {
-		echo '<option selected="selected" value="Yes">', __('Yes') , '</option>';
-		echo '<option value="No">', __('No') , '</option>';
-	}
-	else {
-		echo '<option value="Yes">', __('Yes') , '</option>';
-		echo '<option selected="selected" value="No">', __('No') , '</option>';
-	}
-
-	echo '</select>
-		<fieldhelp>', __('To show all levels of the BOM choose Yes otherwise choose No.') , '</fieldhelp>
-		</field>';
-*/
 	echo '</fieldset>';
 
 	echo '<div class="centre">
