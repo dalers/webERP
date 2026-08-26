@@ -199,9 +199,7 @@ if (isset($_GET['SelectedParent'])) {
 }
 
 if (!isset($SelectedParent) and isset($_GET['StockID'])) {
-	$_POST['Keywords'] = '';
 	$_POST['StockID'] = trim(mb_strtoupper($_GET['StockID']));
-	$_POST['Search'] = 'Search';
 }
 
 if (isset($_GET['ShowAllLevels'])) {
@@ -647,7 +645,7 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 	# this _should_ work but does not seem to
     #echo '<a href="', htmlspecialchars(basename(__FILE__) , ENT_QUOTES, 'UTF-8') , '">', __('Select a Different BOM') , '</a>';
     # so instead will use filename directly (and also save cycles)
-    echo '<a href="' . $RootPath . '/BOMs.php" class="toplink">' . __('Select a Different BOM') . '</a><br />';
+	echo '<a href="' . $RootPath . '/BOMs.php?StockID=' . urlencode($SelectedParent) . '" class="toplink">' . __('Select a Different BOM') . '</a><br />';
 
 	echo '<p class="page_title_text noPrint">
 			<img src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/maintenance.png" title="', __('Search') , '" alt="" /> ', $Title, '
@@ -1147,7 +1145,7 @@ if (!isset($SelectedParent)) {
 	echo '<input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />';
 
 	echo '<div class="page_help_text">
-			', __('Select a manufactured part') , ' (', __('or Assembly or Kit part') , ') ', __('to maintain the bill of material for using the options below') , '<br />', __('Parts must be defined in the stock item entry') , '/', __('modification screen as manufactured') , ', ', __('kits or assemblies to be available for construction of a bill of material') , '
+			', __('Select a part for maintaining the Bill of Material (BOM).') , '<br />', __('The part must be configured as Manufactured, Kit or Assembly to have a BOM.') , '
 		</div>';
 
 	echo '<fieldset>
