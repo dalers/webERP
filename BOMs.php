@@ -1146,7 +1146,7 @@ if (!isset($SelectedParent)) {
 	echo '<input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />';
 
 	echo '<div class="page_help_text">
-			', __('Select a part for maintaining the Bill of Material (BOM).') , '<br />', __('The part must be configured as Manufactured, Kit or Assembly to have a BOM.') , '
+			', __('Select a part for maintaining the Bill of Material (BOM).') , '<br />', __('The part must be configured as Manufactured, Kit,  Assembly or Phantom to have a BOM.') , '
 		</div>';
 
 	echo '<fieldset>
