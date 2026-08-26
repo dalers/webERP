@@ -1175,18 +1175,18 @@ if (!isset($SelectedParent)) {
     	echo '<fieldset>
                 <legend>' . __('Show BOM Listing') . '</legend>
                 <field>
-	    		<label for="ShowAllLevels">', __('Show all levels') , '</label>
+	    		<label for="ShowAllLevels">', __('Show Levels in BOM') , '</label>
 	    		<select name="ShowAllLevels">';
 	    if (isset($_POST['ShowAllLevels']) and $_POST['ShowAllLevels'] == 'Yes') {
-	    	echo '<option selected="selected" value="Yes">', __('Yes') , '</option>';
-	    	echo '<option value="No">', __('No') , '</option>';
+	    	echo '<option selected="selected" value="Yes">', __('All Levels') , '</option>';
+	    	echo '<option value="No">', __('Top Level Only') , '</option>';
 	    } else {
-	    	echo '<option value="Yes">', __('Yes') , '</option>';
-	    	echo '<option selected="selected" value="No">', __('No') , '</option>';
+	    	echo '<option value="Yes">', __('All Levels') , '</option>';
+	    	echo '<option selected="selected" value="No">', __('Top Level Only') , '</option>';
 	    }
 
 	    echo '</select>
-	    	<fieldhelp>', __('To show all levels of the BOM choose Yes otherwise choose No.') , '</fieldhelp>
+	    	<fieldhelp>', __('To show all levels of the BOM choose All Levels otherwise choose Top Level Only.') , '</fieldhelp>
 	    	</field>';
 
 		echo '<table cellpadding="2">
