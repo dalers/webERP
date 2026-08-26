@@ -198,6 +198,12 @@ if (isset($_GET['SelectedParent'])) {
 	$SelectedParent = $_POST['SelectedParent'];
 }
 
+if (!isset($SelectedParent) and isset($_GET['StockCode'])) {
+	$_POST['Keywords'] = '';
+	$_POST['StockCode'] = trim(mb_strtoupper($_GET['StockCode']));
+	$_POST['Search'] = 'Search';
+}
+
 if (isset($_GET['ShowAllLevels'])) {
 	$_POST['ShowAllLevels'] = $_GET['ShowAllLevels'];
 }
@@ -1126,6 +1132,12 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 
 } //end of if search
 if (!isset($SelectedParent)) {
+	if (!isset($_POST['Keywords'])) {
+		$_POST['Keywords'] = '';
+	}
+	if (!isset($_POST['StockCode'])) {
+		$_POST['StockCode'] = '';
+	}
 
 	echo '<p class="page_title_text">
 			<img src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/magnifier.png" title="', __('Search') , '" alt="" />', ' ', $Title, '
@@ -1142,13 +1154,13 @@ if (!isset($SelectedParent)) {
 			<legend class="search">', __('Select the parent item for the BOM') , '</legend>
 			<field>
 				<label for="Keywords">', __('Enter text extracts in the') , ' <b>', __('description') , '</b>:</label>
-				<input type="text" name="Keywords" size="20" maxlength="25" />
+				<input type="text" name="Keywords" size="20" maxlength="25" value="', htmlspecialchars($_POST['Keywords'], ENT_QUOTES, 'UTF-8'), '" />
 				<fieldhelp>', __('Search for the description of parent item for the BOM') , '</fieldhelp>
 			</field>
 			<b>', __('OR') , '</b>
 			<field>
 				<label for="StockCode">', __('Enter extract of the') , ' <b>', __('Stock Code') , '</b>:</label>
-				<input type="text" autofocus="autofocus" name="StockCode" size="15" maxlength="18" />
+				<input type="text" autofocus="autofocus" name="StockCode" size="15" maxlength="18" value="', htmlspecialchars($_POST['StockCode'], ENT_QUOTES, 'UTF-8'), '" />
 				<fieldhelp>', __('Search for the parent item code for the BOM') , '</fieldhelp>
 			</field>';
 
