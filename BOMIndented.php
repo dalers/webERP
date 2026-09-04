@@ -24,14 +24,14 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	$SQL = "DROP TABLE IF EXISTS passbom2";
 	$Result = DB_query($SQL);
 	$SQL = "CREATE TEMPORARY TABLE passbom (
-				part char(20),
+				part varchar(64),
 				sortpart text) DEFAULT CHARSET=utf8";
 	$ErrMsg = __('The SQL to create passbom failed with the message');
 	$Result = DB_query($SQL, $ErrMsg);
 
 	$SQL = "CREATE TEMPORARY TABLE tempbom (
-				parent char(20),
-				component char(20),
+				parent varchar(64),
+				component varchar(64),
 				sortpart text,
 				level int,
 				workcentreadded char(5),
@@ -127,7 +127,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			$Result = DB_query($SQL);
 
 			$SQL = "CREATE TEMPORARY TABLE passbom (
-								part char(20),
+								part varchar(64),
 								sortpart text) DEFAULT CHARSET=utf8";
 			$Result = DB_query($SQL);
 
