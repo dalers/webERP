@@ -16,6 +16,8 @@ if (isset($_GET['StockID'])) {
 }
 
 if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
+	$SortOrder = isset($_POST['SortOrder']) && $_POST['SortOrder'] === 'ItemCode' ? 'ItemCode' : 'BOMSequence';
+	$SortPartExpression = $SortOrder === 'BOMSequence' ? "LPAD(bom.sequence, 10, '0')" : 'CONCAT(bom.parent,bom.component)';
 
 	$SQL = "DROP TABLE IF EXISTS tempbom";
 	$Result = DB_query($SQL);
@@ -48,7 +50,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	// This finds the top level
 	$SQL = "INSERT INTO passbom (part, sortpart)
 			   SELECT bom.component AS part,
-					  CONCAT(bom.parent,bom.component) AS sortpart
+					  $SortPartExpression AS sortpart
 			  FROM bom
 			  WHERE bom.parent ='" . $_POST['Part'] . "'
 			  AND bom.effectiveafter <= CURRENT_DATE
@@ -69,7 +71,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 				quantity)
 			  SELECT bom.parent,
 					 bom.component,
-					 CONCAT(bom.parent,bom.component) AS sortpart,
+						 $SortPartExpression AS sortpart,
 					 " . $LevelCounter . " AS level,
 					 bom.workcentreadded,
 					 bom.loccode,
@@ -103,7 +105,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 					quantity)
 				  SELECT bom.parent,
 						 bom.component,
-						 CONCAT(passbom.sortpart,bom.component) AS sortpart,
+							 CONCAT(passbom.sortpart, " . ($SortOrder === 'BOMSequence' ? "LPAD(bom.sequence, 10, '0')" : 'bom.component') . ") AS sortpart,
 						 $LevelCounter as level,
 						 bom.workcentreadded,
 						 bom.loccode,
@@ -134,7 +136,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 			$SQL = "INSERT INTO passbom (part, sortpart)
 					   SELECT bom.component AS part,
-							  CONCAT(passbom2.sortpart,bom.component) AS sortpart
+							  CONCAT(passbom2.sortpart, " . ($SortOrder === 'BOMSequence' ? "LPAD(bom.sequence, 10, '0')" : 'bom.component') . ") AS sortpart
 					   FROM bom,passbom2
 					   WHERE bom.parent = passbom2.part
 					   AND bom.effectiveafter <= CURRENT_DATE
@@ -307,6 +309,13 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			<select name="Levels">
 				<option selected="selected" value="All">' . __('All Levels') . '</option>
 				<option value="One">' . __('One Level') . '</option>
+			</select>
+		</field>
+		<field>
+			<label for="SortOrder">' . __('Sort Order') . ':</label>
+			<select name="SortOrder">
+				<option value="ItemCode">' . __('Item code') . '</option>
+				<option selected="selected" value="BOMSequence">' . __('BOM Sequence') . '</option>
 			</select>
 		</field>
 		</fieldset>
