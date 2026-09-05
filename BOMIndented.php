@@ -183,9 +183,10 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 					' . __('Indented BOM Listing For') . ' ' . mb_strtoupper($_POST['Part']) . '<br />
 					' . __('Printed') . ': ' . date($_SESSION['DefaultDateFormat']) . '<br />
 				</div>
-				<table>
+				<table id="IndentedBOM">
 					<thead>
 						<tr>
+							<th></th>
 							<th class="SortedColumn">' . __('Part Number') . '</th>
 							<th class="SortedColumn">' . __('M/B') . '</th>
 							<th class="SortedColumn">' . __('Description') . '</th>
@@ -203,7 +204,18 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	$SQL = "SELECT tempbom.*,
 				stockmaster.description,
 				stockmaster.mbflag,
-				stockmaster.units
+				stockmaster.units,
+				EXISTS (
+					SELECT 1
+					FROM bom AS childbom
+					INNER JOIN locationusers AS childlocationusers
+						ON childlocationusers.loccode = childbom.loccode
+						AND childlocationusers.userid = '" . $_SESSION['UserID'] . "'
+						AND childlocationusers.canview = 1
+					WHERE childbom.parent = tempbom.component
+					AND childbom.effectiveafter <= CURRENT_DATE
+					AND childbom.effectiveto > CURRENT_DATE
+				) AS haschildren
 			FROM tempbom,stockmaster
 			WHERE tempbom.component = stockmaster.stockid
 			ORDER BY sortpart";
@@ -211,6 +223,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 	// Display the top-level parent item first for consistency with single-level BOM
 	$HTML .= '<tr class="striped_row">
+				<td></td>
 				<td><strong>' . $Assembly . '</strong></td>
 				<td>' . $ParentMBFlag . '</td>
 				<td><strong>' . $AssemblyDesc . '</strong></td>
@@ -230,8 +243,13 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 		$Level = $MyRow['level'] - 1; // Adjust for parent being level 1
 		$Indent = str_repeat('&nbsp;&nbsp;', $Level * 2); // 2 spaces per level
 		$Symbol = ($Level > 0) ? '|_ ' : '';
+		$Toggle = '';
+		if ($MyRow['haschildren']) {
+			$Toggle = '<button type="button" class="bom-toggle" aria-expanded="true" title="' . __('Collapse') . '" data-collapse-label="' . __('Collapse') . '" data-expand-label="' . __('Expand') . '">-</button> ';
+		}
 
-		$HTML .= '<tr class="striped_row">
+		$HTML .= '<tr class="striped_row" data-level="' . $Level . '" data-collapsed="false">
+					<td>' . $Toggle . '</td>
 					<td>' . $Indent . $Symbol . '<a href="' . $RootPath . '/SelectProduct.php?StockID=' . urlencode($MyRow['component']) . '">' . $MyRow['component'] . '</a>' . '</td>
 					<td>' . $MyRow['mbflag'] . '</td>
 					<td>' . $MyRow['description'] . '</td>
@@ -256,6 +274,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	} else {
 		$HTML .= '</tbody>
 				</table>
+				<script src="' . $RootPath . '/javascripts/BOMIndented.js?version=1.0"></script>
 				<div class="centre">
 					<form><input type="submit" name="close" value="' . __('Close') . '" onclick="window.close()" /></form>
 				</div>';
