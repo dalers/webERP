@@ -267,7 +267,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 		$Indent = str_repeat('&nbsp;&nbsp;', $Level * 2); // 2 spaces per level
 		$Symbol = ($Level > 0) ? '|_ ' : '';
 		$Toggle = '';
-		if ($MyRow['haschildren']) {
+		if (!isset($_POST['PrintPDF']) && $MyRow['haschildren']) {
 			$Toggle = '<button type="button" class="bom-toggle" aria-expanded="true" title="' . __('Collapse') . '" data-collapse-label="' . __('Collapse') . '" data-expand-label="' . __('Expand') . '">-</button> ';
 		}
 
