@@ -68,6 +68,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			   SELECT bom.component AS part,
 					  $SortPartExpression AS sortpart
 			  FROM bom
+			  INNER JOIN locationusers ON locationusers.loccode=bom.loccode AND locationusers.userid='" .  $_SESSION['UserID'] . "' AND locationusers.canview=1
 			  WHERE bom.parent ='" . $_POST['Part'] . "'
 			  AND bom.effectiveafter <= CURRENT_DATE
 			  AND bom.effectiveto > CURRENT_DATE";
@@ -153,14 +154,20 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			$SQL = "INSERT INTO passbom (part, sortpart)
 					   SELECT bom.component AS part,
 							  CONCAT(passbom2.sortpart, " . ($SortOrder === 'BOMSequence' ? "LPAD(bom.sequence, 10, '0')" : 'bom.component') . ") AS sortpart
-					   FROM bom,passbom2
-					   WHERE bom.parent = passbom2.part
-					   AND bom.effectiveafter <= CURRENT_DATE
+				   FROM bom
+				   INNER JOIN passbom2 ON bom.parent = passbom2.part
+				   INNER JOIN locationusers ON locationusers.loccode=bom.loccode AND locationusers.userid='" .  $_SESSION['UserID'] . "' AND locationusers.canview=1
+				   WHERE bom.effectiveafter <= CURRENT_DATE
 					   AND bom.effectiveto > CURRENT_DATE";
 			$Result = DB_query($SQL);
 
 
-			$SQL = "SELECT COUNT(*) FROM bom,passbom WHERE bom.parent = passbom.part";
+			$SQL = "SELECT COUNT(*)
+					FROM bom
+					INNER JOIN passbom ON bom.parent = passbom.part
+					INNER JOIN locationusers ON locationusers.loccode=bom.loccode AND locationusers.userid='" .  $_SESSION['UserID'] . "' AND locationusers.canview=1
+					WHERE bom.effectiveafter <= CURRENT_DATE
+					AND bom.effectiveto > CURRENT_DATE";
 			$Result = DB_query($SQL);
 
 			$MyRow = DB_fetch_row($Result);
