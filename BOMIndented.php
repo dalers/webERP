@@ -68,6 +68,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			   SELECT bom.component AS part,
 					  $SortPartExpression AS sortpart
 			  FROM bom
+			  INNER JOIN locationusers ON locationusers.loccode=bom.loccode AND locationusers.userid='" .  $_SESSION['UserID'] . "' AND locationusers.canview=1
 			  WHERE bom.parent ='" . $_POST['Part'] . "'
 			  AND bom.effectiveafter <= CURRENT_DATE
 			  AND bom.effectiveto > CURRENT_DATE";
@@ -153,14 +154,20 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			$SQL = "INSERT INTO passbom (part, sortpart)
 					   SELECT bom.component AS part,
 							  CONCAT(passbom2.sortpart, " . ($SortOrder === 'BOMSequence' ? "LPAD(bom.sequence, 10, '0')" : 'bom.component') . ") AS sortpart
-					   FROM bom,passbom2
-					   WHERE bom.parent = passbom2.part
-					   AND bom.effectiveafter <= CURRENT_DATE
+				   FROM bom
+				   INNER JOIN passbom2 ON bom.parent = passbom2.part
+				   INNER JOIN locationusers ON locationusers.loccode=bom.loccode AND locationusers.userid='" .  $_SESSION['UserID'] . "' AND locationusers.canview=1
+				   WHERE bom.effectiveafter <= CURRENT_DATE
 					   AND bom.effectiveto > CURRENT_DATE";
 			$Result = DB_query($SQL);
 
 
-			$SQL = "SELECT COUNT(*) FROM bom,passbom WHERE bom.parent = passbom.part";
+			$SQL = "SELECT COUNT(*)
+					FROM bom
+					INNER JOIN passbom ON bom.parent = passbom.part
+					INNER JOIN locationusers ON locationusers.loccode=bom.loccode AND locationusers.userid='" .  $_SESSION['UserID'] . "' AND locationusers.canview=1
+					WHERE bom.effectiveafter <= CURRENT_DATE
+					AND bom.effectiveto > CURRENT_DATE";
 			$Result = DB_query($SQL);
 
 			$MyRow = DB_fetch_row($Result);
@@ -199,9 +206,10 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 					' . __('Indented BOM Listing For') . ' ' . mb_strtoupper($_POST['Part']) . '<br />
 					' . __('Printed') . ': ' . date($_SESSION['DefaultDateFormat']) . '<br />
 				</div>
-				<table>
+				<table id="IndentedBOM">
 					<thead>
 						<tr>
+							<th></th>
 							<th class="SortedColumn">' . __('Part Number') . '</th>
 							<th class="SortedColumn">' . __('M/B') . '</th>
 							<th class="SortedColumn">' . __('Description') . '</th>
@@ -219,7 +227,18 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	$SQL = "SELECT tempbom.*,
 				stockmaster.description,
 				stockmaster.mbflag,
-				stockmaster.units
+				stockmaster.units,
+				EXISTS (
+					SELECT 1
+					FROM bom AS childbom
+					INNER JOIN locationusers AS childlocationusers
+						ON childlocationusers.loccode = childbom.loccode
+						AND childlocationusers.userid = '" . $_SESSION['UserID'] . "'
+						AND childlocationusers.canview = 1
+					WHERE childbom.parent = tempbom.component
+					AND childbom.effectiveafter <= CURRENT_DATE
+					AND childbom.effectiveto > CURRENT_DATE
+				) AS haschildren
 			FROM tempbom,stockmaster
 			WHERE tempbom.component = stockmaster.stockid
 			ORDER BY sortpart";
@@ -227,6 +246,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 	// Display the top-level parent item first for consistency with single-level BOM
 	$HTML .= '<tr class="striped_row">
+				<td></td>
 				<td><strong>' . $Assembly . '</strong></td>
 				<td>' . $ParentMBFlag . '</td>
 				<td><strong>' . $AssemblyDesc . '</strong></td>
@@ -246,8 +266,13 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 		$Level = $MyRow['level'] - 1; // Adjust for parent being level 1
 		$Indent = str_repeat('&nbsp;&nbsp;', $Level * 2); // 2 spaces per level
 		$Symbol = ($Level > 0) ? '|_ ' : '';
+		$Toggle = '';
+		if (!isset($_POST['PrintPDF']) && $MyRow['haschildren']) {
+			$Toggle = '<button type="button" class="bom-toggle" aria-expanded="true" title="' . __('Collapse') . '" data-collapse-label="' . __('Collapse') . '" data-expand-label="' . __('Expand') . '">-</button> ';
+		}
 
-		$HTML .= '<tr class="striped_row">
+		$HTML .= '<tr class="striped_row" data-level="' . $Level . '" data-collapsed="false">
+					<td>' . $Toggle . '</td>
 					<td>' . $Indent . $Symbol . '<a href="' . $RootPath . '/SelectProduct.php?StockID=' . urlencode($MyRow['component']) . '">' . $MyRow['component'] . '</a>' . '</td>
 					<td>' . $MyRow['mbflag'] . '</td>
 					<td>' . $MyRow['description'] . '</td>
@@ -272,6 +297,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	} else {
 		$HTML .= '</tbody>
 				</table>
+				<script src="' . $RootPath . '/javascripts/BOMIndented.js?version=1.0"></script>
 				<div class="centre">
 					<form><input type="submit" name="close" value="' . __('Close') . '" onclick="window.close()" /></form>
 				</div>';
