@@ -211,6 +211,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 						<span class="page-number">Page </span>
 					</div>
 				</div>
+				<table id="IndentedBOM">
 					<thead>
 						<tr>
 							<th></th>
