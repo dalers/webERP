@@ -672,7 +672,7 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 		prnMsg(__('The quantity entered cannot be zero'), 'error');
 		}
 		+		 */
-		if (!Date1GreaterThanDate2($_POST['EffectiveTo'], $_POST['EffectiveAfter'])) {
+		if ($InputError == 0 and !Date1GreaterThanDate2($_POST['EffectiveTo'], $_POST['EffectiveAfter'])) {
 			$InputError = 1;
 			prnMsg(__('The effective to date must be a date after the effective after date') . '<br />' . __('The effective to date is') . ' ' . DateDiff($_POST['EffectiveTo'], $_POST['EffectiveAfter'], 'd') . ' ' . __('days before the effective after date') . '! ' . __('No updates have been performed') . '.<br />' . __('Effective after was') . ': ' . $_POST['EffectiveAfter'] . ' ' . __('and effective to was') . ': ' . $_POST['EffectiveTo'], 'error');
 		}
