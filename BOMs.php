@@ -225,7 +225,7 @@ if (isset($_POST['ComponentSearch']) or isset($_POST['Next']) or isset($_POST['P
 		$_POST['Offset'] = $_POST['Offset'] + 1;
 	}
 
-	echo '<a class="toplink" href="', htmlspecialchars(basename(__FILE__) , ENT_QUOTES, 'UTF-8') , '?SelectedParent=', urlencode($SelectedParent) , '">', __('Return to main BOM screen') , '</a>';
+	echo '<a class="toplink" href="', htmlspecialchars(basename(__FILE__) , ENT_QUOTES, 'UTF-8') , '?SelectedParent=', urlencode($SelectedParent) , '&ShowAllLevels=', urlencode($_POST['ShowAllLevels']) , '">', __('Return to main BOM screen') , '</a>';
 
 	echo '<p class="page_title_text noPrint">
 			<img src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/magnifier.png" title="', __('Search') , '" alt="" /> ', __('Select component to add to BOM') , '
@@ -289,6 +289,7 @@ if (isset($_POST['ComponentSearch']) or isset($_POST['Next']) or isset($_POST['P
 
 	echo '<form method="post" action="', htmlspecialchars(basename(__FILE__) , ENT_QUOTES, 'UTF-8') , '?SelectedParent=', urlencode($SelectedParent) , '">';
 	echo '<input type="hidden" name="FormID" value="', $_SESSION['FormID'], '" />';
+	echo '<input type="hidden" name="ShowAllLevels" value="', htmlspecialchars($_POST['ShowAllLevels'], ENT_QUOTES, 'UTF-8'), '" />';
 	echo '<table class="noPrint">
 			<tr>
 				<th colspan="3">
@@ -305,7 +306,7 @@ if (isset($_POST['ComponentSearch']) or isset($_POST['Next']) or isset($_POST['P
 		echo '<tr>
 				<td>', $MyRow['stockid'], '</td>
 				<td>', $MyRow['description'], '</td>
-				<td><a href="', htmlspecialchars(basename(__FILE__) , ENT_QUOTES, 'UTF-8') , '?SelectedParent=', urlencode($SelectedParent) , '&SelectedComponent=', urlencode($MyRow['stockid']) , '&Add=Yes">', __('Add to the BOM') , '</a></td>
+				<td><a href="', htmlspecialchars(basename(__FILE__) , ENT_QUOTES, 'UTF-8') , '?SelectedParent=', urlencode($SelectedParent) , '&SelectedComponent=', urlencode($MyRow['stockid']) , '&ShowAllLevels=', urlencode($_POST['ShowAllLevels']) , '&Add=Yes">', __('Add to the BOM') , '</a></td>
 			</tr>';
 	}
 	echo '</table>';
@@ -1014,6 +1015,7 @@ if (isset($SelectedParent)) { //Parent Stock Item selected so display BOM or edi
 	if (!isset($SelectedComponent)) {
 		echo '<form action="', htmlspecialchars(basename(__FILE__) , ENT_QUOTES, 'UTF-8') , '" method="post">';
 		echo '<input type="hidden" name="FormID" value="', $_SESSION['FormID'], '" />';
+		echo '<input type="hidden" name="ShowAllLevels" value="', htmlspecialchars($_POST['ShowAllLevels'], ENT_QUOTES, 'UTF-8'), '" />';
 
 		echo '<fieldset>
 				<legend class="search">', __('Select new component for BOM') , '</legend>';
