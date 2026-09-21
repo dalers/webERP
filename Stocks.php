@@ -625,6 +625,7 @@ if (isset($_POST['submit'])) {
 												categoryid,
 												units,
 												mbflag,
+												lastcost,
 												eoq,
 												discontinued,
 												controlled,
@@ -645,6 +646,7 @@ if (isset($_POST['submit'])) {
 								'" . $_POST['CategoryID'] . "',
 								'" . $_POST['Units'] . "',
 								'" . $_POST['MBFlag'] . "',
+								'0.00000000',
 								'" . filter_number_format($_POST['EOQ']) . "',
 								'" . $_POST['Discontinued'] . "',
 								'" . $_POST['Controlled'] . "',
@@ -1382,8 +1384,12 @@ if (DB_num_rows($PropertiesResult) > 0) {
 									stockitemproperties
 									WHERE stockid='" . $StockID . "'
 									AND stkcatpropid ='" . $PropertyRow['stkcatpropid'] . "'");
-			$PropValRow = DB_fetch_row($PropValResult);
-			$PropertyValue = $PropValRow[0];
+            if (DB_num_rows($PropValResult)) {
+			    $PropValRow = DB_fetch_row($PropValResult);
+			    $PropertyValue = $PropValRow[0];
+            } else {
+                $PropertyValue = '';
+            }
 		} else {
 			$PropertyValue = '';
 		}
