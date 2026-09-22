@@ -635,7 +635,8 @@ if (isset($_GET['Add']) or isset($_GET['Edit'])) {
 	echo '</fieldset>
 			<div class="centre">
 				<input type="submit" name="Submit" value="', __('Enter Information') , '" />
-				<input type="reset" name="Cancel" value="', __('Cancel') , '" />
+				<input type="reset" name="Cancel" value="', __('Reset') , '" />
+				<input type="submit" name="Cancel" value="', __('Cancel') , '" />
 			</div>
 		</form>';
 	include(__DIR__ . '/includes/footer.php');
