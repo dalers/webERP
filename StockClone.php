@@ -29,6 +29,22 @@ if (isset($_GET['OldStockID']) || isset($_POST['OldStockID']) ){ //we are clonin
 
 $ItemDescriptionLanguagesArray = explode(',',$_SESSION['ItemDescriptionLanguages']);
 
+if (isset($_POST['SuggestStockID']) && !empty($_POST['OldStockID'])) {
+	$SuggestionSourceStockID = $_POST['OldStockID'];
+	if (!empty($_POST['StockID']) && preg_match('/^\d{4}-\d{4}$/', $_POST['StockID'])) {
+		$SuggestionSourceStockID = $_POST['StockID'];
+	}
+
+	$SuggestedStockID = GetSuggestedCloneStockID($SuggestionSourceStockID);
+	if ($SuggestedStockID != '') {
+		$_POST['StockID'] = $SuggestedStockID;
+		$_POST['New'] = 1;
+		prnMsg(__('Suggested cloned item code') . ': ' . $SuggestedStockID, 'info');
+	} else {
+		prnMsg(__('No additional stock item code could be suggested from the current stock code sequence.'), 'warn');
+	}
+}
+
 if (!empty($_POST['StockID']) && !isset($_POST['UpdateCategories'])) {
 	$SQL = "SELECT COUNT(stockid)
 			FROM stockmaster
@@ -594,6 +610,7 @@ if (empty($_POST['StockID']) || ($_POST['StockID'] == $_POST['OldStockID']) || i
 		echo '<field>
 				<label for="StockID">'. __('Cloned Item Code'). ':</label>
 				<input type="text" ' . (in_array('StockID',$Errors) ?  'class="inputerror"' : '' ) .'"  "'.$StockIDStyle.'" data-type="no-illegal-chars" autofocus="autofocus" required="required" value="' . $StockID . '" name="StockID" size="21" maxlength="20" />
+				<input type="submit" name="SuggestStockID" value="' . __('Suggest') . '" />
 				<fieldhelp>'. __('Enter a unique item code for the new item.') .'</fieldhelp>
 				<input type="hidden" name="OldStockID" value="'.$_POST['OldStockID'].'" />
 			</field>';
@@ -1111,3 +1128,81 @@ $DiscountCategory = $_POST['DiscountCategory'] ?? '';
 echo '</div>
 	</form>';
 include(__DIR__ . '/includes/footer.php');
+
+function GetSuggestedCloneStockID($ReferenceStockID) {
+	if ($ReferenceStockID == '') {
+		return '';
+	}
+
+	$CandidateStockID = IncrementSuggestedCloneStockID($ReferenceStockID);
+	if ($CandidateStockID == '') {
+		return '';
+	}
+
+	$SQL = "SELECT stockid
+			FROM stockmaster
+			WHERE stockid >= '" . DB_escape_string($CandidateStockID) . "'
+			ORDER BY stockid";
+	$Result = DB_query($SQL);
+
+	while ($MyRow = DB_fetch_row($Result)) {
+		if ($MyRow[0] != $CandidateStockID) {
+			break;
+		}
+
+		$CandidateStockID = IncrementSuggestedCloneStockID($CandidateStockID);
+		if ($CandidateStockID == '') {
+			return '';
+		}
+	}
+
+	return $CandidateStockID;
+}
+
+function IncrementSuggestedCloneStockID($StockID) {
+	if (preg_match('/^(.*?)(\d+)$/', $StockID, $Matches)) {
+		$Prefix = $Matches[1];
+		$NumericSuffix = $Matches[2];
+		$NextSuffix = (string)((int)$NumericSuffix + 1);
+		$NextSuffix = str_pad($NextSuffix, mb_strlen($NumericSuffix), '0', STR_PAD_LEFT);
+		return $Prefix . $NextSuffix;
+	}
+
+	if (preg_match('/^(.*?)([0-9A-Z]+)$/', mb_strtoupper($StockID), $Matches)) {
+		$IncrementedSuffix = IncrementAlphaNumericSuffix($Matches[2]);
+		if (mb_strlen($IncrementedSuffix) == mb_strlen($Matches[2])) {
+			return $Matches[1] . $IncrementedSuffix;
+		}
+	}
+
+	return $StockID . '-0001';
+}
+
+function IncrementAlphaNumericSuffix($Suffix) {
+	$Alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	$Characters = str_split($Suffix);
+	$Carry = 1;
+
+	for ($Index = count($Characters) - 1; $Index >= 0; $Index--) {
+		$Position = strpos($Alphabet, $Characters[$Index]);
+		if ($Position === false) {
+			return $Suffix;
+		}
+
+		$Position += $Carry;
+		if ($Position >= mb_strlen($Alphabet)) {
+			$Characters[$Index] = $Alphabet[0];
+			$Carry = 1;
+		} else {
+			$Characters[$Index] = $Alphabet[$Position];
+			$Carry = 0;
+			break;
+		}
+	}
+
+	if ($Carry == 1) {
+		return '1' . implode('', $Characters);
+	}
+
+	return implode('', $Characters);
+}
