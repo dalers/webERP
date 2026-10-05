@@ -8,7 +8,32 @@ use Dompdf\Dompdf;
 
 include(__DIR__ . '/includes/SetDomPDFOptions.php');
 
+if (isset($_GET['StockID'])) {
+	$StockID = trim(mb_strtoupper($_GET['StockID']));
+	if (!isset($_POST['Part'])) {
+		$_POST['Part'] = $StockID;
+	}
+}
+
 if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
+
+    $CheckSQL = "SELECT stockid FROM stockmaster WHERE stockid='" . $_POST['Part'] . "'";
+    $CheckResult = DB_query($CheckSQL);
+    if (DB_num_rows($CheckResult) == 0) {
+        $Title=__('Indented BOM Listing');
+        include(__DIR__ . '/includes/header.php');
+		echo '<p class="page_title_text"><img src="'.$RootPath.'/css/'.$Theme.'/images/maintenance.png" title="' . __('Search') . '" alt="" />' . ' ' . $Title . '</p>';
+        prnMsg(__('The stock code you entered does not exist'),  'error');
+
+        echo '<div class="centre">
+				<form><input type="submit" name="close" value="' . __('Close') . '" onclick="window.close()" /></form>
+			</div>';
+        include(__DIR__ . '/includes/footer.php');
+        exit;
+    }
+
+	$SortOrder = isset($_POST['SortOrder']) && $_POST['SortOrder'] === 'ItemCode' ? 'ItemCode' : 'BOMSequence';
+	$SortPartExpression = $SortOrder === 'BOMSequence' ? "LPAD(bom.sequence, 10, '0')" : 'CONCAT(bom.parent,bom.component)';
 
 	$SQL = "DROP TABLE IF EXISTS tempbom";
 	$Result = DB_query($SQL);
@@ -17,14 +42,14 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	$SQL = "DROP TABLE IF EXISTS passbom2";
 	$Result = DB_query($SQL);
 	$SQL = "CREATE TEMPORARY TABLE passbom (
-				part char(20),
+				part varchar(64),
 				sortpart text) DEFAULT CHARSET=utf8";
 	$ErrMsg = __('The SQL to create passbom failed with the message');
 	$Result = DB_query($SQL, $ErrMsg);
 
 	$SQL = "CREATE TEMPORARY TABLE tempbom (
-				parent char(20),
-				component char(20),
+				parent varchar(64),
+				component varchar(64),
 				sortpart text,
 				level int,
 				workcentreadded char(5),
@@ -41,8 +66,9 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	// This finds the top level
 	$SQL = "INSERT INTO passbom (part, sortpart)
 			   SELECT bom.component AS part,
-					  CONCAT(bom.parent,bom.component) AS sortpart
+					  $SortPartExpression AS sortpart
 			  FROM bom
+			  INNER JOIN locationusers ON locationusers.loccode=bom.loccode AND locationusers.userid='" .  $_SESSION['UserID'] . "' AND locationusers.canview=1
 			  WHERE bom.parent ='" . $_POST['Part'] . "'
 			  AND bom.effectiveafter <= CURRENT_DATE
 			  AND bom.effectiveto > CURRENT_DATE";
@@ -62,7 +88,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 				quantity)
 			  SELECT bom.parent,
 					 bom.component,
-					 CONCAT(bom.parent,bom.component) AS sortpart,
+						 $SortPartExpression AS sortpart,
 					 " . $LevelCounter . " AS level,
 					 bom.workcentreadded,
 					 bom.loccode,
@@ -96,7 +122,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 					quantity)
 				  SELECT bom.parent,
 						 bom.component,
-						 CONCAT(passbom.sortpart,bom.component) AS sortpart,
+							 CONCAT(passbom.sortpart, " . ($SortOrder === 'BOMSequence' ? "LPAD(bom.sequence, 10, '0')" : 'bom.component') . ") AS sortpart,
 						 $LevelCounter as level,
 						 bom.workcentreadded,
 						 bom.loccode,
@@ -120,22 +146,28 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			$Result = DB_query($SQL);
 
 			$SQL = "CREATE TEMPORARY TABLE passbom (
-								part char(20),
+								part varchar(64),
 								sortpart text) DEFAULT CHARSET=utf8";
 			$Result = DB_query($SQL);
 
 
 			$SQL = "INSERT INTO passbom (part, sortpart)
 					   SELECT bom.component AS part,
-							  CONCAT(passbom2.sortpart,bom.component) AS sortpart
-					   FROM bom,passbom2
-					   WHERE bom.parent = passbom2.part
-					   AND bom.effectiveafter <= CURRENT_DATE
+							  CONCAT(passbom2.sortpart, " . ($SortOrder === 'BOMSequence' ? "LPAD(bom.sequence, 10, '0')" : 'bom.component') . ") AS sortpart
+				   FROM bom
+				   INNER JOIN passbom2 ON bom.parent = passbom2.part
+				   INNER JOIN locationusers ON locationusers.loccode=bom.loccode AND locationusers.userid='" .  $_SESSION['UserID'] . "' AND locationusers.canview=1
+				   WHERE bom.effectiveafter <= CURRENT_DATE
 					   AND bom.effectiveto > CURRENT_DATE";
 			$Result = DB_query($SQL);
 
 
-			$SQL = "SELECT COUNT(*) FROM bom,passbom WHERE bom.parent = passbom.part";
+			$SQL = "SELECT COUNT(*)
+					FROM bom
+					INNER JOIN passbom ON bom.parent = passbom.part
+					INNER JOIN locationusers ON locationusers.loccode=bom.loccode AND locationusers.userid='" .  $_SESSION['UserID'] . "' AND locationusers.canview=1
+					WHERE bom.effectiveafter <= CURRENT_DATE
+					AND bom.effectiveto > CURRENT_DATE";
 			$Result = DB_query($SQL);
 
 			$MyRow = DB_fetch_row($Result);
@@ -162,7 +194,12 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	if (isset($_POST['PrintPDF'])) {
 		$HTML .= '<html>
 					<head>';
-		$HTML .= '<link href="css/reports.css" rel="stylesheet" type="text/css" />';
+		$HTML .= '<link href="css/reports.css" rel="stylesheet" type="text/css" />
+				<div class="footer fixed-section">
+					<div class="right">
+						<span class="page-number">Page </span>
+					</div>
+				</div>';
 	}
 
 	$HTML .= '<meta name="author" content="WebERP">
@@ -174,9 +211,10 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 					' . __('Indented BOM Listing For') . ' ' . mb_strtoupper($_POST['Part']) . '<br />
 					' . __('Printed') . ': ' . date($_SESSION['DefaultDateFormat']) . '<br />
 				</div>
-				<table>
+				<table id="IndentedBOM">
 					<thead>
 						<tr>
+							<th></th>
 							<th class="SortedColumn">' . __('Part Number') . '</th>
 							<th class="SortedColumn">' . __('M/B') . '</th>
 							<th class="SortedColumn">' . __('Description') . '</th>
@@ -194,7 +232,18 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 	$SQL = "SELECT tempbom.*,
 				stockmaster.description,
 				stockmaster.mbflag,
-				stockmaster.units
+				stockmaster.units,
+				EXISTS (
+					SELECT 1
+					FROM bom AS childbom
+					INNER JOIN locationusers AS childlocationusers
+						ON childlocationusers.loccode = childbom.loccode
+						AND childlocationusers.userid = '" . $_SESSION['UserID'] . "'
+						AND childlocationusers.canview = 1
+					WHERE childbom.parent = tempbom.component
+					AND childbom.effectiveafter <= CURRENT_DATE
+					AND childbom.effectiveto > CURRENT_DATE
+				) AS haschildren
 			FROM tempbom,stockmaster
 			WHERE tempbom.component = stockmaster.stockid
 			ORDER BY sortpart";
@@ -202,6 +251,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 	// Display the top-level parent item first for consistency with single-level BOM
 	$HTML .= '<tr class="striped_row">
+				<td></td>
 				<td><strong>' . $Assembly . '</strong></td>
 				<td>' . $ParentMBFlag . '</td>
 				<td><strong>' . $AssemblyDesc . '</strong></td>
@@ -221,8 +271,13 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 		$Level = $MyRow['level'] - 1; // Adjust for parent being level 1
 		$Indent = str_repeat('&nbsp;&nbsp;', $Level * 2); // 2 spaces per level
 		$Symbol = ($Level > 0) ? '|_ ' : '';
+		$Toggle = '';
+		if (!isset($_POST['PrintPDF']) && $MyRow['haschildren']) {
+			$Toggle = '<button type="button" class="bom-toggle" aria-expanded="true" title="' . __('Collapse') . '" data-collapse-label="' . __('Collapse') . '" data-expand-label="' . __('Expand') . '">-</button> ';
+		}
 
-		$HTML .= '<tr class="striped_row">
+		$HTML .= '<tr class="striped_row" data-level="' . $Level . '" data-collapsed="false">
+					<td>' . $Toggle . '</td>
 					<td>' . $Indent . $Symbol . '<a href="' . $RootPath . '/SelectProduct.php?StockID=' . urlencode($MyRow['component']) . '">' . $MyRow['component'] . '</a>' . '</td>
 					<td>' . $MyRow['mbflag'] . '</td>
 					<td>' . $MyRow['description'] . '</td>
@@ -238,15 +293,11 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 
 	if (isset($_POST['PrintPDF'])) {
 		$HTML .= '</tbody>
-				<div class="footer fixed-section">
-					<div class="right">
-						<span class="page-number">Page </span>
-					</div>
-				</div>
 			</table>';
 	} else {
 		$HTML .= '</tbody>
 				</table>
+				<script src="' . $RootPath . '/javascripts/BOMIndented.js?version=1.0"></script>
 				<div class="centre">
 					<form><input type="submit" name="close" value="' . __('Close') . '" onclick="window.close()" /></form>
 				</div>';
@@ -265,9 +316,9 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 		$DomPDF->render();
 
 		// Output the generated PDF to Browser
-		$DomPDF->stream($_SESSION['DatabaseName'] . '_BOMIndented_' . date('Y-m-d') . '.pdf', array(
-			"Attachment" => false
-		));
+		$PDFContent = $DomPDF->output();
+		SendPDFToBrowser($PDFContent, $_SESSION['DatabaseName'] . '_BOMIndented_' . date('Y-m-d') . '.pdf');
+
 	} else {
 		$Title = __('Indented BOM Listing');
 		include(__DIR__ . '/includes/header.php');
@@ -292,7 +343,7 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			<legend>', __('Select Report Criteria'), '</legend>';
 	echo '<field>
 			<label for="Part">' . __('Part') . ':</label>
-			<input type="text" name="Part" autofocus="autofocus" required="required" data-type="no-illegal-chars" title="" size="20" />
+			<input type="text" name="Part" value="' . (isset($_POST['Part']) ? htmlspecialchars($_POST['Part'], ENT_QUOTES, 'UTF-8') : '') . '" autofocus="autofocus" required="required" data-type="no-illegal-chars" title="" size="20" />
 			<fieldhelp>' . __('Enter the item code of parent item to list the bill of material for') . '</fieldhelp>
 		</field>
 		<field>
@@ -300,6 +351,13 @@ if (isset($_POST['PrintPDF']) or isset($_POST['View'])) {
 			<select name="Levels">
 				<option selected="selected" value="All">' . __('All Levels') . '</option>
 				<option value="One">' . __('One Level') . '</option>
+			</select>
+		</field>
+		<field>
+			<label for="SortOrder">' . __('Sort Order') . ':</label>
+			<select name="SortOrder">
+				<option value="ItemCode">' . __('Item code') . '</option>
+				<option selected="selected" value="BOMSequence">' . __('BOM Sequence') . '</option>
 			</select>
 		</field>
 		</fieldset>

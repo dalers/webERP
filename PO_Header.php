@@ -73,7 +73,7 @@ if ((isset($_POST['UpdateStatus']) and $_POST['UpdateStatus'] != '')) {
 
 		$AuthResult = DB_query($AuthSQL);
 		$MyRow = DB_fetch_array($AuthResult);
-		$AuthorityLevel = $MyRow['authlevel'];
+		$AuthorityLevel = ($MyRow === null ? 0 : $MyRow['authlevel']);
 		$OrderTotal = $_SESSION['PO' . $identifier]->Order_Value();
 
 		if ($_POST['StatusComments'] != '') {
@@ -208,10 +208,10 @@ if (isset($_POST['EnterLines']) or isset($_POST['AllowRePrint'])) {
 	$_SESSION['PO' . $identifier]->SuppDelAdd5 = $_POST['SuppDelAdd5'];
 	$_SESSION['PO' . $identifier]->SuppTel = $_POST['SuppTel'];
 	$_SESSION['PO' . $identifier]->Initiator = $_POST['Initiator'];
-	$_SESSION['PO' . $identifier]->RequisitionNo = $_POST['Requisition'];
+	$_SESSION['PO' . $identifier]->RequisitionNo = $_POST['Requisition'] ?? '';
 	$_SESSION['PO' . $identifier]->Version = $_POST['Version'];
 	$_SESSION['PO' . $identifier]->DeliveryDate = $_POST['DeliveryDate'];
-	$_SESSION['PO' . $identifier]->Revised = $_POST['Revised'];
+	$_SESSION['PO' . $identifier]->Revised = $_POST['Revised'] ?? '';
 	$_SESSION['PO' . $identifier]->ExRate = filter_number_format($_POST['ExRate']);
 	$_SESSION['PO' . $identifier]->Comments = $_POST['Comments'];
 	$_SESSION['PO' . $identifier]->DeliveryBy = $_POST['DeliveryBy'];
@@ -247,7 +247,7 @@ if (isset($_POST['EnterLines']) or isset($_POST['AllowRePrint'])) {
 } //isset($_POST['EnterLines']) OR isset($_POST['AllowRePrint'])
 /* end of if isset _POST'EnterLines' */
 
-echo '<span style="float:left"><a href="' . $RootPath . '/PO_SelectOSPurchOrder.php?identifier=' . $identifier . '">' . __('Back to Purchase Orders') . '</a></span>';
+echo '<a class="toplink" href="' . $RootPath . '/PO_SelectOSPurchOrder.php?identifier=' . $identifier . '">' . __('Back to Purchase Orders') . '</a>';
 
 /*The page can be called with ModifyOrderNumber=x where x is a purchase
  * order number. The page then looks up the details of order x and allows
@@ -521,7 +521,7 @@ else {
 		$_SESSION['PO' . $identifier]->SuppDelAdd6 = $_POST['SuppDelAdd6'];
 		$_SESSION['PO' . $identifier]->SuppTel = $_POST['SuppTel'];
 		$_SESSION['PO' . $identifier]->Port = $_POST['Port'];
-		$_SESSION['PO' . $Identifier]->DeliveryBy = $_POST['DeliveryBy'];
+		$_SESSION['PO' . $identifier]->DeliveryBy = $_POST['DeliveryBy'];
 		// end of added for suppliers lookup fields
 
 	}
