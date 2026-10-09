@@ -1,6 +1,11 @@
 <?php
 
-// Related Discussion
+// Add PLM Supply Chain Schema
+//
+// Add manufacturers, manufacturerspn, stockfils and supplierlin tables for PLM supply chain management
+// (the stockfils table has a constraint on stockid in stockmaster but does not affect deleting)
+// Inspired by "Parts&Vendors"
+// Related webERP project discussions
 // - "Lite" PLM https://github.com/timschofield/webERP/discussions/813
 // - PLM Features https://github.com/timschofield/webERP/wiki/PLM-Features
 
@@ -103,6 +108,8 @@ CreateTable('manufacturerspn', "CREATE TABLE IF NOT EXISTS `manufacturerspn` (
 
 
 // 5. cleanup
-if ($_SESSION['Updates']['Errors'] == 0) {
-	UpdateDBNo(basename(__FILE__, '.php'), __('Add stockitem doc/url and supply chain OEM'));
-}
+// unlike a project schema update, a custom update does not record its execution in the webERP update history
+// TODO fix this!
+//if ($_SESSION['Updates']['Errors'] == 0) {
+//	UpdateDBNo(basename(__FILE__, '.php'), __('Add PLM supply chain management schema'));
+//}
