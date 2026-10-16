@@ -1,3 +1,47 @@
+# [webERP-PLM (webERP with PLM Extensions)](https://dalescott.net)
+
+This fork is to development a top-level "PLM" module for webERP, guided by a vision for effectively navigating to and managing the items within the system, including supporting documents and quality records stoted in an Wiki Knowledge Base. It is not clear yet if any new menu item scripts will be required and initially the PLM module will be a collection of existing scripts.
+
+It has been suggested a novice or casual user needs a simple menu system with fewer and more obvious menu items (which an experienced user can easily skip through). This implies complication must be managed within a menu-item script. E.g. there are several scripts for viewing a BOM and a user must chose the appropriate script based on their need and security role. Instead there could be one BOMs script that takes into consideration the user's security profile and allows the user to see and/or do only what their security role allows (at least one script does this now although its name escapes me). In this example, the number of BOM-related menu items could be reduced from 3 to 1 providing a significant improvement in screen space for clarity. An added benefit is reducing the number of scripts which reduces work for testing, development, user configuration and system validation.
+
+The PLM module may one day be included in the webERP repository similar to other modules or alternatively a standard plugin interface could be defined for modules and the PLM module the first to use it (which could be as simple as simply being located in a common "plugins" directory).
+
+## Proposed Plugin System
+
+It would benefit the webERP community to have a standard method of customizing webERP that simplifies the work to maintaining a site and keep it updated with security enhancements, bug fixes and new features from the webERP project.
+
+"Modules" in webERP are a user interface metaphor to group scripts into general workflow domains. I.e. the HR module is where people are managed, the Manufacturing module is where manufacturing is initiated and managed, the Asset Manager module is for managing assets and the PLM module is for managing items, their relationships, supporting documents and quality records.
+
+## webERP Mental Model
+
+Core
+
+- Receivables
+- Payables
+- Inventory
+- General Lededger
+- Setup
+- Utilities
+
+Modules
+
+- Manufacturing
+- Sales
+- Purchases
+- Forecast
+- Asset Manager
+- HR
+- Petty Cash _(maybe, if not Petty Cash is included in "Core")_
+- PLM (new)
+
+Modules can be included with webERP or a "custom" modules can be developed outside of the webERP project and installed by a system administrator - by extracting from a zip archive, creating a git sub-project, installing using Composer, or some other method. The PLM module could be such a module. Existing Manufacturing, Sales, Purchases, Forecast, Asset Manager, HR and maybe Petty Cash modules could be migrated to the standardized system to standardize code, improve clarity and reduce project development and maintenance as well as user custom  development and maintenance.
+
+## License Thoughts
+
+IANAL and this is my personal opinion. webERP is licensed according to the GPL and any development on webERP is licensed according to the GPL, including PLM module here. It is possible to develop a plug-in seperate from webERP provided using any license, including no license at all (i.e. a fully proprietary module), but the resulting integration is licensed according to the GPL.
+
+The GPL includes the "SaaS Loophole" (which the AGPL was created to avoid). The "SaaS" loophole would allow a SaaS service provider to develop their own product using webERP, possibly with their own plug-ins and possibly including bug fixes, or improvements that webERP would benefit from, and not have to publish their changes (the GPL does not consider providing SaaS as distributing). I don't have an opinion on the impact of this on webERP and whether it's good or bad, it's just the way it is.
+
 # [webERP - Accounting and Business Administration ERP System](https://www.weberp.org/)
 
 [![Download](https://img.shields.io/sourceforge/dm/web-erp.svg)](https://sourceforge.net/projects/web-erp/files/latest/download)
