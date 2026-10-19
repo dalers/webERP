@@ -13,7 +13,7 @@ NewModule('plm', 'PLM', __('Product Lifecycle Mgmt'), 8);
 
 // Build PLM menu
 // Transactions pane (left)
-NewMenuItem('plm', 'Maintenance', __('Inventory Adjustments'), '/StockAdjustments.php?NewAdjustment=Yes', 1);
+// The PLM does not perform Transations (although "Inventory Item Movements" is available from "Select an Item")
 
 // Reports pane (middle)
 NewMenuItem('plm', 'Reports', __('Serial Item Research Tool'), '/StockSerialItemResearch.php', 1);
