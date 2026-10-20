@@ -1,17 +1,10 @@
 <?php
 
-// Add PLM Module to Menu System
-
-// Register new scripts
-//NewScript('Manufacturers.php', 15));
-//NewScript('SelectManufacturer.php', 15));
-//NewScript('Z_ImportManufacturers.php', 15));
-//NewScript('Z_ImportStockFilsUrls.php', 15));
-
-// Register PLM Module
-//NewModule('plm', 'PLM', __('Product Lifecycle Mgmt'), 8);
-
-// Build PLM menu
-// Transactions pane (left)
-// The PLM does not perform Transations (although "Inventory Item Movements" is available from "Select an Item"
+// Remove menu item [ PLM > Maintenance > Inventory Adjustments ]
+// (access by .../weberp/Z_UpgradeDatabase.php?update=3-fix_plm_menu.php)
+//
+// The PLM module menu provides for stock adjustments of a selected item (menu
+//  item [ PLM > Select an Item > { select an item } > Item Transactions >
+//  Quantity Adjustments ]) but ad hoc adjustments are done in the Inventory module
+//  [ Inventory > Transactions > Inventory Adjustments ]
 RemoveMenuItem('plm', 'Maintenance', __('Inventory Adjustments'), '/StockAdjustments.php?NewAdjustment=Yes', 1);
