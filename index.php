@@ -161,6 +161,12 @@ echo '</legend><ul>'; // SubMenuHeader
 $i = 0;
 if (isset($MenuItems[$_SESSION['Module']]['Transactions'])) {
     foreach ($MenuItems[$_SESSION['Module']]['Transactions']['Caption'] as $Caption) {
+		if (substr($MenuItems[$_SESSION['Module']]['Transactions']['URL'][$i], 0, 7) == '#spacer') {
+			/* A blank line to group the menu items - see sql/updates-custom/5-add_plm_menu_spacers.php */
+			echo '<li class="MenuItem">&nbsp;</li>';
+			++$i;
+			continue;
+		}
 	    /* Transactions Menu Item */
     	$ScriptNameArray = explode('?', substr($MenuItems[$_SESSION['Module']]['Transactions']['URL'][$i], 1));
 	    if (isset($_SESSION['PageSecurityArray'][$ScriptNameArray[0]])) {
@@ -192,6 +198,12 @@ echo '</legend>
 $i = 0;
 if (isset($MenuItems[$_SESSION['Module']]['Reports'])) {
 	foreach ($MenuItems[$_SESSION['Module']]['Reports']['Caption'] as $Caption) {
+		if (substr($MenuItems[$_SESSION['Module']]['Reports']['URL'][$i], 0, 7) == '#spacer') {
+			/* A blank line to group the menu items - see sql/updates-custom/5-add_plm_menu_spacers.php */
+			echo '<li class="MenuItem">&nbsp;</li>';
+			++$i;
+			continue;
+		}
 		/* Transactions Menu Item */
 		$ScriptNameArray = explode('?', substr($MenuItems[$_SESSION['Module']]['Reports']['URL'][$i], 1));
 		$PageSecurity = $_SESSION['PageSecurityArray'][$ScriptNameArray[0]];
@@ -223,6 +235,12 @@ echo '</legend>
 $i = 0;
 if (isset($MenuItems[$_SESSION['Module']]['Maintenance'])) {
 	foreach ($MenuItems[$_SESSION['Module']]['Maintenance']['Caption'] as $Caption) {
+		if (substr($MenuItems[$_SESSION['Module']]['Maintenance']['URL'][$i], 0, 7) == '#spacer') {
+			/* A blank line to group the menu items - see sql/updates-custom/5-add_plm_menu_spacers.php */
+			echo '<li class="MenuItem">&nbsp;</li>';
+			++$i;
+			continue;
+		}
 		/* Transactions Menu Item */
 		$ScriptNameArray = explode('?', substr($MenuItems[$_SESSION['Module']]['Maintenance']['URL'][$i], 1));
 		if (isset($_SESSION['PageSecurityArray'][$ScriptNameArray[0]])) {
