@@ -102,11 +102,29 @@ if (isset($SupplierLogin) AND $SupplierLogin==1){
 //=== MainMenuDiv =======================================================================
 echo '<nav class="ModuleList">
 		<ul>'; //===HJ===
+/* Position of each module's display flag in the user's modulesallowed field (see WWW_Users.php) */
+$ModuleFlagPosition = array(
+	'Sales' => 0,
+	'AR' => 1,
+	'PO' => 2,
+	'AP' => 3,
+	'stock' => 4,
+	'manuf' => 5,
+	'for' => 6,
+	'GL' => 7,
+	'hr' => 8,
+	'FA' => 9,
+	'PC' => 10,
+	'system' => 11,
+	'Utilities' => 12,
+	'plm' => 13
+);
 $i = 0;
 while ($i < count($ModuleLink)) {
 	// This determines if the user has display access to the module see config.php and header.php
 	// for the authorisation and security code
-	if ($_SESSION['ModulesEnabled'][$i] == 1) {
+	$FlagPosition = $ModuleFlagPosition[$ModuleLink[$i]] ?? $i;
+	if (isset($_SESSION['ModulesEnabled'][$FlagPosition]) and $_SESSION['ModulesEnabled'][$FlagPosition] == 1) {
 		// If this is the first time the application is loaded then it is possible that
 		// SESSION['Module'] is not set if so set it to the first module that is enabled for the user
 		if (!isset($_SESSION['Module']) or $_SESSION['Module'] == '') {

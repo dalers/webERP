@@ -44,7 +44,8 @@ $ModuleList = array(
 	__('Asset Manager'),
 	__('Petty Cash'),
 	__('Setup'),
-	__('Utilities')
+	__('Utilities'),
+	__('Product Lifecycle Mgmt')
 );
 $ModuleListLabel = array(
 	__('Display Sales module'),
@@ -59,7 +60,8 @@ $ModuleListLabel = array(
 	__('Display Asset Manager module'),
 	__('Display Petty Cash module'),
 	__('Display Setup module'),
-	__('Display Utilities module')
+	__('Display Utilities module'),
+	__('Display PLM module')
 );
 $PDFLanguages = array(
 	__('Latin Western Languages - Times'),
