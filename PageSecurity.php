@@ -51,9 +51,9 @@ while ($MyRow = DB_fetch_array($Result)) {
 
 	while ($MyTokenRow = DB_fetch_array($TokenResult)) {
 		if ($MyTokenRow['tokenid'] == $MyRow['pagesecurity']) {
-			echo '<option selected="selected" value="' . $MyTokenRow['tokenid'] . '">' . $MyTokenRow['tokenid'] . ' - ' . $MyTokenRow['tokenname'] . '</option>';
+			echo '<option selected="selected" value="' . $MyTokenRow['tokenid'] . '">' . $MyTokenRow['tokenname'] . ' (' . $MyTokenRow['tokenid'] . ')</option>';
 		} else {
-			echo '<option value="' . $MyTokenRow['tokenid'] . '">' . $MyTokenRow['tokenid'] . ' - ' . $MyTokenRow['tokenname'] . '</option>';
+			echo '<option value="' . $MyTokenRow['tokenid'] . '">' . $MyTokenRow['tokenname'] . ' (' . $MyTokenRow['tokenid'] . ')</option>';
 		}
 	}
 	echo '</select>
