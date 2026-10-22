@@ -1,29 +1,28 @@
 # [webERP-PLM (webERP with PLM Extensions)](https://dalescott.net)
 
-This fork is to development a top-level "PLM" module for webERP, guided by a vision for effectively navigating to and managing the items within the system, including supporting documents and quality records stoted in an Wiki Knowledge Base. It is not clear yet if any new menu item scripts will be required and initially the PLM module will be a collection of existing scripts.
+This fork is for the development of a "PLM" module for webERP, guided by a desire to easily navigate from one item to another using BOMs as a network of highways between them. A related project is the workflow for managing drawings, documents, test reports and other quality documents and records using the existing webERP Wiki Knowledge Base interface and WackoWiki.
 
-It has been suggested a novice or casual user needs a simple menu system with fewer and more obvious menu items (which an experienced user can easily skip through). This implies complication must be managed within a menu-item script. E.g. there are several scripts for viewing a BOM and a user must chose the appropriate script based on their need and security role. Instead there could be one BOMs script that takes into consideration the user's security profile and allows the user to see and/or do only what their security role allows (at least one script does this now although its name escapes me). In this example, the number of BOM-related menu items could be reduced from 3 to 1 providing a significant improvement in screen space for clarity. An added benefit is reducing the number of scripts which reduces work for testing, development, user configuration and system validation.
+The PLM module may one day be included in the webERP repository similar to other modules or possibly alternatively a standard module interface could be defined for custom modules such as the PLM module.
 
-The PLM module may one day be included in the webERP repository similar to other modules or alternatively a standard plugin interface could be defined for modules and the PLM module the first to use it (which could be as simple as simply being located in a common "plugins" directory).
+## Modules
 
-## Proposed Plugin System
+It would benefit the webERP community to have a standard workflow for adding custom modules, while still keeping the rest of a webERP site updated with the project, including security enhancements, bug fixes and new features (including the possibility of new modules).
 
-It would benefit the webERP community to have a standard method of customizing webERP that simplifies the work to maintaining a site and keep it updated with security enhancements, bug fixes and new features from the webERP project.
+"Modules" in webERP are a user interface metaphor grouping scripts into general domains of work (e.g. Purchasing, Inventory, Manufacturing, Asset Magement, HR...). Visibility of a module is controlled by the user record and menu entries are filtered by the user's assigned role (e.g. System Administrator, Accounts Payable, PLM Author, PLM Viewer...)
 
-"Modules" in webERP are a user interface metaphor to group scripts into general workflow domains. I.e. the HR module is where people are managed, the Manufacturing module is where manufacturing is initiated and managed, the Asset Manager module is for managing assets and the PLM module is for managing items, their relationships, supporting documents and quality records.
+## webERP Module Mental Model
 
-## webERP Mental Model
-
-Core
+Core Modules
 
 - Receivables
 - Payables
 - Inventory
 - General Lededger
+- Petty Cash
 - Setup
 - Utilities
 
-Modules
+Add-On Modules
 
 - Manufacturing
 - Sales
@@ -31,16 +30,30 @@ Modules
 - Forecast
 - Asset Manager
 - HR
-- Petty Cash _(maybe, if not Petty Cash is included in "Core")_
-- PLM (new)
+- PLM (added new here)
 
-Modules can be included with webERP or a "custom" modules can be developed outside of the webERP project and installed by a system administrator - by extracting from a zip archive, creating a git sub-project, installing using Composer, or some other method. The PLM module could be such a module. Existing Manufacturing, Sales, Purchases, Forecast, Asset Manager, HR and maybe Petty Cash modules could be migrated to the standardized system to standardize code, improve clarity and reduce project development and maintenance as well as user custom  development and maintenance.
+Core and several Add-On modules are included with webERP. A custom Add-On module can be developed and then installed by a webERP site system administrator (by extracting a zip archive or referencing an online repo and also manually running a custom-update file). 
 
-## License Thoughts
+## Other Notes
 
-IANAL and this is my personal opinion. webERP is licensed according to the GPL and any development on webERP is licensed according to the GPL, including PLM module here. It is possible to develop a plug-in seperate from webERP provided using any license, including no license at all (i.e. a fully proprietary module), but the resulting integration is licensed according to the GPL.
+### Strive for the Fewest Menu Items
 
-The GPL includes the "SaaS Loophole" (which the AGPL was created to avoid). The "SaaS" loophole would allow a SaaS service provider to develop their own product using webERP, possibly with their own plug-ins and possibly including bug fixes, or improvements that webERP would benefit from, and not have to publish their changes (the GPL does not consider providing SaaS as distributing). I don't have an opinion on the impact of this on webERP and whether it's good or bad, it's just the way it is.
+Recent demos have suggested a novice or casual user benefits from a simple menu system with fewer and more obvious menu items (which implies complication is managed within the menu-item script). This practise is already followed in:
+
+- SelectProduct.php by not rendering menu items which would be irrelevent (e.g. menu items related to BOMs when the selected item cannot have a BOM)
+
+- SelectProduct.php does not show price, supplier or cost unless the user has token 12 (Prices Security), 9 (Supplier centre – Supplier access only) or 18 (Cost authority). SelectProduct.php itself only requires token 2 (Basic Reports and Inquiries...).
+
+Now consider there are several BOM-related menu items (aka scripts) and a user must chose the appropriate one based on their need and security role. Instead there could be one BOMs script that limits what the user is shown or what actions they can perform based on their security role. This would save two menu items, making the first choice simpler for the user and taking less screen space. Reducing the number of scripts also reduces testing, maintenance and system validation.
+
+### Custom Modules, the GPL and the SaaS Loophole
+
+IANAL and the following is my personal opinion.
+
+Given that webERP is licensed according to the GPL, a fork must also be licensed according to the GPL but it is expected for sites to include custom scripts developed seperate from webERP and so long as no distribution takes place the custom scripts do not need to be distributed.
+
+The GPL includes the "SaaS Loophole" which allows a SaaS service provider to create their own custom modules, modify webERP in general and fix issues the webERP project would benefit from, and sell the service to users, without having to publish any of their changes because the GPL does not consider serving an application to a user as "distributing".
+
 
 # [webERP - Accounting and Business Administration ERP System](https://www.weberp.org/)
 
