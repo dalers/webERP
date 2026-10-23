@@ -107,14 +107,17 @@ if (isset($_POST['Modify'])) {
 }
 
 $SQL = "SELECT
-			email,
-			pagesize,
-			showpagehelp,
-			showfieldhelp,
-            fontsize,
-			language
+			www_users.email,
+			www_users.pagesize,
+			www_users.showpagehelp,
+			www_users.showfieldhelp,
+			www_users.fontsize,
+			www_users.language,
+			securityroles.secrolename
 		FROM www_users
-		WHERE userid = '" . $_SESSION['UserID'] . "'";
+		LEFT JOIN securityroles
+			ON securityroles.secroleid = www_users.fullaccess
+		WHERE www_users.userid = '" . $_SESSION['UserID'] . "'";
 $Result = DB_query($SQL);
 $MyRow = DB_fetch_array($Result);
 
@@ -140,6 +143,16 @@ echo '<fieldset>
 echo '<field>
 		<label for="UsersRealName">', __('User Name'), ':</label>
 		<fieldtext>', $_SESSION['UsersRealName'], '<input name="RealName" type="hidden" value="', $_SESSION['UsersRealName'], '" /></fieldtext>
+	</field>';
+
+echo '<field>
+		<label for="UserRole">', __('User Role'), ':</label>
+		<fieldtext>', $MyRow['secrolename'], '</fieldtext>
+	</field>';
+
+/* Blank line to separate the read-only rows from the editable settings */
+echo '<field>
+		<fieldtext>&nbsp;</fieldtext>
 	</field>';
 
 echo '<field>
