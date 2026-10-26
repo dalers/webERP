@@ -102,6 +102,17 @@ if (isset($SupplierLogin) AND $SupplierLogin==1){
 //=== MainMenuDiv =======================================================================
 echo '<nav class="ModuleList">
 		<ul>'; //===HJ===
+/* Ignore a remembered module (e.g. from a cookie) that this user is not allowed to display */
+$ModuleIsAllowed = false;
+foreach ($ModuleLink as $Index => $ModuleName) {
+	$FlagPosition = $ModuleFlagPosition[$ModuleName] ?? $Index;
+	if ($ModuleName == $_SESSION['Module'] and isset($_SESSION['ModulesEnabled'][$FlagPosition]) and $_SESSION['ModulesEnabled'][$FlagPosition] == 1) {
+		$ModuleIsAllowed = true;
+	}
+}
+if (!$ModuleIsAllowed) {
+	$_SESSION['Module'] = '';
+}
 $i = 0;
 while ($i < count($ModuleLink)) {
 	// This determines if the user has display access to the module see config.php and header.php
