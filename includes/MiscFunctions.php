@@ -389,6 +389,14 @@ function wikiLink($WikiType, $WikiPageID) {
 	}
 }
 
+/* Returns true if the logged in user holds the security token required to run the script. Used to hide menu links the user could not follow. Scripts with no security token defined are treated as not allowed. */
+function IsScriptAllowed($ScriptName) {
+	if (!isset($_SESSION['PageSecurityArray'][$ScriptName]) or !is_array($_SESSION['AllowedPageSecurityTokens'])) {
+		return false;
+	}
+	return in_array($_SESSION['PageSecurityArray'][$ScriptName], $_SESSION['AllowedPageSecurityTokens']);
+}
+
 // Lindsay debug stuff
 function LogBackTrace($dest = 0) {
 
