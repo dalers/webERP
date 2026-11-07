@@ -1,5 +1,7 @@
 -- Add PLM Supply Chain Schema
 --
+-- Add manufacturers, manufacturerspn, stockfils and supplierlin tables for PLM supply chain management
+-- (the stockfils table has a constraint on stockid in stockmaster but does not affect deleting)
 -- Inspired by "Parts&Vendors"
 -- Related webERP project discussions
 -- - "Lite" PLM https://github.com/timschofield/webERP/discussions/813
