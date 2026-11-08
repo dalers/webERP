@@ -169,10 +169,7 @@ if (isset($MenuItems[$_SESSION['Module']]['Transactions'])) {
 		}
 	    /* Transactions Menu Item */
     	$ScriptNameArray = explode('?', substr($MenuItems[$_SESSION['Module']]['Transactions']['URL'][$i], 1));
-	    if (isset($_SESSION['PageSecurityArray'][$ScriptNameArray[0]])) {
-	    	$PageSecurity = $_SESSION['PageSecurityArray'][$ScriptNameArray[0]];
-    	}
-	    if ((in_array($PageSecurity, $_SESSION['AllowedPageSecurityTokens']) and $PageSecurity != '')) {
+	    if (IsScriptAllowed($ScriptNameArray[0])) {
 	    	echo '<li class="MenuItem">
 	    			<a href="', $RootPath, $MenuItems[$_SESSION['Module']]['Transactions']['URL'][$i], '">&bull; ',     __($Caption), '</a>
     			</li>';
