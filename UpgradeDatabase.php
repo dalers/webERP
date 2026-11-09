@@ -1,5 +1,10 @@
 <?php
 
+// This script was used for webERP v3 and v4 (in conjunction with ./Z_Upgrade_3.xx-x-xx.php and
+// sql/mysql/upgradex.y-x.y.sql files). A new upgrade system was introduced in webERP 5 using
+// Z_UpgradeDatabase.php (in conjunction with new sql/updates.xx.php update files). This file
+// is retained for reference and backward compatibility with older upgrade scripts.
+
 $PageSecurity = 15; // hard coded in case database is old and PageSecurity stuff cannot be retrieved
 
 require(__DIR__ . '/includes/session.php');
