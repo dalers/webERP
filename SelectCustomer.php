@@ -162,34 +162,73 @@ if ($_SESSION['CustomerID'] != '' and !isset($_POST['CSV'])) {
 			</thead>
 			<tbody>
 				<tr>
-					<td valign="top" class="select">
-						<a href="', $RootPath, '/CustomerInquiry.php?CustomerID=', urlencode($_SESSION['CustomerID']), '">', __('Customer Transaction Inquiries'), '</a><br />
-						<a href="', $RootPath, '/CustomerAccount.php?CustomerID=', urlencode($_SESSION['CustomerID']), '">', __('Customer Account statement on screen'), '</a><br />
-						<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '&amp;Modify=No">', __('View Customer Details'), '</a><br />
-						<a href="', $RootPath, '/PrintCustStatements.php?FromCust=', urlencode($_SESSION['CustomerID']), '&amp;ToCust=', urlencode($_SESSION['CustomerID']), '&amp;EmailOrPrint=print&amp;PrintPDF=Yes" target="_blank">', __('Print Customer Statement'), '</a><br />
-						<a data-title="', __('One of the customer\'s contacts must have an email address and be flagged as the address to send the customer statement to for this function to work'), '" href="', $RootPath, '/PrintCustStatements.php?FromCust=', urlencode($_SESSION['CustomerID']), '&amp;ToCust=', urlencode($_SESSION['CustomerID']), '&amp;EmailOrPrint=email&amp;PrintPDF=Yes">', __('Email Customer Statement'), '</a><br />
-						<a href="', $RootPath, '/SelectCompletedOrder.php?SelectedCustomer=', urlencode($_SESSION['CustomerID']), '">', __('Order Inquiries'), '</a><br />
-						<a href="', $RootPath, '/CustomerPurchases.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Show purchases from this customer'), '</a><br />
+					<td valign="top" class="select">';
+	if (IsScriptAllowed('CustomerInquiry.php')) {
+		echo '<a href="', $RootPath, '/CustomerInquiry.php?CustomerID=', urlencode($_SESSION['CustomerID']), '">', __('Customer Transaction Inquiries'), '</a><br />';
+	}
+	if (IsScriptAllowed('CustomerAccount.php')) {
+		echo '<a href="', $RootPath, '/CustomerAccount.php?CustomerID=', urlencode($_SESSION['CustomerID']), '">', __('Customer Account statement on screen'), '</a><br />';
+	}
+	if (IsScriptAllowed('Customers.php')) {
+		echo '<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '&amp;Modify=No">', __('View Customer Details'), '</a><br />';
+	}
+	if (IsScriptAllowed('PrintCustStatements.php')) {
+		echo '<a href="', $RootPath, '/PrintCustStatements.php?FromCust=', urlencode($_SESSION['CustomerID']), '&amp;ToCust=', urlencode($_SESSION['CustomerID']), '&amp;EmailOrPrint=print&amp;PrintPDF=Yes" target="_blank">', __('Print Customer Statement'), '</a><br />';
+	}
+	if (IsScriptAllowed('PrintCustStatements.php')) {
+		echo '<a data-title="', __('One of the customer\'s contacts must have an email address and be flagged as the address to send the customer statement to for this function to work'), '" href="', $RootPath, '/PrintCustStatements.php?FromCust=', urlencode($_SESSION['CustomerID']), '&amp;ToCust=', urlencode($_SESSION['CustomerID']), '&amp;EmailOrPrint=email&amp;PrintPDF=Yes">', __('Email Customer Statement'), '</a><br />';
+	}
+	if (IsScriptAllowed('SelectCompletedOrder.php')) {
+		echo '<a href="', $RootPath, '/SelectCompletedOrder.php?SelectedCustomer=', urlencode($_SESSION['CustomerID']), '">', __('Order Inquiries'), '</a><br />';
+	}
+	if (IsScriptAllowed('CustomerPurchases.php')) {
+		echo '<a href="', $RootPath, '/CustomerPurchases.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Show purchases from this customer'), '</a><br />';
+	}
+	echo '
 						', wikiLink('Customer', $_SESSION['CustomerID']), '
 					</td>
-					<td valign="top" class="select">
-						<a href="', $RootPath, '/SelectSalesOrder.php?SelectedCustomer=', urlencode($_SESSION['CustomerID']), '">', __('Modify Outstanding Sales Orders'), '</a><br />
-						<a data-title="', __('This allows the deposits received from the customer to be matched against invoices'), '" href="', $RootPath, '/CustomerAllocations.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Allocate Receipts OR Credit Notes'), '</a><br />
-						<a href="', $RootPath, '/CustomerReceipt.php?CustomerID=', urlencode($_SESSION['CustomerID']), '&NewReceipt=Yes&Type=Customer">', __('Enter a Receipt From This Customer'), '</a><br />';
-	if (isset($_SESSION['CustomerID']) and isset($_SESSION['BranchCode'])) {
-		echo '						<a href="', $RootPath, '/CounterSales.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '&amp;BranchNo=', $_SESSION['BranchCode'], '">', __('Create a Counter Sale for this Customer'), '</a><br />';
+					<td valign="top" class="select">';
+	if (IsScriptAllowed('SelectSalesOrder.php')) {
+		echo '<a href="', $RootPath, '/SelectSalesOrder.php?SelectedCustomer=', urlencode($_SESSION['CustomerID']), '">', __('Modify Outstanding Sales Orders'), '</a><br />';
+	}
+	if (IsScriptAllowed('CustomerAllocations.php')) {
+		echo '<a data-title="', __('This allows the deposits received from the customer to be matched against invoices'), '" href="', $RootPath, '/CustomerAllocations.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Allocate Receipts OR Credit Notes'), '</a><br />';
+	}
+	if (IsScriptAllowed('CustomerReceipt.php')) {
+		echo '<a href="', $RootPath, '/CustomerReceipt.php?CustomerID=', urlencode($_SESSION['CustomerID']), '&NewReceipt=Yes&Type=Customer">', __('Enter a Receipt From This Customer'), '</a><br />';
+	}
+	if (isset($_SESSION['CustomerID']) and isset($_SESSION['BranchCode']) and IsScriptAllowed('CounterSales.php')) {
+		echo '<a href="', $RootPath, '/CounterSales.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '&amp;BranchNo=', $_SESSION['BranchCode'], '">', __('Create a Counter Sale for this Customer'), '</a><br />';
 	}
 	echo '					</td>
-					<td valign="top" class="select">
-						<a href="', $RootPath, '/Customers.php">', __('Add a New Customer'), '</a><br />
-						<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Modify Customer Details'), '</a><br />
-						<a href="', $RootPath, '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Contact'), '</a><br />
-						<a href="', $RootPath, '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Note'), '</a><br />
-						<br />
-						<a href="', $RootPath, '/CustomerBranches.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add/Edit/Delete Customer Branches'), '</a><br />
-						<a href="', $RootPath, '/SelectProduct.php">', __('Special Customer Prices'), '</a><br />
-						<a href="', $RootPath, '/CustEDISetup.php">', __('Customer EDI Configuration'), '</a><br />
-						<a href="', $RootPath, '/CustLoginSetup.php">', __('Customer Login Configuration'), '</a><br />
+					<td valign="top" class="select">';
+	if (IsScriptAllowed('Customers.php')) {
+		echo '<a href="', $RootPath, '/Customers.php">', __('Add a New Customer'), '</a><br />';
+	}
+	if (IsScriptAllowed('Customers.php')) {
+		echo '<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Modify Customer Details'), '</a><br />';
+	}
+	if (IsScriptAllowed('AddCustomerContacts.php')) {
+		echo '<a href="', $RootPath, '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Contact'), '</a><br />';
+	}
+	if (IsScriptAllowed('AddCustomerNotes.php')) {
+		echo '<a href="', $RootPath, '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Note'), '</a><br />';
+	}
+	echo '
+						<br />';
+	if (IsScriptAllowed('CustomerBranches.php')) {
+		echo '<a href="', $RootPath, '/CustomerBranches.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add/Edit/Delete Customer Branches'), '</a><br />';
+	}
+	if (IsScriptAllowed('SelectProduct.php')) {
+		echo '<a href="', $RootPath, '/SelectProduct.php">', __('Special Customer Prices'), '</a><br />';
+	}
+	if (IsScriptAllowed('CustEDISetup.php')) {
+		echo '<a href="', $RootPath, '/CustEDISetup.php">', __('Customer EDI Configuration'), '</a><br />';
+	}
+	if (IsScriptAllowed('CustLoginSetup.php')) {
+		echo '<a href="', $RootPath, '/CustLoginSetup.php">', __('Customer Login Configuration'), '</a><br />';
+	}
+	echo '
 					</td>
 				</tr>
 			</tbody>
