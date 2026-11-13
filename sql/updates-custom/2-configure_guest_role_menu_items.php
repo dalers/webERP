@@ -1,68 +1,77 @@
 <?php
 
-// Create "Guest (Read Only" user and associate menu items with role 
-// - access by URL weberp/Z_UpgradeDatabase.php?update=1-config_guest_role_menu.php
-//
+// Configure menu items for "Guest" user role
+// Z_UpgradeDatabase.php?update=2-configure_guest_role_menu_items.php
+
+// MANUALLY CREATE "Guest" USER ROLE _BEFORE_ RUNNING THIS UPDATE (otherwise the menu
+// items will not be extended to it).
+
 // The "Guest (View Only)" user role menu contains items related to viewing items,
-// BOMs and Suppliers (sources).
+// BOMs and Suppliers (aka sources).
 
-// NOTE the "Guest" user role must already exist before running this update.
+// Add menu item to module menu pane (remove and re-add to add module to new user roles)
 
-// Remove and re-add menu items to add menu items to any new user roles
-
-// NewMenuItem($Link, $Section, $__('Short Caption', $URL, $Sequence);
+// 1. Remove Menu Item
+// function RemoveMenuItem($Link, $Section, $Caption, $URL)
 //   $Link = 'modulename'
-//   $Section = 'Transactions' (left) | 'Reports' pane (middle) } 'Maintenance' (right)
-//   $url = '/ScriptName.php?Argument=Value'
-//   $sequence = 1... (1, 2, 3, 4....)
+//   $Section = 'Transactions' (left) | 'Reports' pane (middle) | 'Maintenance' (right)
+//   $Caption = __('Short Caption')
+//   $URL = '/ScriptName.php?Argument=Value'
+//
 // RemoveMenuItem('plm', 'Maintenance', __('Review Translated Descriptions'), '/RevisionTranslations.php');
 // RemoveMenuItem('plm', 'Maintenance', __('Inventory Adjustments'), '/StockAdjustments.php?NewAdjustment=Yes');
 
+RemoveMenuItem('stock', 'Maintenance', __('Select An Item'), '/SelectProduct.php');
+// it appears $Caption is necessary although redundant at this time. Possibly including $Caption was intended to support
+// removing a menu item for a specific user role in the future (i.e. a unique menu-item_user-role combination), although
+// complementary functionality would also need to be added to NewMenuItem().
 
+// 2. Add Menu Item (will be added to all user roles)
+// NewMenuItem($Link, $Section, $__('Short Caption'), $URL, $Sequence);
+//   $Link = 'modulename' (e.g. 'stock', 'manuf')
+//   $Section = 'Transactions' (left) | 'Reports' pane (middle) } 'Maintenance' (right)
+//   $__('Short Caption') = 'Costed Bill of Material Inquiry'
+//   $url = '/ScriptName.php?Argument=Value'
+//   $sequence = 1... (1, 2, 3, 4....)
+//
+// NewMenuItem('plm', 'Reports', __('Serial Item Research Tool'), '/StockSerialItemResearch.php', 1);
+// NewMenuItem('plm', 'Maintenance', __('Import Manufacturers from CSV'), '/Z_ImportManufacturers.php', 14); // TODO create script
+// NewMenuItem('plm', 'Maintenance', __('Import Files/URLS from CSV'), '/Z_ImportStocksFilsUrls.php', 15); // TODO create script
 
+NewMenuItem('stock', 'Maintenance', __('Select An Item'), '/SelectProduct.php', 2);
+// NOTE the sequence number will be the same for all user roles although in practise each user role may have a different sequence
+// number. Finding what the sequence number is for each user role requires direct interaction with the database. If different
+// user roles have different sequence numbers, the affected sequence numbers will need to be corrected manually afterwards - possibly
+// using the Menu Editor if it has this functionality.
 
-// Reports pane (middle)
-// A menu item whose URL starts with '#spacer' is displayed as a blank line by index.php.
-// Each spacer needs a unique caption and URL.
-NewMenuItem('plm', 'Reports', __('Serial Item Research Tool'), '/StockSerialItemResearch.php', 1);
-NewMenuItem('plm', 'Reports', 'Spacer 1', '#spacer1', 2);
-NewMenuItem('plm', 'Reports', __('Inventory Item Movements'), '/StockMovements.php', 3);
-NewMenuItem('plm', 'Reports', __('Inventory Item Status'), '/StockStatus.php', 4);
-NewMenuItem('plm', 'Reports', __('Inventory Item Usage'), '/StockUsage.php', 5);
-NewMenuItem('plm', 'Reports', __('Inventory Quantities'), '/InventoryQuantities.php', 6);
-NewMenuItem('plm', 'Reports', 'Spacer 2', '#spacer2', 7);
-NewMenuItem('plm', 'Reports', __('Costed BOM Inquiry'), '/BOMInquiry.php', 8);
-NewMenuItem('plm', 'Reports', __('Where Used Inquiry'), '/WhereUsedInquiry.php', 9);
-NewMenuItem('plm', 'Reports', __('Where Used Inquiry (Indented)'), '/BOMIndentedReverse.php', 10); // TODO hide if selected item cannot have BOM?
-NewMenuItem('plm', 'Reports', __('BOM Listing'), '/BOMListing.php', 11); // TODO hide if selected item cannot have BOM?
-NewMenuItem('plm', 'Reports', __('BOM Listing (Indented)'), '/BOMIndented.php', 12); // TODO hide if selected item cannot have BOM?
-NewMenuItem('plm', 'Reports', __('List Components Required'), '/BOMExtendedQty.php', 13);
-NewMenuItem('plm', 'Reports', __('List Components Not Used'), '/MaterialsNotUsed.php', 14);
-NewMenuItem('plm', 'Reports', 'Spacer 3', '#spacer3', 15);
-NewMenuItem('plm', 'Reports', __('Print Product Specification'), '/PDFProdSpec.php', 16);
-NewMenuItem('plm', 'Reports', __('Print Certificate of Analysis'), '/PDFCOA.php', 17);
-NewMenuItem('plm', 'Reports', __('Historical QA Test Results'), '/HistoricalTestResults.php', 18);
-NewMenuItem('plm', 'Reports', 'Spacer 4', '#spacer4', 19);
+// additional menu items - Manufacturing
+RemoveMenuItem('manuf', 'Reports', __('Costed Bill Of Material Inquiry'), '/BOMInquiry.php');
+NewMenuItem('manuf', 'Reports', __('Costed Bill Of Material Inquiry'), '/BOMInquiry.php', 2);
 
-// Maintenance pane (right)
-NewMenuItem('plm', 'Maintenance', __('Add a New Item'), '/Stocks.php', 1);
-NewMenuItem('plm', 'Maintenance', __('Select an Item'), '/SelectProduct.php', 2);
+RemoveMenuItem('manuf', 'Reports', __('Where Used Inquiry'), '/WhereUsedInquiry.php');
+NewMenuItem('manuf', 'Reports', __('Where Used Inquiry'), '/WhereUsedInquiry.php', 3);
 
-NewMenuItem('plm', 'Maintenance', __('Add a Supplier'), '/Suppliers.php', 3);
-NewMenuItem('plm', 'Maintenance', __('Select a Supplier'), '/SelectSupplier.php', 4);
+RemoveMenuItem('manuf', 'Reports', __('Bill Of Material Listing'), '/BOMListing.php');
+NewMenuItem('manuf', 'Reports', __('Bill Of Material Listing'), '/BOMListing.php', 4);
 
-NewMenuItem('plm', 'Maintenance', __('Add a Manufacturer'), '/Manufacturers.php', 5); // TODO create script
-NewMenuItem('plm', 'Maintenance', __('Select a Manufacturer'), '/SelectManufacturer.php', 6); // TODO create script
+RemoveMenuItem('manuf', 'Reports', __('Indented Bill Of Material Listing'), '/BOMIndented.php');
+NewMenuItem('manuf', 'Reports', __('Indented Bill Of Material Listing'), '/BOMIndented.php', 5);
 
-NewMenuItem('plm', 'Maintenance', __('Manage BOM'), '/BOMs.php', 7); // TODO hide if selected item cannot have BOM?
-NewMenuItem('plm', 'Maintenance', __('Copy BOM'), '/CopyBOM.php', 8); // TODO hide if selected item cannot have BOM?
+RemoveMenuItem('manuf', 'Reports', __('Indented Where Used Listing'), '/BOMIndentedReverse.php');
+NewMenuItem('manuf', 'Reports', __('Indented Where Used Listing'), '/BOMIndentedReverse.php', 9);
 
-NewMenuItem('plm', 'Maintenance', __('Work Centre'), '/WorkCentres.php', 9);
-NewMenuItem('plm', 'Maintenance', __('Skills Catalog'), '/HRSkills.php', 10);
+RemoveMenuItem('manuf', 'Reports', __('Print Product Specification'), '/PDFProdSpec.php');
+NewMenuItem('manuf', 'Reports', __('Print Product Specification'), '/PDFProdSpec.php', 15);
 
-NewMenuItem('plm', 'Maintenance', __('Quality Tests Maintenance'), '/QATests.php', 11);
-NewMenuItem('plm', 'Maintenance', __('Product Specifications'), '/ProductSpecs.php', 12);
-NewMenuItem('plm', 'Maintenance', __('Product Spec Groups Maintenance'), '/ProdSpecGroups.php', 13);
+RemoveMenuItem('manuf', 'Reports', __('Print Certificate of Analysis'), '/PDFCOA.php');
+NewMenuItem('manuf', 'Reports', __('Print Certificate of Analysis'), '/PDFCOA.php', 16);
 
-NewMenuItem('plm', 'Maintenance', __('Import Manufacturers from CSV'), '/Z_ImportManufacturers.php', 14); // TODO create script
-NewMenuItem('plm', 'Maintenance', __('Import Files/URLS from CSV'), '/Z_ImportStocksFilsUrls.php', 15); // TODO create script
+// additional menu items - Payables
+RemoveMenuItem('AP', 'Maintenance', __('Select Supplier'), '/SelectSupplier.php');
+NewMenuItem('AP', 'Maintenance', __('Select Supplier'), '/SelectSupplier.php', 3);
+
+// additional menu items - Purchases
+// desired to add Select Supplier menu item to Purchases module as "Purchases" is more intuitive for PLM
+// users than "Payables" (although preferred module name is "Purchasing" or better "Sources")
+// ERRORS RUNNING UPDATE "The menu link Select Supplier could not be inserted" - see screenshot
+//NewMenuItem('PO', 'Maintenance', __('Select Supplier'), '/SelectSupplier.php', 3); // new menu item in Purchases module
