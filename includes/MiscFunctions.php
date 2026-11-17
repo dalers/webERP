@@ -14,12 +14,14 @@
  * GetCurrencyRate - Calculates currency exchange rate
  * GetECBCurrencyRates - Gets currency rates from European Central Bank
  * GetMailList - Gets email list for a mail group
+ * GetVisibleMenuModules - Gets modules with accessible menu items
  * google_currency_rate - Gets currency rate from Google Finance
  * http_file_exists - Checks if a URL exists
  * indian_number_format - Formats numbers in Indian numbering system
  * IsEmailAddress - Validates email address format
  * locale_number_format - Formats numbers according to locale
  * LogBackTrace - Logs debug backtrace information
+ * MenuItemIsAllowed - Checks access to a menu item
  * filter_number_format - Converts formatted number to SQL format
  * prnMsg - Displays formatted messages
  * PrintCompanyTo - Prints company info on PDF
@@ -1000,4 +1002,29 @@ function TableToBeSkippedInAudit($SQLArray, $TableName){
 	// $SQLArray already comes exploded by spaces and uppercased
 	return ((($SQLArray[0] == 'INSERT' or $SQLArray[0] == 'DELETE') and $SQLArray[2] == $TableName)
 			or ($SQLArray[0] == 'UPDATE' and $SQLArray[1] == $TableName));
+}
+
+function MenuItemIsAllowed($URL, $PageSecurityArray, $AllowedPageSecurityTokens) {
+	$ScriptName = basename(explode('?', $URL, 2)[0]);
+	return isset($PageSecurityArray[$ScriptName])
+		and $PageSecurityArray[$ScriptName] !== ''
+		and in_array($PageSecurityArray[$ScriptName], $AllowedPageSecurityTokens);
+}
+
+function GetVisibleMenuModules($ModuleLinks, $MenuItems, $PageSecurityArray, $AllowedPageSecurityTokens) {
+	$VisibleModules = array();
+	foreach ($ModuleLinks as $ModuleLink) {
+		foreach (array('Transactions', 'Reports', 'Maintenance') as $Section) {
+			if (!isset($MenuItems[$ModuleLink][$Section]['URL'])) {
+				continue;
+			}
+			foreach ($MenuItems[$ModuleLink][$Section]['URL'] as $URL) {
+				if (MenuItemIsAllowed($URL, $PageSecurityArray, $AllowedPageSecurityTokens)) {
+					$VisibleModules[] = $ModuleLink;
+					break 2;
+				}
+			}
+		}
+	}
+	return $VisibleModules;
 }
