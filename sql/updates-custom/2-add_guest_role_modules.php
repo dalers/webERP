@@ -3,9 +3,8 @@
 // Add modules to the "Guest" user role (secroleid 10)
 // Z_UpgradeDatabase.php?update=2-add_guest_role_modules.php
 
-// Writes the module rows for security role 10 to the modules table. NewModule() is not
-// used because it inserts for all security roles and shifts existing sequences, so
-// InsertRecord() is used instead. Rows already present for the role/module are skipped.
+// Writes the module rows for security role 10 to the modules table. Roles
+// already present for the role/module are skipped.
 
 $GuestModules = array(
 	array(10, 'AP', 'ap', 'Payables', 4),
