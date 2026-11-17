@@ -56,8 +56,12 @@ $SQL = "SELECT categoryid,
 		ORDER BY categorydescription";
 $Result1 = DB_query($SQL);
 if (DB_num_rows($Result1) == 0) {
-	prnMsg(__('There are no stock categories currently defined. Please use the link below to set them up'), 'warn');
-	echo '<a class="toplink" href="' . $RootPath . '/StockCategories.php">' . __('Define Stock Categories') . '</a><br /><br />';
+	if (MenuItemIsAllowed('/StockCategories.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		prnMsg(__('There are no stock categories currently defined. Please use the link below to set them up'), 'warn');
+		echo '<a class="toplink" href="' . $RootPath . '/StockCategories.php">' . __('Define Stock Categories') . '</a><br /><br />';
+	} else {
+		prnMsg(__('There are no stock categories currently defined'), 'warn');
+	}
 	include(__DIR__ . '/includes/footer.php');
 	exit();
 }
@@ -350,8 +354,12 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 			} else {
 				echo '<td class="select">' . __('No') . '</td>';
 			}
-			echo '<td class="select"><a href="' . $RootPath . '/PO_Header.php?NewOrder=Yes&amp;SelectedSupplier=' .
-				$SuppRow['supplierid'] . '&amp;StockID=' . urlencode($StockID) . '&amp;Quantity='.$SuppRow['minorderqty'].'&amp;LeadTime='.$SuppRow['leadtime'] . '">' . __('Order') . ' </a></td>';
+			echo '<td class="select">';
+			if (MenuItemIsAllowed('/PO_Header.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<a href="' . $RootPath . '/PO_Header.php?NewOrder=Yes&amp;SelectedSupplier=' .
+					$SuppRow['supplierid'] . '&amp;StockID=' . urlencode($StockID) . '&amp;Quantity='.$SuppRow['minorderqty'].'&amp;LeadTime='.$SuppRow['leadtime'] . '">' . __('Order') . ' </a>';
+			}
+			echo '</td>';
 			echo '</tr>';
 		}
 		echo '</table>';
@@ -366,16 +374,30 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 			'<tr>
 				<td valign="top" class="select">';
 	/*Stock Inquiry Options */
-	echo '<a href="' . $RootPath . '/StockMovements.php?StockID=' . urlencode($StockID) . '">' . __('Show Stock Movements') . '</a><br />';
-	if ($Its_A_Kitset_Assembly_Or_Dummy == false) {
-		echo '<a href="' . $RootPath . '/StockStatus.php?StockID=' . urlencode($StockID) . '">' . __('Show Stock Status') . '</a><br />';
-		echo '<a href="' . $RootPath . '/StockUsage.php?StockID=' . urlencode($StockID) . '">' . __('Show Stock Usage') . '</a><br />';
+	if (MenuItemIsAllowed('/StockMovements.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/StockMovements.php?StockID=' . urlencode($StockID) . '">' . __('Show Stock Movements') . '</a><br />';
 	}
-	echo '<a href="' . $RootPath . '/SelectSalesOrder.php?SelectedStockItem=' . urlencode($StockID) . '">' . __('Search Outstanding Sales Orders') . '</a><br />';
-	echo '<a href="' . $RootPath . '/SelectCompletedOrder.php?SelectedStockItem=' . urlencode($StockID) . '">' . __('Search Completed Sales Orders') . '</a><br />';
 	if ($Its_A_Kitset_Assembly_Or_Dummy == false) {
-		echo '<a href="' . $RootPath . '/PO_SelectOSPurchOrder.php?SelectedStockItem=' . urlencode($StockID) . '">' . __('Search Outstanding Purchase Orders') . '</a><br />';
-		echo '<a href="' . $RootPath . '/PO_SelectPurchOrder.php?SelectedStockItem=' . urlencode($StockID) . '">' . __('Search All Purchase Orders') . '</a><br />';
+		if (MenuItemIsAllowed('/StockStatus.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/StockStatus.php?StockID=' . urlencode($StockID) . '">' . __('Show Stock Status') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/StockUsage.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/StockUsage.php?StockID=' . urlencode($StockID) . '">' . __('Show Stock Usage') . '</a><br />';
+		}
+	}
+	if (MenuItemIsAllowed('/SelectSalesOrder.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/SelectSalesOrder.php?SelectedStockItem=' . urlencode($StockID) . '">' . __('Search Outstanding Sales Orders') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/SelectCompletedOrder.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/SelectCompletedOrder.php?SelectedStockItem=' . urlencode($StockID) . '">' . __('Search Completed Sales Orders') . '</a><br />';
+	}
+	if ($Its_A_Kitset_Assembly_Or_Dummy == false) {
+		if (MenuItemIsAllowed('/PO_SelectOSPurchOrder.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/PO_SelectOSPurchOrder.php?SelectedStockItem=' . urlencode($StockID) . '">' . __('Search Outstanding Purchase Orders') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/PO_SelectPurchOrder.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/PO_SelectPurchOrder.php?SelectedStockItem=' . urlencode($StockID) . '">' . __('Search All Purchase Orders') . '</a><br />';
+		}
 
 		$PossibleImageFiles = glob($_SESSION['part_pics_dir'] . '/' . $StockID . '.{png,jpg,jpeg}', GLOB_BRACE);
 		if (count($PossibleImageFiles)>0) {
@@ -387,21 +409,33 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 	}
 	if ($Its_A_Dummy == false) {
         if ($MBFlag == 'M' or $MBFlag == 'A' or $MBFlag == 'K' or $MBFlag == 'G') {
-		    echo '<a href="' . $RootPath . '/BOMs.php?StockID=' . urlencode($StockID) . '">' . __('Manage Bill Of Materials') . '</a><br />';
-	    	echo '<a href="' . $RootPath . '/BOMIndented.php?StockID=' . urlencode($StockID) . '">' . __('View Indented Bill Of Materials') . '</a><br />';
-		    echo '<a href="' . $RootPath . '/BOMInquiry.php?StockID=' . urlencode($StockID) . '">' . __('View Costed Bill Of Materials') . '</a><br />';
+			if (MenuItemIsAllowed('/BOMs.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<a href="' . $RootPath . '/BOMs.php?StockID=' . urlencode($StockID) . '">' . __('Manage Bill Of Materials') . '</a><br />';
+			}
+			if (MenuItemIsAllowed('/BOMIndented.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<a href="' . $RootPath . '/BOMIndented.php?StockID=' . urlencode($StockID) . '">' . __('View Indented Bill Of Materials') . '</a><br />';
+			}
+			if (MenuItemIsAllowed('/BOMInquiry.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<a href="' . $RootPath . '/BOMInquiry.php?StockID=' . urlencode($StockID) . '">' . __('View Costed Bill Of Materials') . '</a><br />';
+			}
         }
-		echo '<a href="' . $RootPath . '/WhereUsedInquiry.php?StockID=' . urlencode($StockID) . '">' . __('Show Where This Item Is Used') . '</a><br />';
+		if (MenuItemIsAllowed('/WhereUsedInquiry.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/WhereUsedInquiry.php?StockID=' . urlencode($StockID) . '">' . __('Show Where This Item Is Used') . '</a><br />';
+		}
 	}
-	if ($Its_A_Labour_Item == true) {
+	if ($Its_A_Labour_Item == true and MenuItemIsAllowed('/WhereUsedInquiry.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
 		echo '<a href="' . $RootPath . '/WhereUsedInquiry.php?StockID=' . urlencode($StockID) . '">' . __('Where This Labour Item Is Used') . '</a><br />';
 	}
 	wikiLink('Product', $StockID);
 	echo '</td><td valign="top" class="select">';
 	/* Stock Transactions */
 	if ($Its_A_Kitset_Assembly_Or_Dummy == false) {
-		echo '<a href="' . $RootPath . '/StockAdjustments.php?StockID=' . urlencode($StockID) . '">' . __('Quantity Adjustments') . '</a><br />';
-		echo '<a href="' . $RootPath . '/StockTransfers.php?StockID=' . urlencode($StockID) . '&amp;NewTransfer=true">' . __('Location Transfers') . '</a><br />';
+		if (MenuItemIsAllowed('/StockAdjustments.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/StockAdjustments.php?StockID=' . urlencode($StockID) . '">' . __('Quantity Adjustments') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/StockTransfers.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/StockTransfers.php?StockID=' . urlencode($StockID) . '&amp;NewTransfer=true">' . __('Location Transfers') . '</a><br />';
+		}
 
 		//show the item image if it has been uploaded
 		$StockImgLink = GetImageLink($ImageFile, $StockID, 200, 200, "", "");
@@ -410,7 +444,8 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 
 		if (($MyRow['mbflag'] == 'B')
 			AND (in_array($SuppliersSecurity, $_SESSION['AllowedPageSecurityTokens']))
-			AND $MyRow['discontinued']==0){
+			AND $MyRow['discontinued']==0
+			AND MenuItemIsAllowed('/PO_Header.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])){
 			echo '<br />';
 			$SuppResult = DB_query("SELECT suppliers.suppname,
 											suppliers.supplierid,
@@ -439,29 +474,52 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 	} /* end of ($Its_A_Kitset_Assembly_Or_Dummy == false) */
 	echo '</td><td valign="top" class="select">';
 	/* Stock Maintenance Options */
-	echo '<a href="' . $RootPath . '/Stocks.php?">' . __('Insert New Item') . '</a><br />';
-	echo '<a href="' . $RootPath . '/Stocks.php?StockID=' . urlencode($StockID) . '">' . __('Modify Item Details') . '</a><br />';
-	if ($Its_A_Kitset_Assembly_Or_Dummy == false) {
-		echo '<a href="' . $RootPath . '/StockReorderLevel.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Reorder Levels') . '</a><br />';
-		echo '<a href="' . $RootPath . '/StockCostUpdate.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Standard Cost') . '</a><br />';
-		echo '<a href="' . $RootPath . '/PurchData.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Purchasing Data') . '</a><br />';
-		echo '<a href="' . $RootPath . '/CustItem.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Customer Item Data') . '</a><br />';
+	if (MenuItemIsAllowed('/Stocks.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/Stocks.php?">' . __('Insert New Item') . '</a><br />';
+		echo '<a href="' . $RootPath . '/Stocks.php?StockID=' . urlencode($StockID) . '">' . __('Modify Item Details') . '</a><br />';
 	}
-	if ($Its_A_Labour_Item == true) {
+	if ($Its_A_Kitset_Assembly_Or_Dummy == false) {
+		if (MenuItemIsAllowed('/StockReorderLevel.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/StockReorderLevel.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Reorder Levels') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/StockCostUpdate.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/StockCostUpdate.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Standard Cost') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/PurchData.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/PurchData.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Purchasing Data') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/CustItem.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/CustItem.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Customer Item Data') . '</a><br />';
+		}
+	}
+	if ($Its_A_Labour_Item == true and MenuItemIsAllowed('/StockCostUpdate.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
 		echo '<a href="' . $RootPath . '/StockCostUpdate.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Standard Cost') . '</a><br />';
 	}
 	if (!$Its_A_Kitset) {
-		echo '<a href="' . $RootPath . '/Prices.php?Item=' . urlencode($StockID) . '">' . __('Maintain Pricing') . '</a><br />';
+		if (MenuItemIsAllowed('/Prices.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/Prices.php?Item=' . urlencode($StockID) . '">' . __('Maintain Pricing') . '</a><br />';
+		}
 		if (isset($_SESSION['CustomerID'])
 			AND $_SESSION['CustomerID'] != ''
-			AND mb_strlen($_SESSION['CustomerID']) > 0) {
+			AND mb_strlen($_SESSION['CustomerID']) > 0
+			AND MenuItemIsAllowed('/Prices_Customer.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
 			echo '<a href="' . $RootPath . '/Prices_Customer.php?Item=' . urlencode($StockID) . '">' . __('Special Prices for customer') . ' - ' . $_SESSION['CustomerID'] . '</a><br />';
 		}
-		echo '<a href="' . $RootPath . '/DiscountCategories.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Discount Category') . '</a><br />';
-	    echo '<a href="' . $RootPath . '/StockClone.php?OldStockID=' . urlencode($StockID) . '">' . __('Clone This Item') . '</a><br />';
-		echo '<a href="' . $RootPath . '/RelatedItemsUpdate.php?Item=' . urlencode($StockID) . '">' . __('Maintain Related Items') . '</a><br />';
-		echo '<a href="' . $RootPath . '/PriceMatrix.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Price Matrix') . '</a><br />';
-		echo '<a href="' . $RootPath . '/AddStockItemNotes.php?StockID=' . urlencode($StockID) . '">' . __('Add Item Notes') . '</a><br />';
+		if (MenuItemIsAllowed('/DiscountCategories.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/DiscountCategories.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Discount Category') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/StockClone.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/StockClone.php?OldStockID=' . urlencode($StockID) . '">' . __('Clone This Item') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/RelatedItemsUpdate.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/RelatedItemsUpdate.php?Item=' . urlencode($StockID) . '">' . __('Maintain Related Items') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/PriceMatrix.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/PriceMatrix.php?StockID=' . urlencode($StockID) . '">' . __('Maintain Price Matrix') . '</a><br />';
+		}
+		if (MenuItemIsAllowed('/AddStockItemNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/AddStockItemNotes.php?StockID=' . urlencode($StockID) . '">' . __('Add Item Notes') . '</a><br />';
+		}
 	}
 	echo '</td></tr><tbody></table>';
 	$ItemNotesSQL = "SELECT noteid,
@@ -489,9 +547,15 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 			echo '<tr class="striped_row">
 					<td class="date">', ConvertSQLDate($ItemNoteRow['date']), '</td>
 					<td>', nl2br(htmlspecialchars($ItemNoteRow['note'], ENT_QUOTES, 'UTF-8', false)), '</td>
-					<td style="text-align:center"><a href="', $RootPath, '/AddStockItemNotes.php?Id=', urlencode($ItemNoteRow['noteid']), '&amp;StockID=', urlencode($ItemNoteRow['stockid']), '">', __('Edit'), '</a></td>
-					<td style="text-align:center"><a href="', $RootPath, '/AddStockItemNotes.php?Id=', urlencode($ItemNoteRow['noteid']), '&amp;StockID=', urlencode($ItemNoteRow['stockid']), '&amp;delete=1" onclick="return confirm(\'' . __('Are you sure you wish to delete this item note?') . '\');">', __('Delete'), '</a></td>
-				</tr>';
+					<td style="text-align:center">';
+			if (MenuItemIsAllowed('/AddStockItemNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<a href="', $RootPath, '/AddStockItemNotes.php?Id=', urlencode($ItemNoteRow['noteid']), '&amp;StockID=', urlencode($ItemNoteRow['stockid']), '">', __('Edit'), '</a>';
+			}
+			echo '</td><td style="text-align:center">';
+			if (MenuItemIsAllowed('/AddStockItemNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<a href="', $RootPath, '/AddStockItemNotes.php?Id=', urlencode($ItemNoteRow['noteid']), '&amp;StockID=', urlencode($ItemNoteRow['stockid']), '&amp;delete=1" onclick="return confirm(\'' . __('Are you sure you wish to delete this item note?') . '\');">', __('Delete'), '</a>';
+			}
+			echo '</td></tr>';
 		}
 		echo '</tbody>
 			</table>';
@@ -509,7 +573,11 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 		'<tr>',
 			'<td class="select"></td>',// Item inquiries options.
 			'<td class="select"></td>',// Item transactions options.
-			'<td class="select"><a href="', $RootPath, '/Stocks.php?">', __('Insert New Item'), '</a></td>',// Stock Maintenance Options.
+			'<td class="select">';
+	if (MenuItemIsAllowed('/Stocks.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/Stocks.php?">', __('Insert New Item'), '</a>';
+	}
+	echo '</td>',
 		'</tr><tbody></table>';
 }// end displaying item options if there is one and only one record
 echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF'],ENT_QUOTES,'UTF-8') . '" method="post">';
@@ -685,8 +753,11 @@ if (isset($SearchResult) AND !isset($_POST['Select'])) {
 			<td title="'. $MyRow['longdescription'] . '">' . $MyRow['description'] . '</td>
 			<td class="number">' . $QOH . '</td>
 			<td>' . $MyRow['units'] . '</td>
-			<td><a target="_blank" href="' . $RootPath . '/StockStatus.php?StockID=' . urlencode($MyRow['stockid']).'">' . __('Stock Status') . '</a></td>
-			</tr>';
+			<td>';
+			if (MenuItemIsAllowed('/StockStatus.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<a target="_blank" href="' . $RootPath . '/StockStatus.php?StockID=' . urlencode($MyRow['stockid']) . '">' . __('Stock Status') . '</a>';
+			}
+			echo '</td></tr>';
 
 			$RowIndex = $RowIndex + 1;
 		}
