@@ -1,10 +1,9 @@
 <?php
 
 // Configure menu items for "Guest" user role
-// Z_UpgradeDatabase.php?update=2-configure_guest_role_menu_items.php
+// Z_UpgradeDatabase.php?update=3-configure_guest_role_menu_items.php
 
-// MANUALLY CREATE "Guest" USER ROLE _BEFORE_ RUNNING THIS UPDATE (otherwise the menu
-// items will not be extended to it).
+// BEFORE RUNNING THIS SCRIPT MANUALLY CREATE "Guest" USER ROLE or menu items will not be extended to role.
 
 // The "Guest (View Only)" user role menu contains items related to viewing items,
 // BOMs and Suppliers (aka sources).
