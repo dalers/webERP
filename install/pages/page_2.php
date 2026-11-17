@@ -44,7 +44,7 @@ if (!is_writable($RootDir)) {
 $CompaniesDir = $RootDir . '/companies';
 if (!is_writable($CompaniesDir)) {
 	$InputError = 1;
-	echo '<div class="error">' . __('The directory') . ' ' . $CompaniesDir . '/companies/' . ' ' . __('must be writable by the web server') . '</div>';
+	echo '<div class="error">' . __('The directory') . ' ' . $CompaniesDir . ' ' . __('must be writable by the web server') . '</div>';
 } else {
 	echo '<div class="success">' . __('The "companies/" directory is writable') . '</div>';
 }
