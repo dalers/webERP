@@ -18,9 +18,12 @@ include(__DIR__ . '/includes/StockFunctions.php');
 include(__DIR__ . '/includes/ImageFunctions.php');
 
 if (isset($_GET['StockID'])) {
-	//The page is called with a StockID
-	$_GET['StockID'] = trim(mb_strtoupper($_GET['StockID']));
-	$_POST['Select'] = trim(mb_strtoupper($_GET['StockID']));
+	if (is_array($_GET['StockID'])) {
+		unset($_SESSION['SelectedStockItem']);
+		prnMsg(__('Invalid stock code'), 'warn');
+	} else {
+		$_POST['Select'] = trim(mb_strtoupper($_GET['StockID']));
+	}
 }
 
 if (isset($_POST['GoTop']) or isset($_POST['NextTop']) or isset($_POST['PreviousTop'])) {
@@ -85,7 +88,6 @@ $TableHead =
 		<tbody>';
 if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['SelectedStockItem']))) {
 	if (isset($_POST['Select'])) {
-		$_SESSION['SelectedStockItem'] = $_POST['Select'];
 		$StockID = $_POST['Select'];
 		unset($_POST['Select']);
 	} else {
@@ -110,6 +112,15 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 						ON stockmaster.categoryid=stockcategory.categoryid
 						WHERE stockid='" . $StockID . "'");
 	$MyRow = DB_fetch_array($Result);
+	if (!$MyRow) {
+		prnMsg(__('The stock item was not found') . ': ' . $StockID, 'warn');
+		unset($_SESSION['SelectedStockItem'], $StockID);
+	} else {
+		$_SESSION['SelectedStockItem'] = $StockID;
+	}
+}
+
+if (isset($StockID) AND !isset($_POST['Search'])) {
     $MBFlag = $MyRow['mbflag'];
 	$Its_A_Kitset_Assembly_Or_Dummy = false;
 	$Its_A_Dummy = false;
@@ -129,6 +140,7 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 		'/images/inventory.png" title="', // Icon image.
 		__('Inventory Item'), '" /> ', // Icon title.
 		__('Inventory Item'), ': ', $StockID, ' - ', $MyRow['description'], ' ', $ItemStatus, '</p>';// Page title.
+	echo '<p class="centre"><a id="ProductLink" href="' . $RootPath . '/SelectProduct.php?StockID=' . urlencode($StockID) . '">' . __('Link to this item (right-click or long-press to copy)') . '</a></p>';
 
 	echo '<table width="90%">
 		<tr>
