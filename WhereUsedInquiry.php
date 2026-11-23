@@ -13,8 +13,14 @@ if (isset($_GET['StockID'])){
 	$StockID = trim(mb_strtoupper($_POST['StockID']));
 }
 
-echo '<a href="' . $RootPath . '/SelectProduct.php" class="toplink">' . __('Back to Items') . '</a>
-	<p class="page_title_text">
+$CanSelectProduct = MenuItemIsAllowed('/SelectProduct.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens']);
+$CanViewBOM = MenuItemIsAllowed('/BOMInquiry.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens']);
+$CanMaintainBOM = MenuItemIsAllowed('/BOMs.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens']);
+
+if ($CanSelectProduct) {
+	echo '<a href="' . $RootPath . '/SelectProduct.php" class="toplink">' . __('Back to Items') . '</a>';
+}
+echo '<p class="page_title_text">
 		<img src="'.$RootPath.'/css/'.$Theme.'/images/magnifier.png" title="' . __('Search') . '" alt="" />' . ' ' . $Title . '
 	</p>';
 if (isset($StockID)){
@@ -25,7 +31,12 @@ if (isset($StockID)){
 						WHERE stockid='".$StockID."'");
 	$MyRow = DB_fetch_row($Result);
 	if (DB_num_rows($Result)==0){
-		prnMsg(__('The item code entered') . ' - ' . $StockID . ' ' . __('is not set up as an item in the system') . '. ' . __('Re-enter a valid item code or select from the Select Item link above'),'error');
+		if ($CanSelectProduct) {
+			$HelpMessage = __('Re-enter a valid item code or select from the Select Item link above');
+		} else {
+			$HelpMessage = __('Use your browser\'s Back button to enter a valid item code');
+		}
+		prnMsg(__('The item code entered') . ' - ' . $StockID . ' ' . __('is not set up as an item in the system') . '. ' . $HelpMessage, 'error');
 		include(__DIR__ . '/includes/footer.php');
 		exit();
 	}
@@ -77,7 +88,7 @@ if (isset($StockID)) {
 		echo '<table width="97%" class="selection">
 			<thead>
 				<tr>
-					<th class="SortedColumn">' . __('Used By ( > Costed BOM)') . '</th>
+					<th class="SortedColumn">' . ($CanViewBOM ? __('Used By ( > Costed BOM)') : __('Used By')) . '</th>
 					<th class="SortedColumn">' . __('Status') . '</th>
 					<th class="SortedColumn">' . __('Work Centre') . '</th>
 					<th class="SortedColumn">' . __('Location') . '</th>
@@ -97,16 +108,32 @@ if (isset($StockID)) {
 				$Status = __('Current');
 			}
 			echo '<tr class="striped_row">
-					<td><a target="_blank" href="' . $RootPath . '/BOMInquiry.php?StockID=' . $MyRow['parent'] . '" alt="' . __('Show Bill Of Material') . '">' . $MyRow['parent']. ' - ' . $MyRow['description']. '</a></td>
+					<td>';
+			if ($CanViewBOM) {
+				echo '<a target="_blank" href="' . $RootPath . '/BOMInquiry.php?StockID=' . urlencode($MyRow['parent']) . '" alt="' . __('Show Bill Of Material') . '">';
+			}
+			echo htmlspecialchars($MyRow['parent'], ENT_QUOTES, 'UTF-8', false) . ' - ' . htmlspecialchars($MyRow['description'], ENT_QUOTES, 'UTF-8', false);
+			if ($CanViewBOM) {
+				echo '</a>';
+			}
+			echo '</td>
 					<td>' . $Status. '</td>
 					<td>' . $MyRow['workcentreadded']. '</td>
 					<td>' . $MyRow['loccode']. '</td>
 					<td class="number">' . locale_number_format($MyRow['quantity'],'Variable') . '</td>
 					<td class="date">' . ConvertSQLDate($MyRow['effectiveafter']) . '</td>
 					<td class="date">' . ConvertSQLDate($MyRow['effectiveto']) . '</td>
-					<td><a target="_blank" href="' . $RootPath . '/BOMs.php?SelectedParent=' . urlencode($MyRow['parent']) . '">' . __('Goto BOM') . '</a></td>
-					<td><a target="_blank" href="' . $RootPath . '/SelectProduct.php?StockID=' . urlencode($MyRow['parent']) . '">' . __('Goto Item') . '</a></td>
-                </tr>';
+					<td>';
+			if ($CanMaintainBOM) {
+				echo '<a target="_blank" href="' . $RootPath . '/BOMs.php?SelectedParent=' . urlencode($MyRow['parent']) . '">' . __('Goto BOM') . '</a>';
+			}
+			echo '</td>
+					<td>';
+			if ($CanSelectProduct) {
+				echo '<a target="_blank" href="' . $RootPath . '/SelectProduct.php?StockID=' . urlencode($MyRow['parent']) . '">' . __('Goto Item') . '</a>';
+			}
+			echo '</td>
+				</tr>';
 
 			//end of page full new headings if
 		}

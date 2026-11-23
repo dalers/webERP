@@ -102,6 +102,22 @@ if (!isset($_SESSION['AttemptsCounter']) or $AllowDemoMode == true) {
 /* Log the script we run so we can optimize CPU time*/	
 $_SESSION['ScriptStartTime'] = microtime();
 
+/* Only pages safe to open with a stock code should be added here. */
+$StockLinkPages = array('SelectProduct.php', 'BOMIndented.php');
+$StockLinkPage = '';
+$CurrentScript = basename($_SERVER['SCRIPT_NAME']);
+if (in_array($CurrentScript, $StockLinkPages, true)
+	and isset($_GET['StockID']) and is_string($_GET['StockID'])) {
+	$StockLinkPage = $CurrentScript;
+	$StockLinkID = $_GET['StockID'];
+} elseif ($CurrentScript == 'index.php'
+	and isset($_POST['StockLinkPage'], $_POST['StockLinkID'])
+	and is_string($_POST['StockLinkPage']) and is_string($_POST['StockLinkID'])
+	and in_array($_POST['StockLinkPage'], $StockLinkPages, true)) {
+	$StockLinkPage = $_POST['StockLinkPage'];
+	$StockLinkID = $_POST['StockLinkID'];
+}
+
 if (isset($_SESSION['DatabaseName']) or $AllowAnyone == true) {
 
 	/* iterate through all elements of the $_GET and $_POST arrays and DB_escape_string plus htmlspecialchars them
@@ -196,6 +212,9 @@ if (basename($_SERVER['SCRIPT_NAME']) == 'Logout.php') {
 		case UL_OK: //user logged in successfully
 			/// @todo shouldn't we only set the cookie if $FirstLogin = true ?
 			setcookie('Login', $_SESSION['DatabaseName']);
+			if ($FirstLogin and $StockLinkPage != '' and isset($_POST['CompanyNameField'])) {
+				setcookie('Company', $_POST['CompanyNameField'], time() + 3600 * 24 * 30);
+			}
 			//include($PathPrefix . 'includes/LanguageSetup.php'); //set up the language
 
 			/// @todo the session table was created in DBUpdateNumber 13, not 11!
@@ -371,7 +390,13 @@ if (in_array(1, $_SESSION['AllowedPageSecurityTokens']) and count($_SESSION['All
 	$CustomerLogin = 0;
 }
 
-if ($FirstLogin and !$SupplierLogin and !$CustomerLogin and $_SESSION['ShowDashboard'] == 1) {
+if ($FirstLogin and $StockLinkPage != ''
+	and (!isset($_SESSION['FirstLogIn']) or $_SESSION['FirstLogIn'] != '1')) {
+	header('Location: ' . htmlspecialchars_decode($RootPath) . '/' . $StockLinkPage . '?StockID=' . urlencode($StockLinkID), true, 303);
+	exit();
+}
+
+if ($FirstLogin and $StockLinkPage == '' and !$SupplierLogin and !$CustomerLogin and $_SESSION['ShowDashboard'] == 1) {
 	header('Location: ' . htmlspecialchars_decode($RootPath) . '/Dashboard.php');
 }
 

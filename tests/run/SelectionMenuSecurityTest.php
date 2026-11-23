@@ -65,6 +65,80 @@ class SelectionMenuSecurityTest extends LoggedInUserTestCase
 		return $Fixture[0];
 	}
 
+	public function testWhereUsedLinksRespectDestinationTokens(): void
+	{
+		$db = new mysqli(
+			$_ENV['TEST_DB_HOSTNAME'],
+			$_ENV['TEST_DB_USER'],
+			$_ENV['TEST_DB_PASSWORD'],
+			$_ENV['TEST_DB_SCHEMA'],
+			$_ENV['TEST_DB_PORT']
+		);
+		list($Tokens, $Security) = $this->getUserSecurity($db);
+		$Allowed = array();
+		foreach (array('WhereUsedInquiry.php', 'SelectProduct.php', 'BOMInquiry.php', 'BOMs.php') as $Script) {
+			$Allowed[$Script] = isset($Security[$Script]) && $Security[$Script] !== '' && in_array($Security[$Script], $Tokens);
+		}
+		if (!$Allowed['WhereUsedInquiry.php']) {
+			$this->markTestSkipped('The test user cannot access the where-used inquiry');
+		}
+
+		$Crawler = $this->request('GET', self::$baseUri . '/WhereUsedInquiry.php');
+		$BackLinks = $Crawler->filterXPath('//a[contains(concat(" ", normalize-space(@class), " "), " toplink ") and contains(@href, "/SelectProduct.php")]');
+		$this->assertCount($Allowed['SelectProduct.php'] ? 1 : 0, $BackLinks);
+
+		$MissingStockID = 'MISSING-' . strtoupper(bin2hex(random_bytes(8)));
+		$Crawler = $this->request('GET', self::$baseUri . '/WhereUsedInquiry.php?StockID=' . urlencode($MissingStockID));
+		if ($Allowed['SelectProduct.php']) {
+			$this->assertStringContainsString('select from the Select Item link above', $Crawler->text());
+		} else {
+			$this->assertStringContainsString('Back button to enter a valid item code', $Crawler->text());
+			$this->assertStringNotContainsString('select from the Select Item link above', $Crawler->text());
+		}
+
+		$Statement = $db->prepare("SELECT bom.component, bom.parent
+			FROM bom
+			INNER JOIN stockmaster ON stockmaster.stockid = bom.parent
+			INNER JOIN stockmaster AS component ON component.stockid = bom.component
+			INNER JOIN locationusers ON locationusers.loccode = bom.loccode
+			WHERE locationusers.userid = ?
+				AND locationusers.canview = 1
+				AND bom.effectiveafter <= CURRENT_DATE
+				AND bom.effectiveto > CURRENT_DATE
+			LIMIT 1");
+		$Statement->bind_param('s', $_ENV['TEST_USER_ACCOUNT']);
+		$Statement->execute();
+		$Fixture = $Statement->get_result()->fetch_assoc();
+		if ($Fixture === null) {
+			$this->markTestSkipped('No accessible where-used fixture is available');
+		}
+		$Crawler = $this->request('GET', self::$baseUri . '/WhereUsedInquiry.php?StockID=' . urlencode($Fixture['component']));
+		$Rows = $Crawler->filter('table.selection tbody tr');
+		$this->assertGreaterThan(0, $Rows->count());
+		foreach ($Rows as $Row) {
+			$Cells = (new Symfony\Component\DomCrawler\Crawler($Row))->filter('td');
+			$this->assertNotSame('', trim($Cells->eq(0)->text()));
+			$this->assertSame($Allowed['BOMInquiry.php'], $Cells->eq(0)->filter('a')->count() > 0);
+			$this->assertSame($Allowed['BOMs.php'], $Cells->eq(7)->filter('a')->count() > 0);
+			$this->assertSame($Allowed['SelectProduct.php'], $Cells->eq(8)->filter('a')->count() > 0);
+		}
+	}
+
+	private function getUserSecurity(mysqli $db): array
+	{
+		$statement = $db->prepare('SELECT fullaccess FROM www_users WHERE userid = ?');
+		$statement->bind_param('s', $_ENV['TEST_USER_ACCOUNT']);
+		$statement->execute();
+		$user = $statement->get_result()->fetch_assoc();
+		$this->assertNotNull($user);
+		$statement = $db->prepare('SELECT tokenid FROM securitygroups WHERE secroleid = ?');
+		$statement->bind_param('s', $user['fullaccess']);
+		$statement->execute();
+		$tokens = array_column($statement->get_result()->fetch_all(MYSQLI_ASSOC), 'tokenid');
+		$security = array_column($db->query('SELECT script, pagesecurity FROM scripts')->fetch_all(MYSQLI_ASSOC), 'pagesecurity', 'script');
+		return array($tokens, $security);
+	}
+
 	/**
 	 * @dataProvider selectionPages
 	 */
@@ -82,16 +156,7 @@ class SelectionMenuSecurityTest extends LoggedInUserTestCase
 			$this->markTestSkipped('No selection fixture is available');
 		}
 
-		$statement = $db->prepare('SELECT fullaccess FROM www_users WHERE userid = ?');
-		$statement->bind_param('s', $_ENV['TEST_USER_ACCOUNT']);
-		$statement->execute();
-		$user = $statement->get_result()->fetch_assoc();
-		$this->assertNotNull($user);
-		$statement = $db->prepare('SELECT tokenid FROM securitygroups WHERE secroleid = ?');
-		$statement->bind_param('s', $user['fullaccess']);
-		$statement->execute();
-		$tokens = array_column($statement->get_result()->fetch_all(MYSQLI_ASSOC), 'tokenid');
-		$security = array_column($db->query('SELECT script, pagesecurity FROM scripts')->fetch_all(MYSQLI_ASSOC), 'pagesecurity', 'script');
+		list($tokens, $security) = $this->getUserSecurity($db);
 
 		$crawler = $this->request('GET', self::$baseUri . '/' . $Page . '?' . $Parameter . '=' . urlencode($fixture[0]));
 		$menu = $crawler->filterXPath('//table[contains(concat(" ", normalize-space(@class), " "), " selection ")][.//th[contains(., "' . $Heading . '")]]');
