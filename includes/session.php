@@ -319,7 +319,7 @@ if ($_SESSION['HTTPS_Only'] == 1) {
 // Now check that the user as logged in has access to the page being called. $SecurityGroups is an array of
 // arrays defining access for each group of users. These definitions can be modified by a system admin under setup
 
-if (!is_array($_SESSION['AllowedPageSecurityTokens']) and !isset($AllowAnyone)) {
+if (!is_array($_SESSION['AllowedPageSecurityTokens']) and !$AllowAnyone) {
 	$Title = __('Account Error Report');
 	include($PathPrefix . 'includes/header.php');
 	echo '<br /><br /><br />';
@@ -337,7 +337,7 @@ if (!isset($PageSecurity)) {
 	$PageSecurity = $_SESSION['PageSecurityArray'][basename($_SERVER['SCRIPT_NAME'])];
 }
 
-if (!isset($AllowAnyone)) {
+if (!$AllowAnyone) {
 	if ((!in_array($PageSecurity, $_SESSION['AllowedPageSecurityTokens']) or !isset($PageSecurity))) {
 		$Title = __('Security Permissions Problem');
 		include($PathPrefix . 'includes/header.php');
@@ -378,7 +378,7 @@ if ($FirstLogin and !$SupplierLogin and !$CustomerLogin and $_SESSION['ShowDashb
 /// @todo instead of checking for $_POST['CompanyNameField'], only disable this check on posts from Login.php, or
 ///       at least make it harder for an attacker to disable the check, f.e. add a var in the session when displaying
 ///       the form. Or just also do the check on Login...
-if (!isset($_POST['CompanyNameField']) and sizeof($_POST) > 0 and !isset($AllowAnyone)) {
+if (!isset($_POST['CompanyNameField']) and sizeof($_POST) > 0 and !$AllowAnyone) {
 	/* Security check to ensure that the form submitted is originally sourced from webERP with the FormID = $_SESSION['FormID'] - which is set before the first login */
 	if (!isset($_POST['FormID']) or ($_POST['FormID'] != $_SESSION['FormID'])) {
 		$Title = __('Error in form verification');
