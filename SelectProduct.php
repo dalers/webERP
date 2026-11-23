@@ -438,7 +438,7 @@ if (!isset($_POST['Search']) AND (isset($_POST['Select']) OR isset($_SESSION['Se
 		}
 
 		//show the item image if it has been uploaded
-		$StockImgLink = GetImageLink($ImageFile, $StockID, 200, 200, "", "");
+		$StockImgLink = GetImageLink($ImageFile, $StockID, 200, 200, "");
 
 		echo '<div class="centre">' . $StockImgLink . '</div>';
 
@@ -744,7 +744,7 @@ if (isset($SearchResult) AND !isset($_POST['Select'])) {
 			} else {
 				$ImageFile ='';
 			}
-			$StockImgLink = GetImageLink($ImageFile, $MyRow['stockid'], 100, 100, "", "");
+			$StockImgLink = GetImageLink($ImageFile, $MyRow['stockid'], 100, 100, "");
 
 			echo '<tr class="striped_row">
 				<td>' . $ItemStatus . '</td>

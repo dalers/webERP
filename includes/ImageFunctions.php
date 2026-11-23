@@ -1,6 +1,13 @@
 <?php
 
-function GetImageLink($ImageFile, $Item, $Width, $Height, $AltText, $Class = "") {
+/**
+ * @param string $ImageFile
+ * @param string|null $Item
+ * @param int|string $Width
+ * @param int|string $Height
+ * @param string $AltText
+ */
+function GetImageLink($ImageFile, $Item, $Width, $Height, $AltText) {
     if (extension_loaded('gd')
 		and function_exists('gd_info')
 		and file_exists($ImageFile)
@@ -34,6 +41,7 @@ function GetImageLink($ImageFile, $Item, $Width, $Height, $AltText, $Class = "")
    return $ImageLink;
 }
 
+/** @param string $stockid */
 function getImageTag($stockid) {
 	$SupportedImgExt = array('png', 'jpg', 'jpeg');
 	$partPicsDir = $_SESSION['part_pics_dir'];
