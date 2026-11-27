@@ -219,35 +219,65 @@ if (isset($_SESSION['SupplierID'])) {
 			'<tr>
 				<td valign="top" class="select">';
 	// Supplier inquiries options:
-	echo '<a href="' . $RootPath . '/SupplierInquiry.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Supplier Account Inquiry') . '</a>
-		<br />
-		<a href="' . $RootPath . '/SupplierGRNAndInvoiceInquiry.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '&amp;SupplierName='.urlencode($SupplierName).'">' . __('Supplier Delivery Note AND GRN inquiry') . '</a>
-		<br />
-		';
-
-	echo '<br /><a href="' . $RootPath . '/PO_SelectOSPurchOrder.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '">' . __('Add / Receive / View Outstanding Purchase Orders') . '</a>';
-	echo '<br /><a href="' . $RootPath . '/PO_SelectPurchOrder.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '">' . __('View All Purchase Orders') . '</a><br />';
+	if (MenuItemIsAllowed('/SupplierInquiry.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/SupplierInquiry.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Supplier Account Inquiry') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/SupplierGRNAndInvoiceInquiry.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/SupplierGRNAndInvoiceInquiry.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '&amp;SupplierName=' . urlencode($SupplierName) . '">' . __('Supplier Delivery Note AND GRN inquiry') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/PO_SelectOSPurchOrder.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/PO_SelectOSPurchOrder.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '">' . __('Add / Receive / View Outstanding Purchase Orders') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/PO_SelectPurchOrder.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/PO_SelectPurchOrder.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '">' . __('View All Purchase Orders') . '</a><br />';
+	}
 	wikiLink('Supplier', $_SESSION['SupplierID']);
-	echo '<br /><a href="' . $RootPath . '/ShiptsList.php?SupplierID=' . $_SESSION['SupplierID'] . '&amp;SupplierName=' . urlencode($SupplierName) . '">' . __('List all open shipments for') .' '.$SupplierName. '</a>';
-	echo '<br /><a href="' . $RootPath . '/Shipt_Select.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '">' . __('Search / Modify / Close Shipments') . '</a>';
-	echo '<br /><a href="' . $RootPath . '/SuppPriceList.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '">' . __('Supplier Price List') . '</a>';
+	if (MenuItemIsAllowed('/ShiptsList.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<br /><a href="' . $RootPath . '/ShiptsList.php?SupplierID=' . $_SESSION['SupplierID'] . '&amp;SupplierName=' . urlencode($SupplierName) . '">' . __('List all open shipments for') . ' ' . $SupplierName . '</a>';
+	}
+	if (MenuItemIsAllowed('/Shipt_Select.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<br /><a href="' . $RootPath . '/Shipt_Select.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '">' . __('Search / Modify / Close Shipments') . '</a>';
+	}
+	if (MenuItemIsAllowed('/SuppPriceList.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<br /><a href="' . $RootPath . '/SuppPriceList.php?SelectedSupplier=' . $_SESSION['SupplierID'] . '">' . __('Supplier Price List') . '</a>';
+	}
 	echo '</td><td valign="top" class="select">'; /* Supplier Transactions */
-	echo '<a href="' . $RootPath . '/PO_Header.php?NewOrder=Yes&amp;SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Enter a Purchase Order for This Supplier') . '</a><br />';
-	echo '<a href="' . $RootPath . '/SupplierInvoice.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Enter a Suppliers Invoice') . '</a><br />';
-	echo '<a href="' . $RootPath . '/SupplierCredit.php?New=true&amp;SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Enter a Suppliers Credit Note') . '</a><br />';
-	echo '<a href="' . $RootPath . '/Payments.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Enter a Payment to, or Receipt from the Supplier') . '</a><br />';
-	echo '<br />';
-	echo '<br /><a href="' . $RootPath . '/ReverseGRN.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Reverse an Outstanding Goods Received Note (GRN)') . '</a>';
+	if (MenuItemIsAllowed('/PO_Header.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/PO_Header.php?NewOrder=Yes&amp;SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Enter a Purchase Order for This Supplier') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/SupplierInvoice.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/SupplierInvoice.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Enter a Suppliers Invoice') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/SupplierCredit.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/SupplierCredit.php?New=true&amp;SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Enter a Suppliers Credit Note') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/Payments.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/Payments.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Enter a Payment to, or Receipt from the Supplier') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/ReverseGRN.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<br /><a href="' . $RootPath . '/ReverseGRN.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Reverse an Outstanding Goods Received Note (GRN)') . '</a>';
+	}
 	echo '</td><td valign="top" class="select">'; /* Supplier Maintenance */
-	echo '<a href="' . $RootPath . '/Suppliers.php">' . __('Add a New Supplier') . '</a>
-		<br /><a href="' . $RootPath . '/Suppliers.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Modify Or Delete Supplier Details') . '</a>
-		<br /><a href="' . $RootPath . '/SupplierContacts.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Add/Edit/Delete Supplier Contacts') . '</a>
-		<br /><a href="' . $RootPath . '/AddSupplierNotes.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Add a Supplier Note') . '</a>
-		<br />
-		<br /><a href="' . $RootPath . '/SellThroughSupport.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Set Up Sell Through Support Deals') . '</a>
-		<br /><a href="' . $RootPath . '/Shipments.php?NewShipment=Yes">' . __('Set Up A New Shipment') . '</a>
-		<br /><a href="' . $RootPath . '/SuppLoginSetup.php">' . __('Supplier Login Configuration') . '</a>
-		</td>
+	if (MenuItemIsAllowed('/Suppliers.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/Suppliers.php">' . __('Add a New Supplier') . '</a><br />';
+		echo '<a href="' . $RootPath . '/Suppliers.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Modify Or Delete Supplier Details') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/SupplierContacts.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/SupplierContacts.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Add/Edit/Delete Supplier Contacts') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/AddSupplierNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/AddSupplierNotes.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Add a Supplier Note') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/SellThroughSupport.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/SellThroughSupport.php?SupplierID=' . $_SESSION['SupplierID'] . '">' . __('Set Up Sell Through Support Deals') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/Shipments.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/Shipments.php?NewShipment=Yes">' . __('Set Up A New Shipment') . '</a><br />';
+	}
+	if (MenuItemIsAllowed('/SuppLoginSetup.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/SuppLoginSetup.php">' . __('Supplier Login Configuration') . '</a><br />';
+	}
+	echo '</td>
 		</tr>
 		<tbody></table>';
 	$SupplierNotesSQL = "SELECT noteid,
@@ -275,9 +305,15 @@ if (isset($_SESSION['SupplierID'])) {
 			echo '<tr class="striped_row">
 					<td class="date">', ConvertSQLDate($SupplierNoteRow['date']), '</td>
 					<td>', nl2br(htmlspecialchars($SupplierNoteRow['note'], ENT_QUOTES, 'UTF-8', false)), '</td>
-					<td style="text-align:center"><a href="', $RootPath, '/AddSupplierNotes.php?Id=', urlencode($SupplierNoteRow['noteid']), '&amp;SupplierID=', urlencode($SupplierNoteRow['supplierid']), '">', __('Edit'), '</a></td>
-					<td style="text-align:center"><a href="', $RootPath, '/AddSupplierNotes.php?Id=', urlencode($SupplierNoteRow['noteid']), '&amp;SupplierID=', urlencode($SupplierNoteRow['supplierid']), '&amp;delete=1" onclick="return confirm(\'' . __('Are you sure you wish to delete this supplier note?') . '\');">', __('Delete'), '</a></td>
-				</tr>';
+					<td style="text-align:center">';
+			if (MenuItemIsAllowed('/AddSupplierNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<a href="', $RootPath, '/AddSupplierNotes.php?Id=', urlencode($SupplierNoteRow['noteid']), '&amp;SupplierID=', urlencode($SupplierNoteRow['supplierid']), '">', __('Edit'), '</a>';
+			}
+			echo '</td><td style="text-align:center">';
+			if (MenuItemIsAllowed('/AddSupplierNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<a href="', $RootPath, '/AddSupplierNotes.php?Id=', urlencode($SupplierNoteRow['noteid']), '&amp;SupplierID=', urlencode($SupplierNoteRow['supplierid']), '&amp;delete=1" onclick="return confirm(\'' . __('Are you sure you wish to delete this supplier note?') . '\');">', __('Delete'), '</a>';
+			}
+			echo '</td></tr>';
 		}
 		echo '</tbody>
 			</table>';
@@ -293,7 +329,11 @@ if (isset($_SESSION['SupplierID'])) {
 		'<tr>',
 			'<td class="select"></td>',// Supplier inquiries options.
 			'<td class="select"></td>',// Supplier transactions options.
-			'<td class="select"><a href="', $RootPath, '/Suppliers.php">', __('Add a New Supplier'), '</a></td>',// Supplier Maintenance options.
+			'<td class="select">';
+	if (MenuItemIsAllowed('/Suppliers.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/Suppliers.php">', __('Add a New Supplier'), '</a>';
+	}
+	echo '</td>',
 		'</tr><tbody></table>';
 }
 echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF'],ENT_QUOTES,'UTF-8') . '" method="post">';

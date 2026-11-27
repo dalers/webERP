@@ -40,6 +40,11 @@ echo '<body>
 			<input type="hidden" name="FormID" value="', $_SESSION['FormID'], '" />
 			<input type="hidden" name="NewLogin" value="Yes" />';
 
+if ($StockLinkPage != '') {
+	echo '<input type="hidden" name="StockLinkPage" value="' . htmlspecialchars($StockLinkPage, ENT_QUOTES, 'UTF-8') . '" />
+			<input type="hidden" name="StockLinkID" value="' . htmlspecialchars($StockLinkID, ENT_QUOTES, 'UTF-8') . '" />';
+}
+
 $DefaultCompany = $_COOKIE['Login'] ?? $DefaultDatabase;
 
 // Read companies directory once and collect all company information

@@ -6,8 +6,9 @@ require(__DIR__ . '/includes/session.php');
 if (isset($_POST['NewLogin']) and !isset($_SESSION['FormID'])) {
 	$_SESSION['FormID'] = sha1(uniqid(mt_rand(), true));
 }
-/*The module link codes are hard coded in a switch statement below to determine the options to show for each tab */
 include(__DIR__ . '/includes/MainMenuLinksArray.php');
+
+$VisibleModules = GetVisibleMenuModules($ModuleLink, $MenuItems, $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens']);
 
 /// @todo this is better left handled to be done in session.php, which can send an http redirect instead
 if (isset($_SESSION['FirstLogIn']) and $_SESSION['FirstLogIn'] == '1' and isset($_SESSION['DatabaseName'])) {
@@ -39,6 +40,10 @@ if (isset($_GET['Application']) and ($_GET['Application'] != '')) {
 	$_SESSION['Module'] = $_COOKIE['Module'];
 } else {
 	$_SESSION['Module'] = '';
+}
+
+if (!in_array($_SESSION['Module'], $VisibleModules)) {
+	$_SESSION['Module'] = count($VisibleModules) > 0 ? $VisibleModules[0] : '';
 }
 
 include(__DIR__ . '/includes/header.php');
@@ -104,22 +109,16 @@ echo '<nav class="ModuleList">
 		<ul>'; //===HJ===
 $i = 0;
 while ($i < count($ModuleLink)) {
-	// This determines if the user has display access to the module see config.php and header.php
-	// for the authorisation and security code
-	if ($_SESSION['ModulesEnabled'][$i] == 1) {
-		// If this is the first time the application is loaded then it is possible that
-		// SESSION['Module'] is not set if so set it to the first module that is enabled for the user
-		if (!isset($_SESSION['Module']) or $_SESSION['Module'] == '') {
-			$_SESSION['Module'] = $ModuleLink[$i];
-		}
-		if ($ModuleLink[$i] == $_SESSION['Module']) {
-			echo '<li class="ModuleSelected">';
-		} else {
-			echo '<li class="ModuleUnSelected">';
-
-		}
-		echo '<a href="', htmlspecialchars(basename(__FILE__), ENT_QUOTES, 'UTF-8'), '?Application=', urlencode($ModuleLink[$i]), '">', $ModuleList[$i], '</a></li>';
+	if (!in_array($ModuleLink[$i], $VisibleModules)) {
+		++$i;
+		continue;
 	}
+	if ($ModuleLink[$i] == $_SESSION['Module']) {
+		echo '<li class="ModuleSelected">';
+	} else {
+		echo '<li class="ModuleUnSelected">';
+	}
+	echo '<a href="', htmlspecialchars(basename(__FILE__), ENT_QUOTES, 'UTF-8'), '?Application=', urlencode($ModuleLink[$i]), '">', $ModuleList[$i], '</a></li>';
 	++$i;
 }
 echo '</ul>
@@ -143,12 +142,7 @@ echo '</legend><ul>'; // SubMenuHeader
 $i = 0;
 if (isset($MenuItems[$_SESSION['Module']]['Transactions'])) {
     foreach ($MenuItems[$_SESSION['Module']]['Transactions']['Caption'] as $Caption) {
-	    /* Transactions Menu Item */
-    	$ScriptNameArray = explode('?', substr($MenuItems[$_SESSION['Module']]['Transactions']['URL'][$i], 1));
-	    if (isset($_SESSION['PageSecurityArray'][$ScriptNameArray[0]])) {
-	    	$PageSecurity = $_SESSION['PageSecurityArray'][$ScriptNameArray[0]];
-    	}
-	    if ((in_array($PageSecurity, $_SESSION['AllowedPageSecurityTokens']) and $PageSecurity != '')) {
+	    if (MenuItemIsAllowed($MenuItems[$_SESSION['Module']]['Transactions']['URL'][$i], $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
 	    	echo '<li class="MenuItem">
 	    			<a href="', $RootPath, $MenuItems[$_SESSION['Module']]['Transactions']['URL'][$i], '">&bull; ',     __($Caption), '</a>
     			</li>';
@@ -174,10 +168,7 @@ echo '</legend>
 $i = 0;
 if (isset($MenuItems[$_SESSION['Module']]['Reports'])) {
 	foreach ($MenuItems[$_SESSION['Module']]['Reports']['Caption'] as $Caption) {
-		/* Transactions Menu Item */
-		$ScriptNameArray = explode('?', substr($MenuItems[$_SESSION['Module']]['Reports']['URL'][$i], 1));
-		$PageSecurity = $_SESSION['PageSecurityArray'][$ScriptNameArray[0]];
-		if ((in_array($PageSecurity, $_SESSION['AllowedPageSecurityTokens']) or !isset($PageSecurity))) {
+		if (MenuItemIsAllowed($MenuItems[$_SESSION['Module']]['Reports']['URL'][$i], $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
 			echo '<li class="MenuItem">
 				<a href="' . $RootPath . $MenuItems[$_SESSION['Module']]['Reports']['URL'][$i] . '">&bull; ' . __($Caption) . '</a>
 			</li>';
@@ -205,15 +196,10 @@ echo '</legend>
 $i = 0;
 if (isset($MenuItems[$_SESSION['Module']]['Maintenance'])) {
 	foreach ($MenuItems[$_SESSION['Module']]['Maintenance']['Caption'] as $Caption) {
-		/* Transactions Menu Item */
-		$ScriptNameArray = explode('?', substr($MenuItems[$_SESSION['Module']]['Maintenance']['URL'][$i], 1));
-		if (isset($_SESSION['PageSecurityArray'][$ScriptNameArray[0]])) {
-			$PageSecurity = $_SESSION['PageSecurityArray'][$ScriptNameArray[0]];
-			if ((in_array($PageSecurity, $_SESSION['AllowedPageSecurityTokens']) or !isset($PageSecurity))) {
-				echo '<li class="MenuItem">
-						<a href="' . $RootPath . $MenuItems[$_SESSION['Module']]['Maintenance']['URL'][$i] . '">&bull; ' . __($Caption) . '</a>
-					</li>';
-			}
+		if (MenuItemIsAllowed($MenuItems[$_SESSION['Module']]['Maintenance']['URL'][$i], $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<li class="MenuItem">
+					<a href="' . $RootPath . $MenuItems[$_SESSION['Module']]['Maintenance']['URL'][$i] . '">&bull; ' . __($Caption) . '</a>
+				</li>';
 		}
 		++$i;
 	}

@@ -11,9 +11,11 @@ define('UL_CONFIGERR', 3);	/* Configuration error in webERP or server */
 define('UL_SHOWLOGIN', 4);
 define('UL_MAINTENANCE', 5);
 
-/*
+/**
  *  Function to validate username and password, perform validity checks and initialise $_SESSION data.
- *  @returns int See define() statements above.
+ *  @param string|null $Name
+ *  @param string $Password
+ *  @return int See define() statements above.
  */
 function userLogin($Name, $Password, $SysAdminEmail = '') {
 
@@ -110,7 +112,6 @@ function userLogin($Name, $Password, $SysAdminEmail = '') {
 			$_SESSION['UserStockLocation'] = $MyRow['defaultlocation'];
 			$_SESSION['UserEmail'] = $MyRow['email'];
 			$_SESSION['Timeout'] = $MyRow['timeout'];
-			$_SESSION['ModulesEnabled'] = explode(",", $MyRow['modulesallowed']);
 			$_SESSION['UsersRealName'] = $MyRow['realname'];
 			$_SESSION['Theme'] = $MyRow['theme'];
 			$_SESSION['Language'] = $MyRow['language'];
@@ -288,7 +289,7 @@ function userLogin($Name, $Password, $SysAdminEmail = '') {
 
 				if ($SysAdminEmail != '') {
 					$EmailSubject = __('User access blocked'). ' ' . $Name ;
-					$EmailText =  __('User ID') . ' ' . $Name . ' - ' . $Password . ' - ' . __('has been blocked access at') . ' ' .
+					$EmailText =  __('User ID') . ' - ' . $Name . ' - ' . __('has been blocked access at') . ' ' .
 								Date('Y-m-d H:i:s') . ' ' . __('from IP') . ' ' . $_SERVER["REMOTE_ADDR"] . ' ' . __('due to too many failed attempts.');
 					SendEmailFromWebERP($SysAdminEmail,
 										$SysAdminEmail,

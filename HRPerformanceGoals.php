@@ -3,6 +3,7 @@
 /* HR Performance Goals Management */
 
 require(__DIR__ . '/includes/session.php');
+require_once(__DIR__ . '/includes/UIGeneralFunctions.php');
 
 $Title = __('Performance Goals');
 $ViewTopic = 'HumanResources';
@@ -19,7 +20,7 @@ echo '<p class="page_title_text">
 if (isset($_POST['Submit'])) {
 	$InputError = 0;
 
-	if (!isset($_POST['EmployeeID']) || $_POST['EmployeeID'] <= 0) {
+	if (!isset($_POST['EmployeeID']) or $_POST['EmployeeID'] <= 0) {
 		$InputError = 1;
 		prnMsg(__('Please select an employee'), 'error');
 	}
@@ -34,9 +35,9 @@ if (isset($_POST['Submit'])) {
 
 	if ($InputError != 1) {
 		$TargetDate = FormatDateForSQL($_POST['TargetDate']);
-		$CompletionDate = !empty($_POST['CompletionDate']) && is_date($_POST['CompletionDate']) ? "'" . FormatDateForSQL($_POST['CompletionDate']) . "'" : 'NULL';
+		$CompletionDate = !empty($_POST['CompletionDate']) and is_date($_POST['CompletionDate']) ? "'" . FormatDateForSQL($_POST['CompletionDate']) . "'" : 'NULL';
 
-		if (isset($_POST['GoalID']) && $_POST['GoalID'] > 0) {
+		if (isset($_POST['GoalID']) and $_POST['GoalID'] > 0) {
 			// Update existing goal
 			$SQL = "UPDATE hrperformancegoals SET
 						employeeid = " . (int)$_POST['EmployeeID'] . ",
@@ -86,7 +87,7 @@ if (isset($_POST['Submit'])) {
 }
 
 // Handle delete
-if (isset($_GET['delete']) && isset($_GET['GoalID'])) {
+if (isset($_GET['delete']) and isset($_GET['GoalID'])) {
 	$SQL = "DELETE FROM hrperformancegoals WHERE goalid = " . (int)$_GET['GoalID'];
 	$Result = DB_query($SQL);
 	if ($Result) {
@@ -95,7 +96,7 @@ if (isset($_GET['delete']) && isset($_GET['GoalID'])) {
 }
 
 // Add/Edit form at top
-if (isset($_GET['edit']) || !isset($_GET['edit']) && !isset($_GET['delete'])) {
+if (isset($_GET['edit']) or !isset($_GET['edit']) and !isset($_GET['delete'])) {
 	$GoalID = isset($_GET['edit']) ? (int)$_GET['edit'] : 0;
 	$EmployeeID = 0;
 	$GoalDescription = '';
@@ -134,26 +135,10 @@ if (isset($_GET['edit']) || !isset($_GET['edit']) && !isset($_GET['delete'])) {
 		echo '<input type="hidden" name="GoalID" value="' . $GoalID . '" />';
 	}
 
+	echo FieldToSelectOneEmployee(
+		'EmployeeID', $EmployeeID, __('Employee'), Options: array('Display' => 'user-name-number')
+	);
 	echo '<field>
-				<label for="EmployeeID">' . __('Employee') . ':</label>
-				<select name="EmployeeID" required="required">
-					<option value="">' . __('Select Employee') . '</option>';
-
-	$SQL = "SELECT employeeid, employeenumber, firstname, lastname
-			FROM hremployees
-			WHERE employmentstatus = 'Active'
-			ORDER BY firstname, lastname";
-	$EmployeeResult = DB_query($SQL);
-	while ($Row = DB_fetch_array($EmployeeResult)) {
-		echo '<option value="' . $Row['employeeid'] . '"' .
-			($EmployeeID == $Row['employeeid'] ? ' selected="selected"' : '') .
-			'>' . $Row['employeenumber'] . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</option>';
-	}
-
-	echo '</select>
-			</field>
-
-			<field>
 				<label for="GoalDescription">' . __('Goal Description') . ':</label>
 				<textarea name="GoalDescription" rows="3" cols="60" required="required">' . htmlspecialchars($GoalDescription) . '</textarea>
 			</field>
@@ -218,21 +203,18 @@ echo '<br /><form method="post" action="' . htmlspecialchars($_SERVER['PHP_SELF'
 		<table class="selection">
 		<tr>
 			<td>' . __('Filter by Employee') . ':</td>
-			<td><select name="FilterEmployee" onchange="this.form.submit()">
-				<option value="0">' . __('All Employees') . '</option>';
-
-$SQL = "SELECT employeeid, employeenumber, firstname, lastname
-		FROM hremployees
-		WHERE employmentstatus = 'Active'
-		ORDER BY firstname, lastname";
-$Result = DB_query($SQL);
-while ($Row = DB_fetch_array($Result)) {
-	echo '<option value="' . $Row['employeeid'] . '"' .
-		($FilterEmployee == $Row['employeeid'] ? ' selected="selected"' : '') .
-		'>' . $Row['employeenumber'] . ' - ' . $Row['firstname'] . ' ' . $Row['lastname'] . '</option>';
-}
-
-echo '</select></td>
+			<td>';
+echo FieldToSelectOneEmployee(
+	'FilterEmployee', $FilterEmployee, Required: false,
+	Options: array(
+		'Display' => 'user-name-number',
+		'Placeholder' => __('All Employees'),
+		'PlaceholderValue' => '0',
+		'SubmitOnChange' => true,
+		'Field' => false,
+	)
+);
+echo '</td>
 			<td>' . __('Status') . ':</td>
 			<td><select name="FilterStatus" onchange="this.form.submit()">
 				<option value="">' . __('All Statuses') . '</option>
@@ -296,7 +278,7 @@ if (DB_num_rows($Result) == 0) {
 } else {
 	while ($Row = DB_fetch_array($Result)) {
 		$StatusColor = '';
-		$IsOverdue = (strtotime($Row['targetdate']) < time() && $Row['status'] != 'Completed');
+		$IsOverdue = (strtotime($Row['targetdate']) < time() and $Row['status'] != 'Completed');
 
 		switch ($Row['status']) {
 			case 'Not Started':

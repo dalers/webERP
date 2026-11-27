@@ -5,6 +5,11 @@ unset($_SESSION['ReportList']);
 unset($_SESSION['ModuleList']);
 unset($_SESSION['MenuItems']);
 
+$ModuleLink = array();
+$ModuleList = array();
+$ReportList = array();
+$MenuItems = array();
+
 $SQL = "SELECT `modulelink`,
 				`reportlink` ,
 				`modulename`

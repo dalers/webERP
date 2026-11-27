@@ -33,6 +33,10 @@ $DefaultDatabase = 'weberpdemo';
 
 include($PathPrefix . 'config.php');
 
+if (!isset($AllowAnyone)) {
+    $AllowAnyone = false;
+}
+
 if (isset($dbuser)) { //this gets past an upgrade issue where old versions used lower case variable names
 	/// @todo we should attempt to update the config.php file...
 	$DBUser = $dbuser;
@@ -98,7 +102,23 @@ if (!isset($_SESSION['AttemptsCounter']) or $AllowDemoMode == true) {
 /* Log the script we run so we can optimize CPU time*/	
 $_SESSION['ScriptStartTime'] = microtime();
 
-if (isset($_SESSION['DatabaseName'])) {
+/* Only pages safe to open with a stock code should be added here. */
+$StockLinkPages = array('SelectProduct.php', 'BOMIndented.php');
+$StockLinkPage = '';
+$CurrentScript = basename($_SERVER['SCRIPT_NAME']);
+if (in_array($CurrentScript, $StockLinkPages, true)
+	and isset($_GET['StockID']) and is_string($_GET['StockID'])) {
+	$StockLinkPage = $CurrentScript;
+	$StockLinkID = $_GET['StockID'];
+} elseif ($CurrentScript == 'index.php'
+	and isset($_POST['StockLinkPage'], $_POST['StockLinkID'])
+	and is_string($_POST['StockLinkPage']) and is_string($_POST['StockLinkID'])
+	and in_array($_POST['StockLinkPage'], $StockLinkPages, true)) {
+	$StockLinkPage = $_POST['StockLinkPage'];
+	$StockLinkID = $_POST['StockLinkID'];
+}
+
+if (isset($_SESSION['DatabaseName']) or $AllowAnyone == true) {
 
 	/* iterate through all elements of the $_GET and $_POST arrays and DB_escape_string plus htmlspecialchars them
 	to avoid both SQL injection attacks and cross scripting attacks
@@ -192,6 +212,9 @@ if (basename($_SERVER['SCRIPT_NAME']) == 'Logout.php') {
 		case UL_OK: //user logged in successfully
 			/// @todo shouldn't we only set the cookie if $FirstLogin = true ?
 			setcookie('Login', $_SESSION['DatabaseName']);
+			if ($FirstLogin and $StockLinkPage != '' and isset($_POST['CompanyNameField'])) {
+				setcookie('Company', $_POST['CompanyNameField'], time() + 3600 * 24 * 30);
+			}
 			//include($PathPrefix . 'includes/LanguageSetup.php'); //set up the language
 
 			/// @todo the session table was created in DBUpdateNumber 13, not 11!
@@ -315,7 +338,7 @@ if ($_SESSION['HTTPS_Only'] == 1) {
 // Now check that the user as logged in has access to the page being called. $SecurityGroups is an array of
 // arrays defining access for each group of users. These definitions can be modified by a system admin under setup
 
-if (!is_array($_SESSION['AllowedPageSecurityTokens']) and !isset($AllowAnyone)) {
+if (!is_array($_SESSION['AllowedPageSecurityTokens']) and !$AllowAnyone) {
 	$Title = __('Account Error Report');
 	include($PathPrefix . 'includes/header.php');
 	echo '<br /><br /><br />';
@@ -333,7 +356,7 @@ if (!isset($PageSecurity)) {
 	$PageSecurity = $_SESSION['PageSecurityArray'][basename($_SERVER['SCRIPT_NAME'])];
 }
 
-if (!isset($AllowAnyone)) {
+if (!$AllowAnyone) {
 	if ((!in_array($PageSecurity, $_SESSION['AllowedPageSecurityTokens']) or !isset($PageSecurity))) {
 		$Title = __('Security Permissions Problem');
 		include($PathPrefix . 'includes/header.php');
@@ -367,14 +390,20 @@ if (in_array(1, $_SESSION['AllowedPageSecurityTokens']) and count($_SESSION['All
 	$CustomerLogin = 0;
 }
 
-if ($FirstLogin and !$SupplierLogin and !$CustomerLogin and $_SESSION['ShowDashboard'] == 1) {
+if ($FirstLogin and $StockLinkPage != ''
+	and (!isset($_SESSION['FirstLogIn']) or $_SESSION['FirstLogIn'] != '1')) {
+	header('Location: ' . htmlspecialchars_decode($RootPath) . '/' . $StockLinkPage . '?StockID=' . urlencode($StockLinkID), true, 303);
+	exit();
+}
+
+if ($FirstLogin and $StockLinkPage == '' and !$SupplierLogin and !$CustomerLogin and $_SESSION['ShowDashboard'] == 1) {
 	header('Location: ' . htmlspecialchars_decode($RootPath) . '/Dashboard.php');
 }
 
 /// @todo instead of checking for $_POST['CompanyNameField'], only disable this check on posts from Login.php, or
 ///       at least make it harder for an attacker to disable the check, f.e. add a var in the session when displaying
 ///       the form. Or just also do the check on Login...
-if (!isset($_POST['CompanyNameField']) and sizeof($_POST) > 0 and !isset($AllowAnyone)) {
+if (!isset($_POST['CompanyNameField']) and sizeof($_POST) > 0 and !$AllowAnyone) {
 	/* Security check to ensure that the form submitted is originally sourced from webERP with the FormID = $_SESSION['FormID'] - which is set before the first login */
 	if (!isset($_POST['FormID']) or ($_POST['FormID'] != $_SESSION['FormID'])) {
 		$Title = __('Error in form verification');

@@ -143,12 +143,16 @@ if ($_SESSION['CustomerID'] != '' and !isset($_POST['CSV'])) {
 	} // $MyRow = DB_fetch_array($Result)
 	unset($CustomerResult);
 
-	echo '<p class="page_title_text"><img alt="" src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/customer.png" title="', // Icon image.
-	__('Customer'), '" /> ', // Icon title.
-	'<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">',
-	__('Customer'), ': ', stripslashes($_SESSION['CustomerID']), ' - ', $CustomerName,
-	'</a>
-		</p>'; // Page title.
+	echo '<p class="page_title_text"><img alt="" src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/customer.png" title="',
+		__('Customer'), '" /> ';
+	if (MenuItemIsAllowed('/Customers.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">';
+	}
+	echo __('Customer'), ': ', stripslashes($_SESSION['CustomerID']), ' - ', $CustomerName;
+	if (MenuItemIsAllowed('/Customers.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '</a>';
+	}
+	echo '</p>';
 
 	ob_start();
 	echo '<div class="page_help_text" style="margin-top: 16px; margin-bottom: 12px;">', __('Chose a menu item for the selected customer.'), '</div>';
@@ -162,35 +166,66 @@ if ($_SESSION['CustomerID'] != '' and !isset($_POST['CSV'])) {
 			</thead>
 			<tbody>
 				<tr>
-					<td valign="top" class="select">
-						<a href="', $RootPath, '/CustomerInquiry.php?CustomerID=', urlencode($_SESSION['CustomerID']), '">', __('Customer Transaction Inquiries'), '</a><br />
-						<a href="', $RootPath, '/CustomerAccount.php?CustomerID=', urlencode($_SESSION['CustomerID']), '">', __('Customer Account statement on screen'), '</a><br />
-						<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '&amp;Modify=No">', __('View Customer Details'), '</a><br />
-						<a href="', $RootPath, '/PrintCustStatements.php?FromCust=', urlencode($_SESSION['CustomerID']), '&amp;ToCust=', urlencode($_SESSION['CustomerID']), '&amp;EmailOrPrint=print&amp;PrintPDF=Yes" target="_blank">', __('Print Customer Statement'), '</a><br />
-						<a data-title="', __('One of the customer\'s contacts must have an email address and be flagged as the address to send the customer statement to for this function to work'), '" href="', $RootPath, '/PrintCustStatements.php?FromCust=', urlencode($_SESSION['CustomerID']), '&amp;ToCust=', urlencode($_SESSION['CustomerID']), '&amp;EmailOrPrint=email&amp;PrintPDF=Yes">', __('Email Customer Statement'), '</a><br />
-						<a href="', $RootPath, '/SelectCompletedOrder.php?SelectedCustomer=', urlencode($_SESSION['CustomerID']), '">', __('Order Inquiries'), '</a><br />
-						<a href="', $RootPath, '/CustomerPurchases.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Show purchases from this customer'), '</a><br />
-						', wikiLink('Customer', $_SESSION['CustomerID']), '
-					</td>
-					<td valign="top" class="select">
-						<a href="', $RootPath, '/SelectSalesOrder.php?SelectedCustomer=', urlencode($_SESSION['CustomerID']), '">', __('Modify Outstanding Sales Orders'), '</a><br />
-						<a data-title="', __('This allows the deposits received from the customer to be matched against invoices'), '" href="', $RootPath, '/CustomerAllocations.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Allocate Receipts OR Credit Notes'), '</a><br />
-						<a href="', $RootPath, '/CustomerReceipt.php?CustomerID=', urlencode($_SESSION['CustomerID']), '&NewReceipt=Yes&Type=Customer">', __('Enter a Receipt From This Customer'), '</a><br />';
-	if (isset($_SESSION['CustomerID']) and isset($_SESSION['BranchCode'])) {
+					<td valign="top" class="select">';
+	if (MenuItemIsAllowed('/CustomerInquiry.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/CustomerInquiry.php?CustomerID=', urlencode($_SESSION['CustomerID']), '">', __('Customer Transaction Inquiries'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/CustomerAccount.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/CustomerAccount.php?CustomerID=', urlencode($_SESSION['CustomerID']), '">', __('Customer Account statement on screen'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/Customers.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '&amp;Modify=No">', __('View Customer Details'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/PrintCustStatements.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/PrintCustStatements.php?FromCust=', urlencode($_SESSION['CustomerID']), '&amp;ToCust=', urlencode($_SESSION['CustomerID']), '&amp;EmailOrPrint=print&amp;PrintPDF=Yes" target="_blank">', __('Print Customer Statement'), '</a><br />
+			<a data-title="', __('One of the customer\'s contacts must have an email address and be flagged as the address to send the customer statement to for this function to work'), '" href="', $RootPath, '/PrintCustStatements.php?FromCust=', urlencode($_SESSION['CustomerID']), '&amp;ToCust=', urlencode($_SESSION['CustomerID']), '&amp;EmailOrPrint=email&amp;PrintPDF=Yes">', __('Email Customer Statement'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/SelectCompletedOrder.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/SelectCompletedOrder.php?SelectedCustomer=', urlencode($_SESSION['CustomerID']), '">', __('Order Inquiries'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/CustomerPurchases.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/CustomerPurchases.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Show purchases from this customer'), '</a><br />';
+	}
+	wikiLink('Customer', $_SESSION['CustomerID']);
+	echo '</td>
+		<td valign="top" class="select">';
+	if (MenuItemIsAllowed('/SelectSalesOrder.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/SelectSalesOrder.php?SelectedCustomer=', urlencode($_SESSION['CustomerID']), '">', __('Modify Outstanding Sales Orders'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/CustomerAllocations.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a data-title="', __('This allows the deposits received from the customer to be matched against invoices'), '" href="', $RootPath, '/CustomerAllocations.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Allocate Receipts OR Credit Notes'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/CustomerReceipt.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/CustomerReceipt.php?CustomerID=', urlencode($_SESSION['CustomerID']), '&NewReceipt=Yes&Type=Customer">', __('Enter a Receipt From This Customer'), '</a><br />';
+	}
+	if (isset($_SESSION['CustomerID']) and isset($_SESSION['BranchCode']) and MenuItemIsAllowed('/CounterSales.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
 		echo '						<a href="', $RootPath, '/CounterSales.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '&amp;BranchNo=', $_SESSION['BranchCode'], '">', __('Create a Counter Sale for this Customer'), '</a><br />';
 	}
 	echo '					</td>
-					<td valign="top" class="select">
-						<a href="', $RootPath, '/Customers.php">', __('Add a New Customer'), '</a><br />
-						<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Modify Customer Details'), '</a><br />
-						<a href="', $RootPath, '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Contact'), '</a><br />
-						<a href="', $RootPath, '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Note'), '</a><br />
-						<br />
-						<a href="', $RootPath, '/CustomerBranches.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add/Edit/Delete Customer Branches'), '</a><br />
-						<a href="', $RootPath, '/SelectProduct.php">', __('Special Customer Prices'), '</a><br />
-						<a href="', $RootPath, '/CustEDISetup.php">', __('Customer EDI Configuration'), '</a><br />
-						<a href="', $RootPath, '/CustLoginSetup.php">', __('Customer Login Configuration'), '</a><br />
-					</td>
+					<td valign="top" class="select">';
+	if (MenuItemIsAllowed('/Customers.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/Customers.php">', __('Add a New Customer'), '</a><br />
+			<a href="', $RootPath, '/Customers.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Modify Customer Details'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/AddCustomerContacts.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Contact'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/AddCustomerNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add a Customer Note'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/CustomerBranches.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/CustomerBranches.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add/Edit/Delete Customer Branches'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/SelectProduct.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/SelectProduct.php">', __('Special Customer Prices'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/CustEDISetup.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/CustEDISetup.php">', __('Customer EDI Configuration'), '</a><br />';
+	}
+	if (MenuItemIsAllowed('/CustLoginSetup.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/CustLoginSetup.php">', __('Customer Login Configuration'), '</a><br />';
+	}
+	echo '</td>
 				</tr>
 			</tbody>
 		</table>';
@@ -231,7 +266,11 @@ if (!isset($_SESSION['CustomerID']) || $_SESSION['CustomerID'] == '' || $Custome
 		'<tr>',
 			'<td class="select"></td>',
 			'<td class="select"></td>',
-			'<td class="select"><a href="', $RootPath, '/Customers.php">', __('Add a New Customer'), '</a></td>',
+			'<td class="select">';
+	if (MenuItemIsAllowed('/Customers.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="', $RootPath, '/Customers.php">', __('Add a New Customer'), '</a>';
+	}
+	echo '</td>',
 		'</tr><tbody></table>';
 }
 
@@ -271,7 +310,9 @@ if (isset($_POST['CustType'])) {
 	// Error if no customer types setup
 	if (DB_num_rows($Result2) == 0) {
 		$DataError = 1;
-		echo '<a href="' . $RootPath . '/CustomerTypes.php" target="_parent">' . __('Setup Types') . '</a>';
+		if (MenuItemIsAllowed('/CustomerTypes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/CustomerTypes.php" target="_parent">' . __('Setup Types') . '</a>';
+		}
 		echo '<field><td colspan="2">' . prnMsg(__('No Customer types defined'), 'error','',true) . '</td></field>';
 	} else {
 		// If OK show select box with option selected
@@ -294,7 +335,9 @@ if (isset($_POST['CustType'])) {
 	// Error if no customer types setup
 	if (DB_num_rows($Result2) == 0) {
 		$DataError = 1;
-		echo '<a href="' . $RootPath . '/CustomerTypes.php" target="_parent">' . __('Setup Types') . '</a>';
+		if (MenuItemIsAllowed('/CustomerTypes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+			echo '<a href="' . $RootPath . '/CustomerTypes.php" target="_parent">' . __('Setup Types') . '</a>';
+		}
 		echo '<field><td colspan="2">' . prnMsg(__('No Customer types defined'), 'error','',true) . '</td></field>';
 	} else {
 		// if OK show select box with available options to choose
@@ -316,7 +359,9 @@ $Result2 = DB_query("SELECT areacode, areadescription FROM areas");
 // Error if no sales areas setup
 if (DB_num_rows($Result2) == 0) {
 	$DataError = 1;
-	echo '<a href="' . $RootPath . '/Areas.php" target="_parent">' . __('Setup Areas') . '</a>';
+	if (MenuItemIsAllowed('/Areas.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+		echo '<a href="' . $RootPath . '/Areas.php" target="_parent">' . __('Setup Areas') . '</a>';
+	}
 	echo '<field><td colspan="2">' . prnMsg(__('No Sales Areas defined'), 'error','',true) . '</td></field>';
 } else {
 	// if OK show select box with available options to choose
@@ -477,7 +522,11 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 		$SQL = "SELECT * FROM geocode_param";
 		$Result = DB_query($SQL);
 		if (DB_num_rows($Result) == 0) {
-			prnMsg(__('You must first setup the geocode parameters') . ' ' . '<a href="' . $RootPath . '/GeocodeSetup.php">' . __('here') . '</a>', 'error');
+			$GeocodeMessage = __('You must first setup the geocode parameters');
+			if (MenuItemIsAllowed('/GeocodeSetup.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				$GeocodeMessage .= ' ' . '<a href="' . $RootPath . '/GeocodeSetup.php">' . __('here') . '</a>';
+			}
+			prnMsg($GeocodeMessage, 'error');
 			echo $CustomerSearchSection;
 			include(__DIR__ . '/includes/footer.php');
 			exit();
@@ -719,9 +768,15 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 						<td><a href="mailto:', $MyRow[6], '">', $MyRow[6], '</a></td>
 						<td>', ($MyRow[7] == 0) ? __('No') : __('Yes'), '</td>
 						<td>', $MyRow[5], '</td>
-						<td style="text-align:center; width:8%; white-space:nowrap"><a href="' . $RootPath . '/AddCustomerContacts.php?Id=', urlencode($MyRow[0]), '&DebtorNo=', urlencode($MyRow[1]), '">', __('Edit'), '</a></td>
-						<td style="text-align:center; width:8%; white-space:nowrap"><a href="' . $RootPath . '/AddCustomerContacts.php?Id=', urlencode($MyRow[0]), '&DebtorNo=', urlencode($MyRow[1]), '&delete=1">', __('Delete'), '</a></td>
-					</tr>';
+						<td style="text-align:center; width:8%; white-space:nowrap">';
+				if (MenuItemIsAllowed('/AddCustomerContacts.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+					echo '<a href="' . $RootPath . '/AddCustomerContacts.php?Id=', urlencode($MyRow[0]), '&DebtorNo=', urlencode($MyRow[1]), '">', __('Edit'), '</a>';
+				}
+				echo '</td><td style="text-align:center; width:8%; white-space:nowrap">';
+				if (MenuItemIsAllowed('/AddCustomerContacts.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+					echo '<a href="' . $RootPath . '/AddCustomerContacts.php?Id=', urlencode($MyRow[0]), '&DebtorNo=', urlencode($MyRow[1]), '&delete=1">', __('Delete'), '</a>';
+				}
+				echo '</td></tr>';
 			} // END WHILE LIST LOOP
 			// Customer Branch Contacts if selected
 			if (isset($_SESSION['BranchCode']) and $_SESSION['BranchCode'] != '') {
@@ -747,10 +802,12 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 			}
 			echo '</tbody>
 				</table>';
-			echo '<div class="centre" style="margin-top: 12px; margin-bottom: 18px;"><a href="' . $RootPath . '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add New Contact'), '</a></div>';
+			if (MenuItemIsAllowed('/AddCustomerContacts.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<div class="centre" style="margin-top: 12px; margin-bottom: 18px;"><a href="' . $RootPath . '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add New Contact'), '</a></div>';
+			}
 		} // DB_num_rows($Result) <> 0
 		else {
-			if ($_SESSION['CustomerID'] != '') {
+			if ($_SESSION['CustomerID'] != '' and MenuItemIsAllowed('/AddCustomerContacts.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
 				echo '<p class="page_title_text">
 						<img src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/group_add.png" title="', __('Customer Contacts'), '" alt="" />
 						<a href="' . $RootPath . '/AddCustomerContacts.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', ' ', __('Add New Contact'), '</a>
@@ -792,16 +849,24 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 						<td>', $MyRow['note'], '</td>
 							<td style="word-break:break-all; overflow-wrap:anywhere;"><a href="', $MyRow['href'], '">', $MyRow['href'], '</a></td>
 						<td>', $MyRow['priority'], '</td>
-							<td style="text-align:center; width:8%; white-space:nowrap"><a href="' . $RootPath . '/AddCustomerNotes.php?Id=', urlencode($MyRow['noteid']), '&amp;DebtorNo=', urlencode($MyRow['debtorno']), '">', __('Edit'), '</a></td>
-							<td style="text-align:center; width:8%; white-space:nowrap"><a href="' . $RootPath . '/AddCustomerNotes.php?Id=', urlencode($MyRow['noteid']), '&amp;DebtorNo=', urlencode($MyRow['debtorno']), '&amp;delete=1" onclick="return confirm(\'' . __('Are you sure you wish to delete this customer note?') . '\');">', __('Delete'), '</a></td>
-					</tr>';
+						<td style="text-align:center; width:8%; white-space:nowrap">';
+				if (MenuItemIsAllowed('/AddCustomerNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+					echo '<a href="' . $RootPath . '/AddCustomerNotes.php?Id=', urlencode($MyRow['noteid']), '&amp;DebtorNo=', urlencode($MyRow['debtorno']), '">', __('Edit'), '</a>';
+				}
+				echo '</td><td style="text-align:center; width:8%; white-space:nowrap">';
+				if (MenuItemIsAllowed('/AddCustomerNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+					echo '<a href="' . $RootPath . '/AddCustomerNotes.php?Id=', urlencode($MyRow['noteid']), '&amp;DebtorNo=', urlencode($MyRow['debtorno']), '&amp;delete=1" onclick="return confirm(\'' . __('Are you sure you wish to delete this customer note?') . '\');">', __('Delete'), '</a>';
+				}
+				echo '</td></tr>';
 			} // END WHILE LIST LOOP
 			echo '</tbody>';
 			echo '</table>';
-			echo '<div class="centre" style="margin-top: 12px;"><a href="' . $RootPath . '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add New Note'), '</a></div>';
+			if (MenuItemIsAllowed('/AddCustomerNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<div class="centre" style="margin-top: 12px;"><a href="' . $RootPath . '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', __('Add New Note'), '</a></div>';
+			}
 		} // DB_num_rows($Result) <> 0
 		else {
-			if ($_SESSION['CustomerID'] != '') {
+			if ($_SESSION['CustomerID'] != '' and MenuItemIsAllowed('/AddCustomerNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
 				echo '<p class="page_title_text">
 						<img src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/note_add.png" title="', __('Customer Notes'), '" alt="" />
 						<a href="' . $RootPath . '/AddCustomerNotes.php?DebtorNo=', urlencode($_SESSION['CustomerID']), '">', ' ', __('Add New Note for this Customer'), '</a>
@@ -835,17 +900,24 @@ if (isset($_SESSION['CustomerID']) and $_SESSION['CustomerID'] != '') {
 						<td class="date">', $MyRow[4], '</td>
 						<td>', $MyRow[3], '</td>
 						<td>', $MyRow[2], '</td>
-						<td>', $MyRow[5], '</td>
-						<td><a href="' . $RootPath . '/AddCustomerTypeNotes.php?Id=', urlencode($MyRow[0]), '&amp;DebtorType=', urlencode($MyRow[1]), '">', __('Edit'), '</a></td>
-						<td><a href="' . $RootPath . '/AddCustomerTypeNotes.php?Id=', urlencode($MyRow[0]), '&amp;DebtorType=', urlencode($MyRow[1]), '&amp;delete=1">', __('Delete'), '</a></td>
-					</tr>';
+						<td>', $MyRow[5], '</td><td>';
+				if (MenuItemIsAllowed('/AddCustomerTypeNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+					echo '<a href="' . $RootPath . '/AddCustomerTypeNotes.php?Id=', urlencode($MyRow[0]), '&amp;DebtorType=', urlencode($MyRow[1]), '">', __('Edit'), '</a>';
+				}
+				echo '</td><td>';
+				if (MenuItemIsAllowed('/AddCustomerTypeNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+					echo '<a href="' . $RootPath . '/AddCustomerTypeNotes.php?Id=', urlencode($MyRow[0]), '&amp;DebtorType=', urlencode($MyRow[1]), '&amp;delete=1">', __('Delete'), '</a>';
+				}
+				echo '</td></tr>';
 			} // END WHILE LIST LOOP
 			echo '</tbody>';
 			echo '</table>';
-			echo '<div class="centre" style="margin-top: 12px; margin-bottom: 18px;"><a href="' . $RootPath . '/AddCustomerTypeNotes.php?DebtorType=', urlencode($CustomerType), '">', __('Add New Group Note'), '</a></div>';
+			if (MenuItemIsAllowed('/AddCustomerTypeNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
+				echo '<div class="centre" style="margin-top: 12px; margin-bottom: 18px;"><a href="' . $RootPath . '/AddCustomerTypeNotes.php?DebtorType=', urlencode($CustomerType), '">', __('Add New Group Note'), '</a></div>';
+			}
 		} // DB_num_rows($Result) <> 0
 		else {
-			if ($_SESSION['CustomerID'] != '') {
+			if ($_SESSION['CustomerID'] != '' and MenuItemIsAllowed('/AddCustomerTypeNotes.php', $_SESSION['PageSecurityArray'], $_SESSION['AllowedPageSecurityTokens'])) {
 				echo '<p class="page_title_text">
 						<img src="', $RootPath, '/css/', $_SESSION['Theme'], '/images/folder_add.png" title="', __('Customer Group Notes'), '" alt="" />
 						<a href="' . $RootPath . '/AddCustomerTypeNotes.php?DebtorType=', urlencode($CustomerType), '">', ' ', __('Add New Group Note'), '</a>

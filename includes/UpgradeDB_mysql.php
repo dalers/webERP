@@ -69,12 +69,12 @@ function NewSysType($TypeID, $TypeDescription) {
 	}
 }
 
-function NewScript($ScriptName, $PageSecurity) {
+function NewScript($ScriptName, $PageSecurity, $Description = '') {
 	/*Is page already in table */
 	$SQL = "SELECT script FROM scripts WHERE script='" . $ScriptName . "'";
 	$Result = DB_query($SQL);
 	if (DB_num_rows($Result) == 0) {
-		$SQL = "INSERT INTO `scripts` (`script`, `pagesecurity`, `description`) VALUES ('" . $ScriptName . "', '" . $PageSecurity . "', '')";
+		$SQL = "INSERT INTO `scripts` (`script`, `pagesecurity`, `description`) VALUES ('" . $ScriptName . "', '" . $PageSecurity . "', '" . $Description . "')";
 		$Response = executeSQL($SQL, false);
 		if ($Response == 0) {
 			OutputResult(__('The script') . ' ' . $ScriptName . ' ' . __('has been inserted'), 'success');
@@ -313,12 +313,12 @@ function ChangeColumnSize($Column, $Table, $Type, $Null, $Default, $Size) {
 	if ($MyRow[0] <> $Size) {
 		$Response = executeSQL("ALTER TABLE " . $Table . " CHANGE COLUMN " . $Column . " " . $Column . " " . $Type . " " . $Null . " DEFAULT '" . $Default . "'", false);
 		if ($Response == 0) {
-			OutputResult(__('The column') . ' ' . $Column . ' ' . __('has been changed'), 'success');
+			OutputResult(__('The column') . ' ' . $Table . '.' . $Column . ' ' . __('has been changed'), 'success');
 		} else {
-			OutputResult(__('The column') . ' ' . $Column . ' ' . __('could not be changed'), 'error');
+			OutputResult(__('The column') . ' ' . $Table . '.' . $Column . ' ' . __('could not be changed'), 'error');
 		}
 	} else {
-		OutputResult(__('The column') . ' ' . $Column . ' ' . __('is already changed'), 'info');
+		OutputResult(__('The column') . ' ' . $Table . '.' . $Column . ' ' . __('is already changed'), 'info');
 	}
 }
 

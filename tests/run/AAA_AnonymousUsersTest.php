@@ -8,6 +8,112 @@ require_once(__DIR__ . '/../src/AnonymousUserTestCase.php');
 class AAA_AnonymousUsersTest extends AnonymousUserTestCase
 {
 	/**
+	 * @dataProvider stockLinkPages
+	 */
+	public function testStockLinkLoginFormPreservesStockCode(string $Page): void
+	{
+		$StockID = 'PART/12 #?&';
+		$Crawler = $this->request('GET', self::$baseUri . '/' . $Page . '?StockID=' . urlencode($StockID));
+		$Action = $Crawler->filter('form[name="LogIn"]')->attr('action');
+		$this->assertSame('index.php', basename(parse_url($Action, PHP_URL_PATH)));
+		$this->assertSame($Page, $Crawler->filter('input[name="StockLinkPage"]')->attr('value'));
+		$this->assertSame($StockID, $Crawler->filter('input[name="StockLinkID"]')->attr('value'));
+
+		$Crawler = $this->request('GET', self::$baseUri . '/index.php?StockID=' . urlencode($StockID));
+		$this->assertSame('index.php', basename($Crawler->filter('form[name="LogIn"]')->attr('action')));
+		$this->assertCount(0, $Crawler->filter('input[name="StockLinkPage"]'));
+
+		$Crawler = $this->request('GET', self::$baseUri . '/' . $Page . '?StockID%5B%5D=invalid');
+		$this->assertSame('index.php', basename($Crawler->filter('form[name="LogIn"]')->attr('action')));
+		$this->assertCount(0, $Crawler->filter('input[name="StockLinkPage"]'));
+
+		$Crawler = $this->request('GET', self::$baseUri . '/' . $Page);
+		$this->assertCount(0, $Crawler->filter('input[name="StockLinkPage"]'));
+
+		$Crawler = $this->request('GET', self::$baseUri . '/StockStatus.php?StockID=' . urlencode($StockID));
+		$this->assertCount(0, $Crawler->filter('input[name="StockLinkPage"]'));
+	}
+
+	/**
+	 * @dataProvider stockLinkPages
+	 */
+	public function testStockLinkSurvivesLoginRetry(string $Page): void
+	{
+		$db = new mysqli(
+			$_ENV['TEST_DB_HOSTNAME'],
+			$_ENV['TEST_DB_USER'],
+			$_ENV['TEST_DB_PASSWORD'],
+			$_ENV['TEST_DB_SCHEMA'],
+			$_ENV['TEST_DB_PORT']
+		);
+		$Fixture = $db->query("SELECT stockmaster.stockid
+			FROM stockmaster INNER JOIN stockcategory ON stockmaster.categoryid = stockcategory.categoryid
+			WHERE stockmaster.stockid REGEXP '^[A-Z0-9 _/-]+$'
+			LIMIT 1")->fetch_row();
+		if ($Fixture === null) {
+			$this->markTestSkipped('No selection fixture is available');
+		}
+		$StockID = $Fixture[0];
+		$Crawler = $this->request('GET', self::$baseUri . '/' . $Page . '?StockID=' . urlencode($StockID));
+		$Crawler = $this->submitForm('SubmitUser', array(
+			'CompanyNameField' => $_ENV['TEST_DB_SCHEMA'],
+			'UserNameEntryField' => 'NOUSER' . strtoupper(bin2hex(random_bytes(5))),
+			'Password' => 'incorrect'
+		));
+		$this->assertStringContainsString('incorrect password', $Crawler->text());
+		$this->assertSame($Page, $Crawler->filter('input[name="StockLinkPage"]')->attr('value'));
+		$this->assertSame($StockID, $Crawler->filter('input[name="StockLinkID"]')->attr('value'));
+
+		$LoggedIn = false;
+		try {
+			$this->followRedirects(false);
+			$this->setExpectedStatusCodes([303]);
+			$Crawler = $this->submitForm('SubmitUser', array(
+				'CompanyNameField' => $_ENV['TEST_DB_SCHEMA'],
+				'UserNameEntryField' => $_ENV['TEST_USER_ACCOUNT'],
+				'Password' => $_ENV['TEST_USER_PASSWORD']
+			));
+			$LoggedIn = true;
+			$Location = $this->getResponse()->getHeader('Location');
+			$this->assertSame($Page, basename(parse_url($Location, PHP_URL_PATH)));
+			parse_str(parse_url($Location, PHP_URL_QUERY), $Parameters);
+			$this->assertSame($StockID, $Parameters['StockID']);
+			$this->setExpectedStatusCodes([200]);
+			$Crawler = $this->request('GET', self::$baseUri . '/' . $Page . '?' . parse_url($Location, PHP_URL_QUERY));
+			if ($Page == 'SelectProduct.php') {
+				$this->assertCount(1, $Crawler->filter('#ProductLink'));
+			} else {
+				$this->assertSame($StockID, $Crawler->filter('input[name="Part"]')->attr('value'));
+			}
+		} finally {
+			if ($LoggedIn) {
+				$this->followRedirects(false);
+				$this->setExpectedStatusCodes([302]);
+				$this->request('GET', self::$baseUri . '/Logout.php');
+			}
+		}
+	}
+
+	public function testUnapprovedLoginDestinationIsDiscarded(): void
+	{
+		$this->request('GET', self::$baseUri . '/SelectProduct.php?StockID=PART');
+		$Crawler = $this->submitForm('SubmitUser', array(
+			'CompanyNameField' => $_ENV['TEST_DB_SCHEMA'],
+			'UserNameEntryField' => 'NOUSER' . strtoupper(bin2hex(random_bytes(5))),
+			'Password' => 'incorrect',
+			'StockLinkPage' => 'https://example.invalid/SelectProduct.php'
+		));
+		$this->assertStringContainsString('incorrect password', $Crawler->text());
+		$this->assertCount(0, $Crawler->filter('input[name="StockLinkPage"]'));
+		$this->assertCount(0, $Crawler->filter('input[name="StockLinkID"]'));
+	}
+
+	public static function stockLinkPages(): array
+	{
+		return array(array('SelectProduct.php'), array('BOMIndented.php'));
+	}
+
+	/**
 	 * Tests access to pages which set $AllowAnyone to true
 	 * This test is run many times - the filename to test is provided via the dataProvider.
 	 * @dataProvider listAnonAccessPages
